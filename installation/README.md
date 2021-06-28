@@ -2,7 +2,7 @@
 These are the files that are required to run **UFT One** tests on an Azure DevOps agent machine. The server must have the **UFT One Azure DevOps extension** installed.
 
 ## Important Notes
-- This folder may contain the files under development which might not be compatible with the latest release.
+- This folder may contain files that are under development, which might not be compatible with the latest release.
 - Always download the integration files from the [release page][release-page].
 
 ## UFT.zip
