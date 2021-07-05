@@ -137,6 +137,15 @@ if($uploadArtifact -eq "yes") {
 
 if ($rerunIdx) {
 	Write-Host "Rerun attempt = $rerunIdx"
+	if (Test-Path $runSummary) {
+		Remove-Item $runSummary
+	}
+	if (Test-Path $uftReport) {
+		Remove-Item $uftReport
+	}
+	if (Test-Path $failedTests) {
+		Remove-Item $failedTests
+	}
 }
 
 #---------------------------------------------------------------------------------------------------
