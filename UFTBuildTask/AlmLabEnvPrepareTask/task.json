@@ -1,7 +1,7 @@
 ﻿{
   "id": "2A12D98C-8838-40BA-BE69-C0B5D88743F5",
   "name": "AlmLabEnvPrepareTask",
-  "friendlyName": "UFT ALM Lab Environment Preparation",
+  "friendlyName": "UFT One ALM Lab Environment Preparation",
   "description": "Use this build step to assign values to AUT Environment Configuration in ALM.",
   "category": "Test",
   "visibility": [
@@ -31,7 +31,7 @@
     }
   ],
   "minimumAgentVersion": "1.95.0",
-  "instanceNameFormat": "Run From ALM Lab Environment Preparation $(message)",
+  "instanceNameFormat": "ALM Lab Environment Preparation $(message)",
   "inputs": [
     {
       "name": "varAlmserv",
@@ -86,28 +86,26 @@
       "type": "radio",
       "label": "",
       "required": true,
-      "groupName": "advanced",
       "defaultValue": "Existing",
       "helpMarkDown": "Sets JAVA_HOME either by selecting a JDK version that will be discovered during builds or by manually entering a JDK path",
       "options": {
-        "NewConf": "Create a new configuration named",
-        "Existing": "Use an existing configuration with ID:"
+        "NewConf": "Create a new configuration",
+        "Existing": "Use an existing configuration"
       }
     },
     {
       "name": "createNewNamed",
       "type": "string",
-      "label": "Create a new configuration named:",
-      "groupName": "advanced",
+      "label": "New configuration name:",
       "defaultValue": "",
       "required": true,
+      "helpMarkDown": "The name for the configuration to be created",
       "visibleRule": "javaHomeSelection = NewConf"
     },
     {
       "name": "assignMessage",
       "type": "string",
       "label": "Assign AUT Environment Configuration ID to:",
-      "groupName": "advanced",
       "defaultValue": "",
       "required": false,
       "visibleRule": "javaHomeSelection = NewConf"
@@ -115,9 +113,8 @@
     {
       "name": "jdkUserInputPath",
       "type": "string",
-      "label": "Use an existing configuration with ID:",
+      "label": "Configuration ID:",
       "required": true,
-      "groupName": "advanced",
       "defaultValue": "",
       "helpMarkDown": "Sets JAVA_HOME to the given path",
       "visibleRule": "javaHomeSelection = Existing"

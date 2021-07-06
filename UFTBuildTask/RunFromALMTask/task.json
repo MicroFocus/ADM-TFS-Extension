@@ -1,8 +1,8 @@
 ﻿{
   "id": "A571AE7C-E100-42E1-8CED-498B46029773",
   "name": "RunFromALMTask",
-  "friendlyName": "UFT ALM Execution",
-  "description": "Execute UFT tests from ALM",
+  "friendlyName": "UFT One ALM Run",
+  "description": "Run UFT One tests from ALM",
   "category": "Test",
   "visibility": [
     "Build",
@@ -100,7 +100,7 @@
       "type": "multiLine",
       "label": "Test Sets",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "helpMarkDown": "The test sets to run in the current build step"
     },
     {
@@ -125,7 +125,7 @@
       "label": "Run Mode",
       "defaultValue": "runLocally",
       "required": false,
-      "helpMarkDown": "The place to run the test: Remote host, local computer, or remote planned host",
+      "helpMarkDown": "The place to run the test sets: locally (on the agent machine), remotely (on a specified host) or on a planned host (set for the test set in ALM)",
       "groupName": "advanced",
       "options": {
         "runLocally": "Run locally",
@@ -140,7 +140,7 @@
       "defaultValue": "",
       "groupName": "advanced",
       "required": false,
-      "helpMarkDown": "The address of the host running the selected tests"
+      "helpMarkDown": "Required for running remotely: The name of the host that runs the test sets"
     }
   ],
 
