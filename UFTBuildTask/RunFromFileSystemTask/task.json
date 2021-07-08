@@ -1,8 +1,8 @@
 ﻿{
   "id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F5",
   "name": "RunFromFileSystemTask",
-  "friendlyName": "UFT File System Execution",
-  "description": "Execute UFT tests from file system",
+  "friendlyName": "UFT One File System Run",
+  "description": "Run UFT One tests from file system",
   "category": "Test",
   "visibility": [
     "Build",
@@ -36,7 +36,7 @@
     {
       "name": "uploadArtifact",
       "type": "radio",
-      "label": "Do you want to upload the UFT report to the storage account?",
+      "label": "Do you want to upload the UFT One report to the storage account?",
       "defaultValue": "yes",
       "required": true,
       "options": {
@@ -54,9 +54,9 @@
       "visibleRule": "uploadArtifact = yes",
       "helpMarkDown": "Choose what artifact will be uploaded to the storage account",
       "options": {
-        "onlyReport": "Only UFT html report",
-        "onlyArchive": "Only UFT archive",
-        "bothReportArchive": "Both UFT report and archive"
+        "onlyReport": "Only UFT One html report",
+        "onlyArchive": "Only UFT One archive",
+        "bothReportArchive": "Both UFT One report and archive"
       }
     },
     {
@@ -65,7 +65,7 @@
       "label": "Report file name",
       "defaultValue": "$(Build.DefinitionName)",
       "visibleRule": "artifactType = onlyReport || artifactType = bothReportArchive",
-      "helpMarkDown": "Choose a name for the UFT report file"
+      "helpMarkDown": "Choose a name for the UFT One report file"
     }
   ],
 
