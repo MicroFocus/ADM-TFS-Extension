@@ -42,6 +42,27 @@ $failedTests = "$resDir\Failed Tests"
 
 if ($rerunIdx) {
 	Write-Host "Rerun attempt = $rerunIdx"
+	if (Test-Path $runSummary) {
+		try {
+			Remove-Item $runSummary -ErrorAction Stop
+		} catch {
+			Write-Error $_
+		}
+	}
+	if (Test-Path $uftReport) {
+		try {
+			Remove-Item $uftReport -ErrorAction Stop
+		} catch {
+			Write-Error $_
+		}
+	}
+	if (Test-Path $failedTests) {
+		try {
+			Remove-Item $failedTests -ErrorAction Stop
+		} catch {
+			Write-Error $_
+		}
+	}
 }
 
 Invoke-RunFromAlmTask $varAlmserv $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varTestsets $varTimeout $varReportName $runMode $testingToolHost $buildNumber -Verbose

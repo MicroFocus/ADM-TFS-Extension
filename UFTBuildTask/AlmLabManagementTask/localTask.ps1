@@ -43,6 +43,27 @@ $failedTests = "$resDir\Failed Tests"
 
 if ($rerunIdx) {
 	Write-Host "Rerun attempt = $rerunIdx"
+	if (Test-Path $runSummary) {
+		try {
+			Remove-Item $runSummary -ErrorAction Stop
+		} catch {
+			Write-Error $_
+		}
+	}
+	if (Test-Path $uftReport) {
+		try {
+			Remove-Item $uftReport -ErrorAction Stop
+		} catch {
+			Write-Error $_
+		}
+	}
+	if (Test-Path $failedTests) {
+		try {
+			Remove-Item $failedTests -ErrorAction Stop
+		} catch {
+			Write-Error $_
+		}
+	}
 }
 
 $CDA1 = [bool]($varUseCDA) 
