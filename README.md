@@ -12,7 +12,7 @@ In a build step, run UFT One tests stored in the local file system or on an ALM 
 #### Prerequisites
 - UFT One (version >=**14.00**)
 - Powershell (version **4** or later)
-- JRE installed
+- JRE v8.x installed
 
 #### Setup
 1. From [Visual Studio Marketplace][marketplace]: Install the **UFT One Azure DevOps extension** for the relevant organization
@@ -43,7 +43,7 @@ In a build step, run UFT One tests stored in the local file system or on an ALM 
 - Use this task to run ALM server-side functional test sets and build verification suites.
 - More information is available [here][alm-lab-docs]
 
-##### Run from ALM Lab Environment Preparation
+##### ALM Lab Environment Preparation
 - Use this task to assign values to AUT Environment Configurations located in ALM.
 - More information is available [here][alm-env-docs]
 #
