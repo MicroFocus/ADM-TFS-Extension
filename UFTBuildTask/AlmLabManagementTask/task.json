@@ -2,7 +2,7 @@
   "id": "91008DAF-AFF5-4E1A-A6FF-8ACF9D229E4C",
   "name": "AlmLabManagementTask",
   "friendlyName": "UFT One ALM Lab Management Run",
-  "description": "Use this build step to run ALM server-side functional test sets and Build Verification Suites.",
+  "description": "Use this build step to run ALM server-side functional test sets.",
   "category": "Test",
   "visibility": [
     "Build",
@@ -67,24 +67,12 @@
       "helpMarkDown": "The ALM project in which the tests to run are stored"
     },
     {
-      "name": "varRunType",
-      "type": "radio",
-      "label": "Run Type",
-      "defaultValue": "TEST_SET",
-      "required": false,
-      "helpMarkDown": "The run mode (Suite run or Build Verification Suite) to use when running the test",
-      "options": {
-        "TEST_SET": "Test set",
-        "BVS": "Build verification suite"
-      }
-    },
-    {
       "name": "varTestSet",
       "type": "string",
-      "label": "Test Set/Build Verification Suite ID",
+      "label": "Test Set ID",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The ID number (found in ALM) for the test set or build verification suite"
+      "helpMarkDown": "The ID number (found in ALM) for the test set"
     },
     {
       "name": "varDescription",
@@ -92,7 +80,7 @@
       "label": "Description",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "The description of this test set/build verification suite"
+      "helpMarkDown": "The description of this test set"
     },
     {
       "name": "varTimeslotDuration",
@@ -100,7 +88,7 @@
       "label": "Timeslot Duration (in minutes, minimum = 30)",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The amount of time needed on the host to run this test set/verification suite"
+      "helpMarkDown": "The amount of time needed on the host to run this test set"
     },
     {
       "name": "varEnvironmentConfigurationID",

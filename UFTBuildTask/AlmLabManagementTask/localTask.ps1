@@ -7,7 +7,6 @@ $varUserName = Get-VstsInput -Name 'varUserName' -Require
 $varPass = Get-VstsInput -Name 'varPass'
 $varDomain = Get-VstsInput -Name 'varDomain' -Require
 $varProject = Get-VstsInput -Name 'varProject' -Require
-$varRunType = Get-VstsInput -Name 'varRunType'
 $varTestSet = Get-VstsInput -Name 'varTestSet' -Require
 $varDescription = Get-VstsInput -Name 'varDescription'
 $varTimeslotDuration = Get-VstsInput -Name 'varTimeslotDuration' -Require
@@ -46,7 +45,7 @@ if ($rerunIdx) {
 }
 
 $CDA1 = [bool]($varUseCDA) 
-Invoke-AlmLabManagementTask $varAlmServ $varUserName $varPass $varDomain $varProject $varRunType $varTestSet $varDescription $varTimeslotDuration $varEnvironmentConfigurationID $varReportName $CDA1 $varDeploymentAction $varDeploymentEnvironmentName $varDeprovisioningAction $buildNumber -Verbose
+Invoke-AlmLabManagementTask $varAlmServ $varUserName $varPass $varDomain $varProject $varTestSet $varDescription $varTimeslotDuration $varEnvironmentConfigurationID $varReportName $CDA1 $varDeploymentAction $varDeploymentEnvironmentName $varDeprovisioningAction $buildNumber -Verbose
 
 #---------------------------------------------------------------------------------------------------
 # uploads report files to build artifacts
