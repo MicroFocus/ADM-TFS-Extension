@@ -16,7 +16,7 @@ In a build step, run UFT One tests stored in the local file system or on an ALM 
 
 #### Setup
 1. From [Visual Studio Marketplace][marketplace]: Install the **UFT One Azure DevOps extension** for the relevant organization
-2. On our [GitHub][repository]: Navigate to a specific release (latest: **1.1.0**)
+2. On our [GitHub][repository]: Navigate to a specific release (latest: **2.0.0**)
 3. From [Azure DevOps][azure-devops]: Navigate to **agent pools** and set up an agent (interactive or run as a service) 
 4. On your agent machine:    
 4.1. Download the resources provided by a specific release (UFT.zip & unpack.ps1)    

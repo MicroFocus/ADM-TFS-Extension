@@ -16,9 +16,12 @@
 		"some stuff"
 	],
 	"tags": [
-		"UFT",
+		"UFT One",
 		"ALM",
-		"Test task"
+		"automated testing",
+		"Test task",
+		"GUI testing",
+		"API testing"
 	],
 	"icons": {
 		"default": "images/tfs.png"
@@ -33,7 +36,7 @@
 	],
 	"links": {
 		"home": {
-			"uri": "https://github.com/MicroFocus/ADM-TFS-Extension"
+			"uri": "https://github.com/MicroFocus/ADM-TFS-Extension/releases/tag/2.0.0"
 		},
 		"installation": {
 			"uri": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops.htm"
