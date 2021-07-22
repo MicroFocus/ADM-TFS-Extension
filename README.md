@@ -7,7 +7,7 @@ Enables you to run UFT One tests as a build in an Azure DevOps build process. Th
 4. [Resources](#Additional-resources)
 
 # Integration with UFT One
-In a build step, run UFT One tests stored in the local file system or on an ALM server. When running tests from ALM Lab Management, you can also include a build step that prepares the test environment using test sets before running the tests. After the build is complete, you can view comprehensive test results. 
+In a build step, run UFT One tests stored in the local file system or on an ALM server. When running tests from ALM Lab Management, you can also include a build step that prepares the test environment before running the tests. After the build is complete, you can view comprehensive test results. 
 #  Configuration
 #### Prerequisites
 - UFT One (version >=**14.00**)
