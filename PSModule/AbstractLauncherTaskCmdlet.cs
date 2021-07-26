@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Collections.Concurrent;
 using PSModule.Models;
+using System.Xml.Linq;
 
 namespace PSModule
 {
@@ -32,6 +33,7 @@ namespace PSModule
         private const string ARTIFACT_TYPE = "artifactType";
         private const string REPORT_NAME = "reportName";
         private const string ARCHIVE_NAME = "archiveName";
+        private const string ENABLE_FAILED_TESTS_RPT = "enableFailedTestsReport";
         private const string YES = "yes";
         private const string JUNIT_REPORT_XML = "junit_report.xml";
 
@@ -97,16 +99,13 @@ namespace PSModule
 
                 //run the build task
                 Run(launcherPath, paramFileName);
-               
+
                 //collect results
-                CollateResults(resultsFileName, _launcherConsole.ToString(), resdir);
-
+                bool hasResults = CollateResults(resultsFileName, _launcherConsole.ToString(), resdir);
                 RunStatus runStatus = RunStatus.FAILED;
-                if (File.Exists(resultsFileName) && new FileInfo(resultsFileName).Length > 0)//if results file exists
+                if (hasResults)
                 {
-                    //create UFT report from the results file
                     var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
-
                     string storageAccount = properties.GetValueOrDefault(STORAGE_ACCOUNT, string.Empty);
                     string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
 
@@ -124,24 +123,27 @@ namespace PSModule
                     //get task return code
                     runStatus = H.GetRunStatus(listReport);
                     int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);
-                    H.CreateRunSummary(runStatus, totalTests, nrOfTests, resdir);
-                    
-                    var reportFolders = new List<string>();
-                    foreach (var item in listReport)
+                    if (totalTests > 0)
                     {
-                        if (!item.ReportPath.IsNullOrWhiteSpace())
-                            reportFolders.Add(item.ReportPath);
-                    }
+                        H.CreateRunSummary(runStatus, totalTests, nrOfTests, resdir);
 
-                    if (runType == RunType.FileSystem && reportFolders.Any())
-                    {
-                        //run junit report converter
-                        string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
-                        RunConverter(converterPath, outputFileReport, reportFolders);
-                        if (File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0 && nrOfTests[H.FAIL] > 0)
+                        var reportFolders = new List<string>();
+                        foreach (var item in listReport)
                         {
-                            H.ReadReportFromXMLFile(outputFileReport, true, out IDictionary<string, IList<ReportMetaData>> failedSteps);
-                            H.CreateFailedStepsReport(failedSteps, resdir);
+                            if (!item.ReportPath.IsNullOrWhiteSpace())
+                                reportFolders.Add(item.ReportPath);
+                        }
+
+                        if (runType == RunType.FileSystem && reportFolders.Any() && properties[ENABLE_FAILED_TESTS_RPT] == YES)
+                        {
+                            //run junit report converter
+                            string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
+                            RunConverter(converterPath, outputFileReport, reportFolders);
+                            if (File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0 && nrOfTests[H.FAIL] > 0)
+                            {
+                                H.ReadReportFromXMLFile(outputFileReport, true, out IDictionary<string, IList<ReportMetaData>> failedSteps);
+                                H.CreateFailedStepsReport(failedSteps, resdir);
+                            }
                         }
                     }
                 }
@@ -333,7 +335,7 @@ namespace PSModule
             return string.Empty;
         }
 
-        protected virtual void CollateResults(string resultFile, string log, string resdir)
+        protected virtual bool CollateResults(string resultFile, string log, string resdir)
         {
             if (!File.Exists(resultFile))
             {
@@ -346,32 +348,48 @@ namespace PSModule
             if (reportFileName.IsNullOrWhiteSpace())
             {
                 WriteError(new ErrorRecord(new Exception("collate results, empty reportFileName "), string.Empty, ErrorCategory.WriteError, string.Empty));
-                return;
+                return false;
             }
 
             if ((resultFile.IsNullOrWhiteSpace() || !File.Exists(resultFile)) && log.IsNullOrWhiteSpace())
             {
                 WriteError(new ErrorRecord(new FileNotFoundException($"No results file ({resultFile}) nor result log provided"), string.Empty, ErrorCategory.WriteError, string.Empty));
-
-                return;
+                return false;
             }
 
             //read result xml file
-            string s = File.ReadAllText(resultFile);
+            string xml = File.ReadAllText(resultFile);
 
-            if (s.IsNullOrWhiteSpace())
+            if (xml.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new FileNotFoundException("collate results, empty results file"), string.Empty, ErrorCategory.WriteError, string.Empty));
-                return;
+                WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.WriteError, string.Empty));
+                return false;
             }
-            var links = GetRequiredLinksFromString(s);
+            else
+            {
+                try
+                {
+                    var doc = XDocument.Parse(xml);
+                    if (doc?.Root == null || !doc.Root.HasElements)
+                    {
+                        WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.WriteError, string.Empty));
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    WriteError(new ErrorRecord(e, "Invalid XML format of the results file", ErrorCategory.WriteError, string.Empty));
+                    return false;
+                }
+            }
+            var links = GetRequiredLinksFromString(xml);
             if (links.IsNullOrEmpty())
             {
                 links = GetRequiredLinksFromString(log);
                 if (links.IsNullOrEmpty())
                 {
                     WriteError(new ErrorRecord(new FileNotFoundException("No report links in results file or log found"), string.Empty, ErrorCategory.WriteError, string.Empty));
-                    return;
+                    return false;
                 }
             }
 
@@ -386,8 +404,10 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, "error writing the results", ErrorCategory.WriteError, string.Empty));
+                WriteError(new ErrorRecord(e, "Error writing the results", ErrorCategory.WriteError, string.Empty));
+                return false;
             }
+            return true;
         }
 
         private List<Tuple<string, string>> GetRequiredLinksFromString(string s)

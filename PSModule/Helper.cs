@@ -54,6 +54,7 @@ namespace PSModule
         private const string HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_800 = "font-weight:bold;min-width:800px";
         private const string FONT_WEIGHT_BOLD = "font-weight:bold;";
         private const string FONT_WEIGHT_BOLD_UNDERLINE = "font-weight:bold; text-decoration:underline;";
+        private const string BUILD_STATUS_IMG_STYLE = "width:50%;vertical-align:middle;";
 
         private const string UFT_REPORT_CAPTION = "UFT Report";
         private const string RUN_SUMMARY = "Run Summary";
@@ -328,8 +329,11 @@ namespace PSModule
                 var row = new HtmlTableRow();
                 if (index == 0)
                 {
-                    var cell1 = new HtmlTableCell { InnerText = runStatus.ToString(), Align = LEFT, RowSpan = 4 };
-                    cell1.Attributes.Add(STYLE, FONT_WEIGHT_BOLD);
+                    var cell1 = new HtmlTableCell { Align = LEFT, RowSpan = 4 };
+                    var img = new HtmlImage { Src = $"{IMG_LINK_PREFIX}/build_status/{runStatus.ToString().ToLower()}.svg" };
+                    img.Attributes.Add(STYLE, BUILD_STATUS_IMG_STYLE);
+                    cell1.Controls.Add(img);
+                    
                     row.Cells.Add(cell1);
 
                     var cell2 = new HtmlTableCell { InnerText = $"{totalTests}", Align = LEFT, RowSpan = 4 };

@@ -22,9 +22,11 @@ namespace PSModule
 
     public class LauncherParamsBuilder
     {
-        private string secretkey = "EncriptionPass4Java";
+        private const string secretkey = "EncriptionPass4Java";
         private readonly List<string> requiredParameters = new List<string> { "almRunHost", "almUserName", "almPassword" };
-        private Dictionary<string, string> properties = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> properties = new Dictionary<string, string>();
+        private const string YES = "yes";
+        private const string NO = "no";
 
         public Dictionary<string, string> GetProperties()
         {
@@ -44,6 +46,11 @@ namespace PSModule
         public void SetBuildNumber(string buildNumber)
         {
             SetParamValue("buildNumber", buildNumber);
+        }
+
+        public void SetEnableFailedTestsReport(bool enableJunitRpt)
+        {
+            SetParamValue("enableFailedTestsReport", enableJunitRpt ? YES : NO);
         }
 
         public void SetReportName(string reportName)
@@ -123,7 +130,7 @@ namespace PSModule
 
         public void SetAlmRunMode(AlmRunMode almRunMode)
         {
-            properties.Add("almRunMode", almRunMode != AlmRunMode.RUN_NONE ? almRunMode.ToString() : "");
+            properties.Add("almRunMode", almRunMode != AlmRunMode.RUN_NONE ? almRunMode.ToString() : string.Empty);
         }
 
         public void SetAlmTimeout(string almTimeout)
@@ -290,7 +297,7 @@ namespace PSModule
                 if (!requiredParameters.Contains(paramName))
                     properties.Remove(paramName);
                 else
-                    properties.Add(paramName, "");
+                    properties.Add(paramName, string.Empty);
             }
             else
             {

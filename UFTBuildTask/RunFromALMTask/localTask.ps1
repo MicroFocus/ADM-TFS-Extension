@@ -42,6 +42,27 @@ $failedTests = "$resDir\Failed Tests"
 
 if ($rerunIdx) {
 	Write-Host "Rerun attempt = $rerunIdx"
+	if (Test-Path $runSummary) {
+		try {
+			Remove-Item $runSummary -ErrorAction Stop
+		} catch {
+			Write-Error "Cannot rerun because the file '$runSummary' is currently in use."
+		}
+	}
+	if (Test-Path $uftReport) {
+		try {
+			Remove-Item $uftReport -ErrorAction Stop
+		} catch {
+			Write-Error "Cannot rerun because the file '$uftReport' is currently in use."
+		}
+	}
+	if (Test-Path $failedTests) {
+		try {
+			Remove-Item $failedTests -ErrorAction Stop
+		} catch {
+			Write-Error "Cannot rerun because the file '$failedTests' is currently in use."
+		}
+	}
 }
 
 Invoke-RunFromAlmTask $varAlmserv $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varTestsets $varTimeout $varReportName $runMode $testingToolHost $buildNumber -Verbose

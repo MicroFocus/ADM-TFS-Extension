@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace PSModule
@@ -62,7 +60,6 @@ namespace PSModule
             return string.IsNullOrEmpty(ReportName) ? base.GetReportFilename() : ReportName;
         }
 
-
         public override Dictionary<string, string> GetTaskProperties()
         {
             LauncherParamsBuilder builder = new LauncherParamsBuilder();
@@ -95,9 +92,8 @@ namespace PSModule
             }
             else
             {
-                builder.SetAlmTestSet("");
+                builder.SetAlmTestSet(string.Empty);
             }
-
 
             if (UseCDA)
             {
@@ -108,8 +104,8 @@ namespace PSModule
 
             //set ALM mandatory parameters
             builder.SetAlmTimeout(TimeslotDuration);
-            builder.SetAlmRunMode(AlmRunMode.RUN_LOCAL);
-            builder.SetAlmRunHost("localhost");
+            builder.SetAlmRunMode(AlmRunMode.RUN_PLANNED_HOST);
+            builder.SetAlmRunHost(string.Empty);
 
             return builder.GetProperties();
         }

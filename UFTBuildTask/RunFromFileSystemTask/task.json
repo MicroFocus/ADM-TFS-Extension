@@ -66,6 +66,14 @@
       "defaultValue": "$(Build.DefinitionName)",
       "visibleRule": "artifactType = onlyReport || artifactType = bothReportArchive",
       "helpMarkDown": "Choose a name for the UFT One report file"
+    },
+    {
+      "name": "enableFailedTestsReport",
+      "type": "boolean",
+      "label": "Generate 'Failed Tests' report",
+      "defaultValue": true,
+      "required": false,
+      "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps."
     }
   ],
 
