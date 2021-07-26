@@ -1,12 +1,13 @@
 # Integration with UFT One
-This extension enables you to run UFT One tests as part of your Azure DevOps build process. In a build step, run UFT One tests stored in the local file system or on an ALM server. When running tests from ALM Lab Management, you can also include a build step that prepares the test environment using test sets before running the tests. After the build is complete, you can view comprehensive test results. 
+This extension enables you to run UFT One tests as part of your Azure DevOps build process. In a build step, run UFT One tests stored in the local file system or on an ALM server. When running tests from ALM Lab Management, you can also include a build step that prepares the test environment before running. After the build is complete, you can view comprehensive test results. 
 #
 # What's new in  Azure DevOps extension - version 2.0.0
-##### Release date: November 2020
+##### Release date: July 2021
 - Upload your tests results into Azure Portal containers and have them available after each individual build run
 - View run metrics and failure details
 - UI enhancements
-- Have a JUnit report generated as part of the run task (File System run **only**; no need for adding a *PublishTestResults* task)
+- UFT One ALM Lab Management task improvement
+- Have a 'Failed Tests' report generated as part of the run task (File System run **only**; no need for adding a *PublishTestResults* task)
 - Bug fixes
 #
 #
@@ -32,7 +33,7 @@ This extension enables you to run UFT One tests as part of your Azure DevOps bui
 #
 #
 # Extension Functionality
-##### Run from File System
+##### UFT One File System Run
 - Use this task to run tests located in your file system by specifying the tests' names, folders that contain tests, or an MTBX file (code sample below).
 ``` xml 
 <Mtbx>
@@ -44,15 +45,15 @@ This extension enables you to run UFT One tests as part of your Azure DevOps bui
 ```
 - More information is available [here][fs-docs]
 
-##### Run from ALM
+##### UFT One ALM Run
 - Use this task to run tests located on an ALM server, to which you can connect using SSO or a username and password.
 - More information is available [here][alm-docs]
 
-##### Run from ALM Lab Management
+##### UFT One ALM Lab Management Run
 - Use this task to run ALM server-side functional test setssuites.
 - More information is available [here][alm-lab-docs]
 
-##### Run from ALM Lab Environment Preparation
+##### UFT One ALM Lab Environment Preparation
 - Use this task to assign values to AUT Environment Configurations located in ALM.
 - More information is available [here][alm-env-docs]
 #
