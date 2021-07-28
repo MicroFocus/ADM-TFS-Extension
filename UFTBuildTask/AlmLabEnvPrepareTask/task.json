@@ -84,7 +84,7 @@
     {
       "name": "javaHomeSelection",
       "type": "radio",
-      "label": "",
+      "label": "Choose your configuration type:",
       "required": true,
       "defaultValue": "Existing",
       "helpMarkDown": "Sets JAVA_HOME either by selecting a JDK version that will be discovered during builds or by manually entering a JDK path",
@@ -100,14 +100,6 @@
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "The name for the configuration to be created",
-      "visibleRule": "javaHomeSelection = NewConf"
-    },
-    {
-      "name": "assignMessage",
-      "type": "string",
-      "label": "Assign AUT Environment Configuration ID to:",
-      "defaultValue": "",
-      "required": false,
       "visibleRule": "javaHomeSelection = NewConf"
     },
     {

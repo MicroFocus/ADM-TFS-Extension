@@ -34,10 +34,18 @@
       "helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
     },
     {
+      "name": "enableFailedTestsReport",
+      "type": "boolean",
+      "label": "Generate 'Failed Tests' report",
+      "defaultValue": true,
+      "required": false,
+      "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps. You can view these results in the Extensions tab."
+    },
+    {
       "name": "uploadArtifact",
       "type": "radio",
       "label": "Do you want to upload the UFT One report to the storage account?",
-      "defaultValue": "yes",
+      "defaultValue": "no",
       "required": true,
       "options": {
         "yes": "Yes",
@@ -66,14 +74,6 @@
       "defaultValue": "$(Build.DefinitionName)",
       "visibleRule": "artifactType = onlyReport || artifactType = bothReportArchive",
       "helpMarkDown": "Choose a name for the UFT One report file"
-    },
-    {
-      "name": "enableFailedTestsReport",
-      "type": "boolean",
-      "label": "Generate 'Failed Tests' report",
-      "defaultValue": true,
-      "required": false,
-      "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps."
     }
   ],
 

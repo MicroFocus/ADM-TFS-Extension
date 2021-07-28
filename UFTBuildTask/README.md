@@ -7,7 +7,7 @@ This extension enables you to run UFT One tests as part of your Azure DevOps bui
 - View run metrics and failure details
 - UI enhancements
 - UFT One ALM Lab Management task improvement
-- Have a 'Failed Tests' report generated as part of the run task (File System run **only**; no need for adding a *PublishTestResults* task)
+- The "Failed Tests" report is generated as part of the run, without the need to add a *PublishTestResults* task (File System Run only)
 - Bug fixes
 #
 #
