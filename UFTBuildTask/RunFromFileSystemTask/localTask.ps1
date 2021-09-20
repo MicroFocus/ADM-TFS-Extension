@@ -11,9 +11,15 @@ $rptFileName = Get-VstsInput -Name 'reportFileName'
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 
 $uftworkdir = $env:UFT_LAUNCHER
-$buildNumber = $env:BUILD_BUILDNUMBER
-$pipelineName = $env:BUILD_DEFINITIONNAME
-$attemptNumber = $env:SYSTEM_STAGEATTEMPT
+# $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
+if ($env:SYSTEM_HOSTTYPE -eq "build") {
+	$buildNumber = $env:BUILD_BUILDNUMBER
+	$attemptNumber = $env:SYSTEM_STAGEATTEMPT
+} else {
+	$buildNumber = $env:RELEASE_RELEASEID
+	$attemptNumber = $env:RELEASE_ATTEMPTNUMBER
+}
+
 [int]$rerunIdx = [convert]::ToInt32($attemptNumber, 10) - 1
 $resDir = Join-Path $uftworkdir -ChildPath "res\Report_$buildNumber"
 

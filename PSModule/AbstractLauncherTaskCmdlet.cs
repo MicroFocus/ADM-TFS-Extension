@@ -39,7 +39,7 @@ namespace PSModule
 
         #endregion
 
-        protected readonly StringBuilder _launcherConsole = new StringBuilder();
+        private readonly StringBuilder _launcherConsole = new StringBuilder();
         private readonly ConcurrentQueue<string> outputToProcess = new ConcurrentQueue<string>();
         private readonly ConcurrentQueue<string> errorToProcess = new ConcurrentQueue<string>();
 
@@ -58,13 +58,13 @@ namespace PSModule
                     properties = GetTaskProperties();
                     if (properties == null || !properties.Any())
                     {
-                        ThrowTerminatingError(new ErrorRecord(new Exception("Invalid or missing properties!"), nameof(GetTaskProperties), ErrorCategory.ParserError, string.Empty));
+                        ThrowTerminatingError(new ErrorRecord(new Exception("Invalid or missing properties!"), nameof(GetTaskProperties), ErrorCategory.InvalidData, nameof(GetTaskProperties)));
                         return;
                     }
                 }
                 catch (Exception e)
                 {
-                    ThrowTerminatingError(new ErrorRecord(e, nameof(GetTaskProperties), ErrorCategory.ParserError, string.Empty));
+                    ThrowTerminatingError(new ErrorRecord(e, nameof(GetTaskProperties), ErrorCategory.ParserError, nameof(GetTaskProperties)));
                     return;
                 }
 
@@ -78,7 +78,11 @@ namespace PSModule
 
                 if (!Directory.Exists(propdir))
                     Directory.CreateDirectory(propdir);
-
+                if (!properties.ContainsKey(BUILD_NUMBER))
+                {
+                    WriteError(new ErrorRecord(new Exception("Missing buildNumber property!"), string.Empty, ErrorCategory.InvalidData, nameof(ProcessRecord)));
+                    return;
+                }
                 string resdir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{properties[BUILD_NUMBER]}"));
 
                 if (!Directory.Exists(resdir))
@@ -93,7 +97,7 @@ namespace PSModule
 
                 if (!SaveProperties(paramFileName, properties))
                 {
-                    WriteError(new ErrorRecord(new Exception("cannot save properties"), string.Empty, ErrorCategory.WriteError, string.Empty));
+                    WriteError(new ErrorRecord(new Exception("Cannot save properties"), string.Empty, ErrorCategory.WriteError, nameof(ProcessRecord)));
                     return;
                 }
 
@@ -152,11 +156,11 @@ namespace PSModule
             }
             catch (IOException ioe)
             {
-                WriteError(new ErrorRecord(ioe, nameof(IOException), ErrorCategory.ResourceExists, string.Empty));
+                WriteError(new ErrorRecord(ioe, nameof(IOException), ErrorCategory.ResourceExists, nameof(ProcessRecord)));
             }
             catch (ThreadInterruptedException e)
             {
-                WriteError(new ErrorRecord(e, nameof(ThreadInterruptedException), ErrorCategory.OperationStopped, "ThreadInterruptedException target"));
+                WriteError(new ErrorRecord(e, nameof(ThreadInterruptedException), ErrorCategory.OperationStopped, nameof(ProcessRecord)));
                 Run(aborterPath, paramFileName);
             }
         }
@@ -165,25 +169,22 @@ namespace PSModule
         {
             bool result = true;
 
-            using (StreamWriter file = new StreamWriter(paramsFile, true))
+            using var file = new StreamWriter(paramsFile, true);
+            try
             {
-                try
+                foreach (string prop in properties.Keys.ToArray())
                 {
-                    foreach (string prop in properties.Keys.ToArray())
-                    {
-                        file.WriteLine(prop + "=" + properties[prop]);
-                    }
-
+                    file.WriteLine($"{prop}={properties[prop]}");
                 }
-                catch (ThreadInterruptedException)
-                {
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    result = false;
-                    WriteError(new ErrorRecord(e, string.Empty, ErrorCategory.WriteError, string.Empty));
-                }
+            }
+            catch(ThreadInterruptedException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                result = false;
+                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.WriteError, nameof(SaveProperties)));
             }
 
             return result;
@@ -191,9 +192,19 @@ namespace PSModule
 
         private int Run(string launcherPath, string paramFile)
         {
+            Console.WriteLine($"{launcherPath} -paramfile {paramFile}");
+
             _launcherConsole.Clear();
             try
             {
+                if (!File.Exists(launcherPath))
+                {
+                    throw new FileNotFoundException($"The file [{launcherPath}] does not exist!");
+                }
+                else if (!File.Exists(paramFile))
+                {
+                    throw new FileNotFoundException($"The file [{paramFile}] does not exist!");
+                }
                 ProcessStartInfo info = new ProcessStartInfo
                 {
                     UseShellExecute = false,
@@ -230,7 +241,7 @@ namespace PSModule
 
                 launcher.OutputDataReceived -= Launcher_OutputDataReceived;
                 launcher.ErrorDataReceived -= Launcher_ErrorDataReceived;
-                
+
                 launcher.WaitForExit();
 
                 return launcher.ExitCode;
@@ -241,7 +252,7 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, nameof(ThreadInterruptedException), ErrorCategory.InvalidData, "ThreadInterruptedException target"));
+                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.InvalidData, nameof(Run)));
                 return -1;
             }
         }
@@ -262,7 +273,7 @@ namespace PSModule
                 {
                     info.Arguments += $" \"{reportFolder}\"";
                 }
-                
+
                 Process converter = new Process { StartInfo = info };
 
                 converter.OutputDataReceived += Launcher_OutputDataReceived;
@@ -290,8 +301,6 @@ namespace PSModule
                 converter.ErrorDataReceived -= Launcher_ErrorDataReceived;
 
                 converter.WaitForExit();
-
-               // return launcher.ExitCode;
             }
             catch (ThreadInterruptedException)
             {
@@ -300,7 +309,6 @@ namespace PSModule
             catch (Exception e)
             {
                 WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.InvalidData, $"{nameof(RunConverter)} target"));
-               // return -1;
             }
         }
 
@@ -321,12 +329,12 @@ namespace PSModule
             string fileName = GetRetCodeFileName();
             if (fileName.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new Exception("Method GetRetCodeFileName() did not return a value"), string.Empty, ErrorCategory.WriteError, string.Empty));
+                WriteError(new ErrorRecord(new Exception("Method GetRetCodeFileName() did not return a value"), string.Empty, ErrorCategory.WriteError, nameof(CollateRetCode)));
                 return;
             }
             if (!Directory.Exists(resdir))
             {
-                WriteError(new ErrorRecord(new DirectoryNotFoundException(resdir), string.Empty, ErrorCategory.WriteError, string.Empty));
+                WriteError(new ErrorRecord(new DirectoryNotFoundException(resdir), string.Empty, ErrorCategory.WriteError, nameof(CollateRetCode)));
                 return;
             }
             string retCodeFilename = Path.Combine(resdir, fileName);
@@ -341,7 +349,7 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.WriteError, string.Empty));
+                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.WriteError, nameof(CollateRetCode)));
             }
         }
 
@@ -354,7 +362,7 @@ namespace PSModule
         {
             if (!File.Exists(resultFile))
             {
-                WriteError(new ErrorRecord(new Exception("result file does not exist"), string.Empty, ErrorCategory.WriteError, string.Empty));
+                WriteError(new ErrorRecord(new Exception("result file does not exist"), string.Empty, ErrorCategory.ResourceUnavailable, nameof(CollateResults)));
                 File.Create(resultFile).Dispose();
             }
 
@@ -362,13 +370,13 @@ namespace PSModule
 
             if (reportFileName.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new Exception("Collate results, empty reportFileName "), string.Empty, ErrorCategory.WriteError, nameof(CollateResults)));
+                WriteError(new ErrorRecord(new Exception("Collate results, empty reportFileName"), string.Empty, ErrorCategory.InvalidArgument, nameof(CollateResults)));
                 return false;
             }
 
             if ((resultFile.IsNullOrWhiteSpace() || !File.Exists(resultFile)) && log.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new FileNotFoundException($"No results file ({resultFile}) nor result log provided"), string.Empty, ErrorCategory.WriteError, nameof(CollateResults)));
+                WriteError(new ErrorRecord(new FileNotFoundException($"No results file ({resultFile}) nor result log provided"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
                 return false;
             }
 
@@ -377,7 +385,7 @@ namespace PSModule
 
             if (xml.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.WriteError, nameof(CollateResults)));
+                WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
                 return false;
             }
             else
@@ -387,7 +395,7 @@ namespace PSModule
                     var doc = XDocument.Parse(xml);
                     if (doc?.Root == null || !doc.Root.HasElements)
                     {
-                        WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.WriteError, nameof(CollateResults)));
+                        WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
                         return false;
                     }
                 }
@@ -397,7 +405,7 @@ namespace PSModule
                 }
                 catch (Exception e)
                 {
-                    WriteError(new ErrorRecord(e, "Invalid XML format of the results file", ErrorCategory.WriteError, nameof(CollateResults)));
+                    WriteError(new ErrorRecord(e, "Invalid XML format of the results file", ErrorCategory.ParserError, nameof(CollateResults)));
                     return false;
                 }
             }
@@ -407,7 +415,7 @@ namespace PSModule
                 links = GetRequiredLinksFromString(log);
                 if (links.IsNullOrEmpty())
                 {
-                    WriteError(new ErrorRecord(new FileNotFoundException("No report links in results file or log found"), string.Empty, ErrorCategory.WriteError, nameof(CollateResults)));
+                    WriteError(new ErrorRecord(new FileNotFoundException("No report links in results file or log found"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
                     return false;
                 }
             }
@@ -457,13 +465,13 @@ namespace PSModule
                     match2 = match2.NextMatch();
                 }
             }
-            catch(ThreadInterruptedException)
+            catch (ThreadInterruptedException)
             {
                 throw;
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.WriteError, nameof(GetRequiredLinksFromString)));
+                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.InvalidData, nameof(GetRequiredLinksFromString)));
             }
             return results;
         }

@@ -62,6 +62,8 @@
     <Content Include="AlmLabManagementTask\icon.png" />
     <Content Include="RunFromFileSystemTask\Strings\resources.resjson\en-US\resources.resjson" />
     <Content Include="RunFromFileSystemTask\task.json" />
+    <Content Include="RunFromALMTask\localTask.ps1" />
+    <Content Include="RunFromALMTask\task.json" />
     <None Include="RunFromFileSystemTask\localTask.ps1" />
     <Content Include="LICENSE" />
     <Content Include="README.md" />
