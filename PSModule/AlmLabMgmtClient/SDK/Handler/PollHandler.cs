@@ -14,6 +14,9 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
 
         protected PollHandler(IClient client, string entityId, int interval) : base(client, entityId)
         {
+            // NOTE: this constructor is not used at this moment, but for safety, restrict the polling interval between 1 and 60 seconds
+            if (interval < 1000 || interval > 60000)
+                throw new AlmException($"PollHandler: Invalid polling interval : {interval} milliseconds. Between 1000 and 60000 milliseconds");
             _interval = interval;
         }
 

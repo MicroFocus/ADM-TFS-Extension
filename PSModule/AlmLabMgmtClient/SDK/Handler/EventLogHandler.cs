@@ -56,7 +56,11 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
         private bool IsNew(IDictionary<string, string> currEntity)
         {
             bool isNew = false;
-            int currEvent = int.Parse(currEntity[ID]);
+            if (currEntity?.ContainsKey(ID) != true)
+                throw new AlmException("Current entity is null or does not contain the [id] key");
+            if (!int.TryParse(currEntity[ID], out int currEvent))
+                throw new AlmException($"Current entity has an invalid [id]: {currEntity[ID]}");
+
             if (currEvent > _lastRead)
             {
                 _lastRead = currEvent;
