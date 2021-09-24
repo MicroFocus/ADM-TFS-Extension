@@ -3,6 +3,9 @@
 #
 
 $varAlmServ = Get-VstsInput -Name 'varAlmserv' -Require
+[bool]$varSSOEnabled = Get-VstsInput -Name 'varSSOEnabled' -AsBool
+$varClientID = Get-VstsInput -Name 'varClientID'
+$varApiKeySecret = Get-VstsInput -Name 'varApiKeySecret'
 $varUserName = Get-VstsInput -Name 'varUserName' -Require
 $varPass = Get-VstsInput -Name 'varPass'
 $varDomain = Get-VstsInput -Name 'varDomain' -Require
@@ -68,7 +71,7 @@ if ($rerunIdx) {
 	}
 }
 
-Invoke-AlmLabManagementTask $varAlmServ $varUserName $varPass $varDomain $varProject $varRunType $varEntityId $varDescription $varTimeslotDuration $varEnvironmentConfigurationID $varReportName $buildNumber $varClientType -Verbose
+Invoke-AlmLabManagementTask $varAlmServ $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varRunType $varEntityId $varDescription $varTimeslotDuration $varEnvironmentConfigurationID $varReportName $buildNumber $varClientType -Verbose
 
 #---------------------------------------------------------------------------------------------------
 # uploads report files to build artifacts

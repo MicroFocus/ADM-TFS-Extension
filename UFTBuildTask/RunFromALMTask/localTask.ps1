@@ -3,7 +3,7 @@
 #
 
 $varAlmserv = Get-VstsInput -Name 'varAlmserv' -Require
-$varSSOEnabled = Get-VstsInput -Name 'varSSOEnabled'
+[bool]$varSSOEnabled = Get-VstsInput -Name 'varSSOEnabled' -AsBool
 $varClientID = Get-VstsInput -Name 'varClientID'
 $varApiKeySecret = Get-VstsInput -Name 'varApiKeySecret'
 $varUserName = Get-VstsInput -Name 'varUsername'
