@@ -10,6 +10,7 @@ using System.Text;
 using System.Collections.Concurrent;
 using PSModule.Models;
 using System.Xml.Linq;
+using System.Runtime.CompilerServices;
 
 namespace PSModule
 {
@@ -80,7 +81,7 @@ namespace PSModule
                     Directory.CreateDirectory(propdir);
                 if (!properties.ContainsKey(BUILD_NUMBER))
                 {
-                    WriteError(new ErrorRecord(new Exception("Missing buildNumber property!"), string.Empty, ErrorCategory.InvalidData, nameof(ProcessRecord)));
+                    LogError(new InvalidDataException("Missing buildNumber property!"), ErrorCategory.InvalidData);
                     return;
                 }
                 string resdir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{properties[BUILD_NUMBER]}"));
@@ -97,7 +98,6 @@ namespace PSModule
 
                 if (!SaveProperties(paramFileName, properties))
                 {
-                    WriteError(new ErrorRecord(new Exception("Cannot save properties"), string.Empty, ErrorCategory.WriteError, nameof(ProcessRecord)));
                     return;
                 }
 
@@ -156,11 +156,11 @@ namespace PSModule
             }
             catch (IOException ioe)
             {
-                WriteError(new ErrorRecord(ioe, nameof(IOException), ErrorCategory.ResourceExists, nameof(ProcessRecord)));
+                LogError(ioe);
             }
             catch (ThreadInterruptedException e)
             {
-                WriteError(new ErrorRecord(e, nameof(ThreadInterruptedException), ErrorCategory.OperationStopped, nameof(ProcessRecord)));
+                LogError(e, ErrorCategory.OperationStopped);
                 Run(aborterPath, paramFileName);
             }
         }
@@ -184,7 +184,7 @@ namespace PSModule
             catch (Exception e)
             {
                 result = false;
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.WriteError, nameof(SaveProperties)));
+                LogError(e, ErrorCategory.WriteError);
             }
 
             return result;
@@ -252,7 +252,7 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.InvalidData, nameof(Run)));
+                LogError(e, ErrorCategory.InvalidData);
                 return -1;
             }
         }
@@ -308,7 +308,7 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.InvalidData, $"{nameof(RunConverter)} target"));
+                LogError(e, ErrorCategory.InvalidData);
             }
         }
 
@@ -329,12 +329,12 @@ namespace PSModule
             string fileName = GetRetCodeFileName();
             if (fileName.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new Exception("Method GetRetCodeFileName() did not return a value"), string.Empty, ErrorCategory.WriteError, nameof(CollateRetCode)));
+                LogError(new InvalidDataException("Method GetRetCodeFileName() did not return a value"), ErrorCategory.InvalidData);
                 return;
             }
             if (!Directory.Exists(resdir))
             {
-                WriteError(new ErrorRecord(new DirectoryNotFoundException(resdir), string.Empty, ErrorCategory.WriteError, nameof(CollateRetCode)));
+                LogError(new DirectoryNotFoundException(resdir), ErrorCategory.ResourceUnavailable);
                 return;
             }
             string retCodeFilename = Path.Combine(resdir, fileName);
@@ -349,7 +349,7 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.WriteError, nameof(CollateRetCode)));
+                LogError(e, ErrorCategory.WriteError);
             }
         }
 
@@ -362,7 +362,7 @@ namespace PSModule
         {
             if (!File.Exists(resultFile))
             {
-                WriteError(new ErrorRecord(new Exception("result file does not exist"), string.Empty, ErrorCategory.ResourceUnavailable, nameof(CollateResults)));
+                LogError(new FileNotFoundException("result file does not exist"), ErrorCategory.ResourceUnavailable);
                 File.Create(resultFile).Dispose();
             }
 
@@ -370,13 +370,13 @@ namespace PSModule
 
             if (reportFileName.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new Exception("Collate results, empty reportFileName"), string.Empty, ErrorCategory.InvalidArgument, nameof(CollateResults)));
+                LogError(new InvalidDataException("Collate results, empty reportFileName"), ErrorCategory.InvalidArgument);
                 return false;
             }
 
             if ((resultFile.IsNullOrWhiteSpace() || !File.Exists(resultFile)) && log.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new FileNotFoundException($"No results file ({resultFile}) nor result log provided"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
+                LogError(new FileNotFoundException($"No results file ({resultFile}) nor result log provided"), ErrorCategory.InvalidData);
                 return false;
             }
 
@@ -385,7 +385,7 @@ namespace PSModule
 
             if (xml.IsNullOrWhiteSpace())
             {
-                WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
+                LogError(new FileNotFoundException("Empty results file"), ErrorCategory.InvalidData);
                 return false;
             }
             else
@@ -395,7 +395,7 @@ namespace PSModule
                     var doc = XDocument.Parse(xml);
                     if (doc?.Root == null || !doc.Root.HasElements)
                     {
-                        WriteError(new ErrorRecord(new FileNotFoundException("Empty results file"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
+                        LogError(new FileNotFoundException("Invalid or empty results file"), ErrorCategory.InvalidData);
                         return false;
                     }
                 }
@@ -405,7 +405,7 @@ namespace PSModule
                 }
                 catch (Exception e)
                 {
-                    WriteError(new ErrorRecord(e, "Invalid XML format of the results file", ErrorCategory.ParserError, nameof(CollateResults)));
+                    LogError(e, ErrorCategory.ParserError);
                     return false;
                 }
             }
@@ -415,7 +415,7 @@ namespace PSModule
                 links = GetRequiredLinksFromString(log);
                 if (links.IsNullOrEmpty())
                 {
-                    WriteError(new ErrorRecord(new FileNotFoundException("No report links in results file or log found"), string.Empty, ErrorCategory.InvalidData, nameof(CollateResults)));
+                    LogError(new FileNotFoundException("No report links in results file or log found"), ErrorCategory.InvalidData);
                     return false;
                 }
             }
@@ -435,7 +435,7 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.WriteError, nameof(CollateResults)));
+                LogError(e, ErrorCategory.WriteError);
                 return false;
             }
             return true;
@@ -471,9 +471,14 @@ namespace PSModule
             }
             catch (Exception e)
             {
-                WriteError(new ErrorRecord(e, $"{e.GetType()}", ErrorCategory.InvalidData, nameof(GetRequiredLinksFromString)));
+                LogError(e, ErrorCategory.InvalidData);
             }
             return results;
         }
+        protected void LogError(Exception ex, ErrorCategory categ = ErrorCategory.NotSpecified, [CallerMemberName] string methodName = "")
+        {
+            WriteError(new ErrorRecord(ex, $"{ex.GetType()}", categ, methodName));
+        }
+
     }
 }

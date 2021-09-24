@@ -138,7 +138,7 @@ namespace PSModule
                 }
                 catch (Exception e)
                 {
-                    ThrowTerminatingError(new ErrorRecord(e, nameof(GetTaskProperties), ErrorCategory.ParserError, string.Empty));
+                    ThrowTerminatingError(new ErrorRecord(e, nameof(GetTaskProperties), ErrorCategory.ParserError, nameof(ProcessRecord)));
                     return;
                 }
 
@@ -162,7 +162,6 @@ namespace PSModule
 
                 if (!SaveProperties(paramFileName, properties))
                 {
-                    WriteError(new ErrorRecord(new Exception("Cannot save properties"), nameof(SaveProperties), ErrorCategory.WriteError, string.Empty));
                     return;
                 }
 
@@ -177,17 +176,17 @@ namespace PSModule
             }
             catch(AlmException ae)
             {
-                WriteError(new ErrorRecord(ae, nameof(AlmException), ae.Category, nameof(ProcessRecord)));
+                LogError(ae, ae.Category);
                 runMgr?.Stop();
             }
             catch (IOException ioe)
             {
-                WriteError(new ErrorRecord(ioe, nameof(IOException), ErrorCategory.ResourceExists, nameof(ProcessRecord)));
+                LogError(ioe, ErrorCategory.ResourceExists);
                 runMgr?.Stop();
             }
             catch (ThreadInterruptedException e)
             {
-                WriteError(new ErrorRecord(e, nameof(ThreadInterruptedException), ErrorCategory.OperationStopped, nameof(ProcessRecord)));
+                LogError(e, ErrorCategory.OperationStopped);
                 runMgr?.Stop();
             }
         }
@@ -236,7 +235,7 @@ namespace PSModule
                 }
                 catch (Exception e)
                 {
-                    LogError(e.Message, ErrorCategory.ParserError);
+                    LogError(e, ErrorCategory.ParserError);
                     return;
                 }
                 try
@@ -250,14 +249,9 @@ namespace PSModule
                 }
                 catch (Exception e)
                 {
-                    LogError(e.Message, ErrorCategory.WriteError);
+                    LogError(e, ErrorCategory.WriteError);
                 }
             }
-        }
- 
-        public void LogError(string err, ErrorCategory categ = ErrorCategory.NotSpecified, [CallerMemberName] string methodName = "")
-        {
-            WriteError(new ErrorRecord(new Exception(err), methodName, categ, string.Empty));
         }
     }
 }
