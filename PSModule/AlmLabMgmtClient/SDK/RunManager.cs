@@ -40,7 +40,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
             TestSuites res = null;
             _isRunning = true;
             var authHandler = AuthManager.Instance;
-            _isLoggedIn = await authHandler.Authenticate(_client, _args.Username, _args.Password, _args.ClientType);
+            _isLoggedIn = await authHandler.Authenticate(_client);
             if (_isLoggedIn)
             {
                 if (await Start())

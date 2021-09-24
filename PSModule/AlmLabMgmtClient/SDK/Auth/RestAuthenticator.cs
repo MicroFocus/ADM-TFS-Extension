@@ -22,8 +22,12 @@ namespace PSModule.AlmLabMgmtClient.SDK.Auth
         protected const string AUTHENTICATE_HEADER = "WWW-Authenticate";
         protected const string AUTHENTICATION_INFO = "AuthenticationInfo";
 
-        public async Task<bool> Login(IClient client, string username, string password, string clientType)
+        public async Task<bool> Login(IClient client)
         {
+            string username = client.Credentials.UsernameOrClientID;
+            string password = client.Credentials.PasswordOrSecret;
+            string clientType = client.ClientType;
+
             try
             {
                 bool isAuthenticated = await IsAuthenticated(client, username);

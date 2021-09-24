@@ -12,9 +12,11 @@ namespace PSModule.AlmLabMgmtClient.SDK.Auth
         private const string APIKEY_LOGIN_API = "rest/oauth2/login";
         private const string ALM_CLIENT_TYPE = "ALM-CLIENT-TYPE";
 
-        [SuppressMessage("Critical Code Smell", "S927:Parameter names should match base declaration and other partial definitions", Justification = "<clientId> and <secret> are more suggestive in this case")]
-        public async Task<bool> Login(IClient client, string clientId, string secret, string clientType)
+        public async Task<bool> Login(IClient client)
         {
+            string clientId = client.Credentials.UsernameOrClientID;
+            string secret = client.Credentials.PasswordOrSecret;
+            string clientType = client.ClientType;
             string body = $"{{clientId:{clientId}, secret:{secret}}}";
             var headers = new WebHeaderCollection
             {

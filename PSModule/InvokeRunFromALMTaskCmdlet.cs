@@ -11,7 +11,7 @@ namespace PSModule
         public string ALMServerPath { get; set; }
 
         [Parameter(Position = 1, Mandatory = false)]
-        public string SSOEnabled { get; set; }
+        public bool IsSSO { get; set; }
 
         [Parameter(Position = 2)]
         public string ClientID { get; set; }
@@ -60,7 +60,7 @@ namespace PSModule
 
             builder.SetRunType(RunType.Alm);
             builder.SetAlmServerUrl(ALMServerPath);
-            builder.SetSSOEnabled(SSOEnabled);
+            builder.SetSSOEnabled(IsSSO);
             builder.SetClientID(ClientID);
             builder.SetApiKeySecret(ApiKeySecret);
             builder.SetAlmUserName(ALMUserName);

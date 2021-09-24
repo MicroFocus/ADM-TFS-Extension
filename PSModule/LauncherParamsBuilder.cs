@@ -112,9 +112,9 @@ namespace PSModule
             SetParamValue("almProject", almProject);
         }
 
-        public void SetSSOEnabled(string ssoEnabled)
+        public void SetSSOEnabled(bool ssoEnabled)
         {
-            SetParamValue("SSOEnabled", ssoEnabled);
+            SetParamValue("SSOEnabled", $"{ssoEnabled}".ToLower());
         }
 
         public void SetClientID(string clientID)
@@ -147,7 +147,6 @@ namespace PSModule
         {
            SetParamValue("timeslotDuration", timeslotDuration);
         }
-
 
         public void SetTestSet(int index, string testSet)
         {

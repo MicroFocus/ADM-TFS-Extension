@@ -8,13 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using PSModule.AlmLabMgmtClient.Result.Model;
 using PSModule.AlmLabMgmtClient.SDK;
-using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Util;
 
 namespace PSModule
 {
     using C = Constants;
-    using H = Helper;
 
     [Cmdlet(VerbsLifecycle.Invoke, "AlmLabManagementTask")]
     public class InvokeAlmLabManagementTaskCmdlet : AbstractLauncherTaskCmdlet
@@ -22,40 +20,49 @@ namespace PSModule
         [Parameter(Position = 0, Mandatory = true)]
         public string ALMServerPath { get; set; }
 
-        [Parameter(Position = 1, Mandatory = true)]
-        public string ALMUserName { get; set; }
+        [Parameter(Position = 1, Mandatory = false)]
+        public bool IsSSO { get; set; }
 
         [Parameter(Position = 2)]
-        public string ALMPassword { get; set; }
+        public string ClientID { get; set; }
 
-        [Parameter(Position = 3, Mandatory = true)]
-        public string ALMDomain { get; set; }
+        [Parameter(Position = 3)]
+        public string ApiKeySecret { get; set; }
 
         [Parameter(Position = 4, Mandatory = true)]
-        public string ALMProject { get; set; }
+        public string ALMUserName { get; set; }
 
         [Parameter(Position = 5)]
-        public string TestRunType { get; set; }
+        public string ALMPassword { get; set; }
 
         [Parameter(Position = 6, Mandatory = true)]
+        public string ALMDomain { get; set; }
+
+        [Parameter(Position = 7, Mandatory = true)]
+        public string ALMProject { get; set; }
+
+        [Parameter(Position = 8)]
+        public string TestRunType { get; set; }
+
+        [Parameter(Position = 9, Mandatory = true)]
         public string ALMEntityId { get; set; }
 
-        [Parameter(Position = 7)]
+        [Parameter(Position = 10)]
         public string Description { get; set; }
 
-        [Parameter(Position = 8, Mandatory = true)]
+        [Parameter(Position = 11, Mandatory = true)]
         public string TimeslotDuration { get; set; }
 
-        [Parameter(Position = 9)]
+        [Parameter(Position = 12)]
         public string EnvironmentConfigurationID { get; set; }
 
-        [Parameter(Position = 10)]
+        [Parameter(Position = 13)]
         public string ReportName { get; set; }
 
-        [Parameter(Position = 11)]
+        [Parameter(Position = 14)]
         public string BuildNumber { get; set; }
 
-        [Parameter(Position = 12)]
+        [Parameter(Position = 15)]
         public string ClientType { get; set; }
 
         protected override string GetReportFilename()
@@ -69,6 +76,9 @@ namespace PSModule
 
             builder.SetRunType(RunType.AlmLabManagement);
             builder.SetAlmServerUrl(ALMServerPath);
+            builder.SetSSOEnabled(IsSSO);
+            builder.SetClientID(ClientID);
+            builder.SetApiKeySecret(ApiKeySecret);
             builder.SetAlmUserName(ALMUserName);
             builder.SetAlmPassword(ALMPassword);
             builder.SetAlmDomain(ALMDomain);
@@ -172,7 +182,7 @@ namespace PSModule
             }
             catch (ThreadInterruptedException e)
             {
-                WriteError(new ErrorRecord(e, nameof(ThreadInterruptedException), ErrorCategory.OperationStopped, "ThreadInterruptedException target"));
+                WriteError(new ErrorRecord(e, nameof(ThreadInterruptedException), ErrorCategory.OperationStopped, nameof(ProcessRecord)));
                 runMgr?.Stop();
             }
         }
@@ -191,20 +201,24 @@ namespace PSModule
 
         private RunManager GetRunManager()
         {
-            Args args = new Args
+            var args = new Args
             {
-                ClientType = ClientType,
                 Description = Description,
                 Domain = ALMDomain,
                 Project = ALMProject,
-                Username = ALMUserName,
-                Password = ALMPassword,
                 ServerUrl = ALMServerPath,
                 Duration = TimeslotDuration,
                 EntityId = ALMEntityId,
                 RunType = TestRunType
             };
-            var client = new RestClient(args.ServerUrl, args.Domain, args.Project, args.Username);
+            var cred = new Credentials
+            {
+                IsSSO = IsSSO,
+                UsernameOrClientID = IsSSO ? ClientID : ALMUserName,
+                PasswordOrSecret = IsSSO ? ApiKeySecret : ALMPassword,
+            };
+
+            var client = new RestClient(args.ServerUrl, args.Domain, args.Project, ClientType, cred);
             return new RunManager(client, args);
         }
 

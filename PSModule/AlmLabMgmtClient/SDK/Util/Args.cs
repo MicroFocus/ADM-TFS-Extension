@@ -2,8 +2,7 @@
 {
     public class Args
     {
-        public string Username { get; internal set; }
-        public string Password { get; internal set; }
+        public Credentials Credentials { get; internal set; }
         public string ServerUrl { get; internal set; }
         public string ClientType { get; internal set; }
         public string RunType { get; internal set; }

@@ -118,6 +118,7 @@
     <Compile Include="AlmLabMgmtClient\SDK\Util\Args.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ConsoleLogger.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\Constants.cs" />
+    <Compile Include="AlmLabMgmtClient\SDK\Util\Credentials.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\JUnitParser.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ResourceAccessLevel.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\StringValue.cs" />

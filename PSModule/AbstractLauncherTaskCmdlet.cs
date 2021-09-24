@@ -34,7 +34,8 @@ namespace PSModule
         private const string REPORT_NAME = "reportName";
         private const string ARCHIVE_NAME = "archiveName";
         private const string ENABLE_FAILED_TESTS_RPT = "enableFailedTestsReport";
-        private const string YES = "yes";
+        protected const string SSO_ENABLED = "SSOEnabled";
+        protected const string YES = "yes";
         private const string JUNIT_REPORT_XML = "junit_report.xml";
 
         #endregion

@@ -20,7 +20,8 @@ namespace PSModule.AlmLabMgmtClient.SDK
         protected IDictionary<string, string> _cookies = new Dictionary<string, string>();
         private readonly Uri _restPrefix;
         private readonly Uri _webuiPrefix;
-        private readonly string _username;
+        private readonly string _clientType;
+        private readonly Credentials _credentials;
         private readonly string _xsrfTokenValue;
         private readonly ILogger _logger;
         private string _rawCookies => GetCookiesAsString();
@@ -30,10 +31,11 @@ namespace PSModule.AlmLabMgmtClient.SDK
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RestClient(string serverUrl, string domain, string project, string username, ILogger logger = null)
+        public RestClient(string serverUrl, string domain, string project, string clientType, Credentials credentials, ILogger logger = null)
         {
             _serverUrl = new Uri(serverUrl);
-            _username = username;
+            _clientType = clientType;
+            _credentials = credentials;
             _restPrefix = new Uri(_serverUrl.AppendSuffix($"rest/domains/{domain}/projects/{project}"));
             _webuiPrefix = new Uri(_serverUrl.AppendSuffix($"webui/alm/{domain}/{project}"));
             _logger = logger ?? new ConsoleLogger();
@@ -44,7 +46,9 @@ namespace PSModule.AlmLabMgmtClient.SDK
 
         public Uri ServerUrl => _serverUrl;
 
-        public string Username => _username;
+        public string ClientType => _clientType;
+
+        public Credentials Credentials => _credentials;
 
         public IDictionary<string, string> Cookies => _cookies;
 
@@ -153,7 +157,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
             {
                 string userHeaderName = resourceAccessLevel.GetStringValue();
                 if (userHeaderName != null)
-                    client.Headers.Add(userHeaderName, _username.GetMD5Hash());
+                    client.Headers.Add(userHeaderName, _credentials.UsernameOrClientID.GetMD5Hash());
             }
             if (_cookies.Any())
                 client.Headers.Add(HttpRequestHeader.Cookie, _rawCookies);

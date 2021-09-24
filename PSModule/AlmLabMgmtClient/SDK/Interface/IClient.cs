@@ -34,7 +34,8 @@ namespace PSModule.AlmLabMgmtClient.SDK.Interface
 
         Uri ServerUrl { get; }
 
-        string Username { get; }
+        string ClientType { get; }
+        Credentials Credentials { get; }
 
         IDictionary<string, string> Cookies { get; }
 
