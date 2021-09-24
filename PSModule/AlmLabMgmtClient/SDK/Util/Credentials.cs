@@ -18,9 +18,9 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
             _usernameOrClientId = usernameOrClientId;
             _passwordOrSecret = passwordOrSecret;
         }
-        public bool IsSSO { get; }
-        public string UsernameOrClientID { get; }
-        public string PasswordOrSecret { get; }
+        public bool IsSSO => _isSSO;
+        public string UsernameOrClientID => _usernameOrClientId;
+        public string PasswordOrSecret => _passwordOrSecret;
 
     }
 }

@@ -196,7 +196,8 @@ namespace PSModule
             var res = RunStatus.FAILED;
             TestSuites testsuites = await runMgr.Execute();
             await SaveResults(resFilename, testsuites).ConfigureAwait(false);
-            if (!testsuites.ListOfTestSuites.Any(ts => ts.ListOfTestCases.Any(tc => tc.Status.In(JUnitTestCaseStatus.ERROR, JUnitTestCaseStatus.FAILURE))))
+            if (testsuites?.ListOfTestSuites.Any() == true && 
+                !testsuites.ListOfTestSuites.Any(ts => ts.ListOfTestCases.Any(tc => tc.Status.In(JUnitTestCaseStatus.ERROR, JUnitTestCaseStatus.FAILURE))))
             {
                 res = RunStatus.PASSED;
             }
