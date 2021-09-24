@@ -1,6 +1,7 @@
 using PSModule.AlmLabMgmtClient.SDK.Handler;
 using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Util;
+using System.Management.Automation;
 
 namespace PSModule.AlmLabMgmtClient.SDK.Factory
 {
@@ -13,7 +14,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Factory
             {
                 C.BVS => new BvsRunHandler(client, entityId),
                 C.TEST_SET => new TestSetRunHandler(client, entityId),
-                _ => throw new AlmException("RunHandlerFactory: Run type {runType} is Not Implmented"),
+                _ => throw new AlmException("RunHandlerFactory: Run type {runType} is Not Implmented", ErrorCategory.NotImplemented),
             };
         }
     }

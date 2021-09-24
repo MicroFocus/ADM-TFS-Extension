@@ -1,6 +1,7 @@
 using PSModule.AlmLabMgmtClient.SDK.Handler;
 using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Util;
+using System.Management.Automation;
 
 namespace PSModule.AlmLabMgmtClient.SDK.Factory
 {
@@ -16,7 +17,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Factory
             }
             else
             {
-                throw new AlmException("PollHandlerFactory: Unrecognized run type");
+                throw new AlmException("PollHandlerFactory: Unrecognized run type", ErrorCategory.InvalidType);
             }
 
             return ret;
@@ -31,7 +32,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Factory
             }
             else
             {
-                throw new AlmException("PollHandlerFactory: Unrecognized run type");
+                throw new AlmException("PollHandlerFactory: Unrecognized run type", ErrorCategory.InvalidType);
             }
 
             return ret;

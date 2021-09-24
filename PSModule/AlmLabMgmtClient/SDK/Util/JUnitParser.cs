@@ -3,6 +3,7 @@ using PSModule.AlmLabMgmtClient.Result.Model;
 using PSModule.AlmLabMgmtClient.SDK.Util;
 using System;
 using System.Collections.Generic;
+using System.Management.Automation;
 
 namespace AlmLabMgmtClient.SDK.Util
 {
@@ -200,7 +201,7 @@ namespace AlmLabMgmtClient.SDK.Util
                     }
                     catch (UriFormatException ex)
                     {
-                        throw new AlmException(ex.Message);
+                        throw new AlmException($"{url}: {ex.Message}", ErrorCategory.ParserError);
                     }
                 }
 

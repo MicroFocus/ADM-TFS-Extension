@@ -133,7 +133,7 @@ namespace PSModule
                     properties = GetTaskProperties();
                     if (properties == null || !properties.Any())
                     {
-                        throw new AlmException("Invalid or missing properties!");
+                        throw new AlmException("Invalid or missing properties!", ErrorCategory.InvalidData);
                     }
                 }
                 catch (Exception e)
@@ -175,9 +175,14 @@ namespace PSModule
 
                 CollateRetCode(resdir, (int)runStatus);
             }
+            catch(AlmException ae)
+            {
+                WriteError(new ErrorRecord(ae, nameof(AlmException), ae.Category, nameof(ProcessRecord)));
+                runMgr?.Stop();
+            }
             catch (IOException ioe)
             {
-                WriteError(new ErrorRecord(ioe, nameof(IOException), ErrorCategory.ResourceExists, string.Empty));
+                WriteError(new ErrorRecord(ioe, nameof(IOException), ErrorCategory.ResourceExists, nameof(ProcessRecord)));
                 runMgr?.Stop();
             }
             catch (ThreadInterruptedException e)
@@ -211,13 +216,7 @@ namespace PSModule
                 EntityId = ALMEntityId,
                 RunType = TestRunType
             };
-            var cred = new Credentials
-            {
-                IsSSO = IsSSO,
-                UsernameOrClientID = IsSSO ? ClientID : ALMUserName,
-                PasswordOrSecret = IsSSO ? ApiKeySecret : ALMPassword,
-            };
-
+            var cred = new Credentials(IsSSO, IsSSO ? ClientID : ALMUserName, IsSSO ? ApiKeySecret : ALMPassword);
             var client = new RestClient(args.ServerUrl, args.Domain, args.Project, ClientType, cred);
             return new RunManager(client, args);
         }

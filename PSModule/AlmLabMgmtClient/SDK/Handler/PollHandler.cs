@@ -1,5 +1,6 @@
 using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Util;
+using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
         {
             // NOTE: this constructor is not used at this moment, but for safety, restrict the polling interval between 1 and 60 seconds
             if (interval < 1000 || interval > 60000)
-                throw new AlmException($"PollHandler: Invalid polling interval : {interval} milliseconds. Between 1000 and 60000 milliseconds");
+                throw new AlmException($"PollHandler: Invalid polling interval : {interval} milliseconds. Between 1000 and 60000 milliseconds", ErrorCategory.LimitsExceeded);
             _interval = interval;
         }
 

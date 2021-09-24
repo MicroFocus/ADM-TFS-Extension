@@ -1,6 +1,7 @@
 using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Request;
 using System;
+using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,7 +51,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
             if (res.IsOK)
                 return res.Data.DeserializeXML<AlmVersion>();
             else
-                throw new AlmException($"Failed to get ALM version. HTTP status code: {res.StatusCode}");
+                throw new AlmException($"Failed to get ALM version. HTTP status code: {res.StatusCode}", ErrorCategory.InvalidResult);
         }
     }
 }

@@ -3,6 +3,7 @@ using PSModule.AlmLabMgmtClient.SDK.Request;
 using PSModule.AlmLabMgmtClient.SDK.Util;
 using System;
 using System.Collections.Generic;
+using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -57,9 +58,9 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
         {
             bool isNew = false;
             if (currEntity?.ContainsKey(ID) != true)
-                throw new AlmException("Current entity is null or does not contain the [id] key");
+                throw new AlmException("Current entity is null or does not contain the [id] key", ErrorCategory.InvalidData);
             if (!int.TryParse(currEntity[ID], out int currEvent))
-                throw new AlmException($"Current entity has an invalid [id]: {currEntity[ID]}");
+                throw new AlmException($"Current entity has an invalid [id]: {currEntity[ID]}", ErrorCategory.InvalidData);
 
             if (currEvent > _lastRead)
             {
