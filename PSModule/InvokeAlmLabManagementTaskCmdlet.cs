@@ -29,7 +29,7 @@ namespace PSModule
         [Parameter(Position = 3)]
         public string ApiKeySecret { get; set; }
 
-        [Parameter(Position = 4, Mandatory = true)]
+        [Parameter(Position = 4)]
         public string ALMUserName { get; set; }
 
         [Parameter(Position = 5)]
