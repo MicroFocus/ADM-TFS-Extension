@@ -87,7 +87,11 @@ if ($rptFileName) {
 	$rptFileName = "${pipelineName}_${buildNumber}"
 }
 if ($rerunIdx) {
-	$rptFileName += "_rerun$rerunIdx"
+	if ($env:SYSTEM_HOSTTYPE -eq "build") {
+			$rptFileName += "_rerun$rerunIdx"
+	}	else {
+			$rptFileName += "_attempt$rerunIdx"
+	}
 }
 
 $archiveNamePattern = "${rptFileName}_Report"
@@ -143,7 +147,12 @@ if($uploadArtifact -eq "yes") {
 }
 
 if ($rerunIdx) {
-	Write-Host "Rerun attempt = $rerunIdx"
+
+	if ($env:SYSTEM_HOSTTYPE -eq "build") {
+			Write-Host "Rerun attempt = $rerunIdx"
+	}	else {
+			Write-Host "Attempt = $rerunIdx"
+	}
 	if (Test-Path $runSummary) {
 		try {
 			Remove-Item $runSummary -ErrorAction Stop
