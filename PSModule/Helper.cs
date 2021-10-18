@@ -28,6 +28,7 @@ namespace PSModule
         private const string REPORT = "report";
         private const string STATUS = "status";
         private const string TIME = "time";
+        private const string START_EXEC_DT = "startExecDateTime";
         private const string FAILURE = "failure";
         private const string MESSAGE = "message";
         private const string SYSTEM_OUT = "system-out";
@@ -88,11 +89,12 @@ namespace PSModule
                     {
                         switch (attribute.Name)
                         {
-                            case NAME  : reportmetadata.DisplayName = attribute.Value; break;
-                            case REPORT: reportmetadata.ReportPath  = attribute.Value; break;
-                            case STATUS: reportmetadata.Status      = attribute.Value; break;
-                            case TIME  : reportmetadata.Duration    = attribute.Value; break;
-                            default    : break;
+                            case NAME  :        reportmetadata.DisplayName = attribute.Value; break;
+                            case REPORT:        reportmetadata.ReportPath  = attribute.Value; break;
+                            case STATUS:        reportmetadata.Status      = attribute.Value; break;
+                            case TIME:          reportmetadata.Duration    = attribute.Value; break;
+                            case START_EXEC_DT: reportmetadata.DateTime    = attribute.Value; break;
+                            default: break;
                         }
                     }
 
@@ -109,18 +111,22 @@ namespace PSModule
                     var nodes = currentNode.ChildNodes;
                     foreach (XmlNode xmlNode in nodes)//inside nodes in <testcase> nodes
                     {
-                        if (xmlNode.Name == FAILURE)
+                        if (xmlNode.Name.In(FAILURE, ERROR))
                         {
                             foreach (XmlAttribute attribute in xmlNode.Attributes)
                             {
                                 if (attribute.Name == MESSAGE)
                                 {
                                     reportmetadata.ErrorMessage = attribute.Value;
-                                    reportmetadata.Status = FAIL;
+                                    if (reportmetadata.Status.IsNullOrWhiteSpace())
+                                    {
+                                        reportmetadata.Status = xmlNode.Name == FAILURE ? FAIL : ERROR;
+                                    }
+                                    break;
                                 }
                             }
                         }
-                        if (xmlNode.Name == SYSTEM_OUT)
+                        else if (xmlNode.Name == SYSTEM_OUT && reportmetadata.DateTime.IsNullOrWhiteSpace())
                         {
                             reportmetadata.DateTime = xmlNode.InnerText.Substring(0, 19);
                         }
@@ -142,7 +148,7 @@ namespace PSModule
 
         public static RunStatus GetRunStatus(IList<ReportMetaData> listReport)
         {
-            var errorCode = RunStatus.PASSED;
+            var runStatus = RunStatus.PASSED;
             int passedTests = 0, failedTests = 0;
 
             foreach (ReportMetaData report in listReport)
@@ -159,14 +165,14 @@ namespace PSModule
 
             if (passedTests > 0 && failedTests > 0)
             {
-                errorCode = RunStatus.UNSTABLE;
+                runStatus = RunStatus.UNSTABLE;
             }
             else if (passedTests == 0 && failedTests > 0)
             {
-                errorCode = RunStatus.FAILED;
+                runStatus = RunStatus.FAILED;
             }
 
-            return errorCode;
+            return runStatus;
         }
 
         public static int GetNumberOfTests(IList<ReportMetaData> listReport, out IDictionary<string, int> nrOfTests)

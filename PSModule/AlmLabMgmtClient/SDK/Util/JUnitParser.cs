@@ -15,7 +15,11 @@ namespace AlmLabMgmtClient.SDK.Util
         private const string TESTCYCL_ID = "testcycl-id";
         private const string TEST_CONFIG_NAME = "test-config-name";
         private const string DURATION = "duration";
+        private const string START_EXEC_TIME = "start-exec-time";
+        private const string START_EXEC_DATE = "start-exec-date";
         private const string PASSED = "Passed";
+        private const string FAILED = "Failed";
+        private const string NO_RUN = "No Run";
         private const string ZERO = "0";
 
         public JUnitParser(string entityId)
@@ -23,89 +27,55 @@ namespace AlmLabMgmtClient.SDK.Util
             _entityId = entityId;
         }
 
-        public TestSuites ToModel(
-                IList<IDictionary<string, string>> testInstanceRuns,
-                string entityName,
-                string url,
-                string domain,
-                string project)
+        public TestSuites ToModel(IList<IDictionary<string, string>> testInstanceRuns, string entityName, string url, string domain, string project)
         {
-            var testSetIdToTestSuite = GetTestSets(testInstanceRuns);
-            AddTestCases(
-                    testInstanceRuns,
-                    testSetIdToTestSuite,
-                    entityName,
-                    url,
-                    domain,
-                    project);
+            var testSets = BuildTestSets(testInstanceRuns, entityName, url, domain, project);
 
-            return CreateTestSuites(testSetIdToTestSuite);
+            return CreateTestSuites(testSets);
         }
 
-        private TestSuites CreateTestSuites(IDictionary<string, TestSuite> testSetIdToTestsuite)
+        private TestSuites CreateTestSuites(IDictionary<string, TestSuite> testSets)
         {
             TestSuites res = new TestSuites();
             List<TestSuite> testsuites = res.ListOfTestSuites;
-            foreach (TestSuite currTestsuite in testSetIdToTestsuite.Values)
-            {
-                testsuites.Add(currTestsuite);
-            }
-
+            testSets.Values.ForEach(ts => testsuites.Add(ts));
             return res;
         }
 
-        private void AddTestCases(
-                IList<IDictionary<string, string>> testInstanceRuns,
-                IDictionary<string, TestSuite> testSetIdToTestsuite,
-                string bvsName,
-                string url,
-                string domain,
-                string project)
+        private IDictionary<string, TestSuite> BuildTestSets(IList<IDictionary<string, string>> testInstanceRuns, string bvsName, string url, string domain, string project)
         {
-            foreach (IDictionary<string, string> currEntity in testInstanceRuns)
+            var testSets = new Dictionary<string, TestSuite>();
+            foreach (var entity in testInstanceRuns)
             {
-                AddTestCase(
-                        testSetIdToTestsuite,
-                        currEntity,
-                        bvsName,
-                        url,
-                        domain,
-                        project);
+                entity.TryGetValue(TESTCYCL_ID, out string testSetId);
+                TestSuite testsuite;
+                if (testSets.ContainsKey(testSetId))
+                {
+                    testsuite = testSets[testSetId];
+                }
+                else
+                {
+                    testsuite = new TestSuite();
+                    testSets.Add(testSetId, testsuite);
+                }
+                testsuite.ListOfTestCases.Add(GetTestCase(entity, bvsName, url, domain, project));
             }
+            return testSets;
         }
 
-        private void AddTestCase(
-                IDictionary<string, TestSuite> testSetIdToTestsuite,
-                IDictionary<string, string> currEntity,
-                string bvsName,
-                string url,
-                string domain,
-                string project)
+        private TestCase GetTestCase(IDictionary<string, string> entity, string bvsName, string url, string domain, string project)
         {
-            if (testSetIdToTestsuite.TryGetValue(currEntity[TESTCYCL_ID], out TestSuite testsuite))
-            {
-                testsuite.ListOfTestCases.Add(GetTestCase(currEntity, bvsName, url, domain, project));
-            }
-        }
-
-        private TestCase GetTestCase(
-                IDictionary<string, string> entity,
-                string bvsName,
-                string url,
-                string domain,
-                string project)
-        {
-
-            TestCase ret = new TestCase
+            TestCase tc = new TestCase
             {
                 Classname = GetTestSetName(entity, bvsName),
                 Name = GetTestName(entity),
                 Time = GetTime(entity),
+                StartExecDateTime = GetTimestamp(entity),
                 Type = entity[TEST_SUBTYPE]
             };
-            TestCaseStatusUpdater.Update(ret, entity, url, domain, project);
+            TestCaseStatusUpdater.Update(tc, entity, url, domain, project);
 
-            return ret;
+            return tc;
         }
 
         private string GetTestSetName(IDictionary<string, string> entity, string bvsName)
@@ -137,27 +107,16 @@ namespace AlmLabMgmtClient.SDK.Util
             {
                 time = ZERO;
             }
-            else
-            {
-                time = $"{double.Parse(time) * 1000}";
-            }
 
             return time;
         }
 
-        private IDictionary<string, TestSuite> GetTestSets(IList<IDictionary<string, string>> testInstanceRuns)
+        private string GetTimestamp(IDictionary<string, string> entity)
         {
-            var res = new Dictionary<string, TestSuite>();
-            foreach (var currEntity in testInstanceRuns)
-            {
-                currEntity.TryGetValue(TESTCYCL_ID, out string testSetId);
-                if (!res.ContainsKey(testSetId))
-                {
-                    res.Add(testSetId, new TestSuite());
-                }
-            }
+            entity.TryGetValue(START_EXEC_DATE, out string date);
+            entity.TryGetValue(START_EXEC_TIME, out string time);
 
-            return res;
+            return $"{date} {time}";
         }
 
         private static class TestCaseStatusUpdater
@@ -165,31 +124,21 @@ namespace AlmLabMgmtClient.SDK.Util
             private const string STATUS = "status";
             private const string RUN_ID = "run-id";
 
-            public static void Update(
-                        TestCase testcase,
-                        IDictionary<string, string> entity,
-                        string url,
-                        string domain,
-                        string project)
+            public static void Update(TestCase testcase, IDictionary<string, string> entity, string url, string domain, string project)
             {
                 entity.TryGetValue(STATUS, out string status);
                 testcase.Status = GetAzureStatus(status);
                 if (testcase.Status == JUnitTestCaseStatus.ERROR)
                 {
-                    string errorMessage = status;
-                    if (errorMessage != null)
-                    {
-                        var link = GetTestInstanceRunLink(entity, url, domain, project);
-                        testcase.ListOfErrors.Add(new Error { Message = $"Error: {errorMessage}. {link}" });
-                    }
+                    testcase.ListOfErrors.Add(new Error { Message = $"{status}. {GetTestInstanceRunLink(entity, url, domain, project)}" });
+                }
+                else if (testcase.Status == JUnitTestCaseStatus.FAIL)
+                {
+                    testcase.ListOfFailures.Add(new Failure { Message = $"{status}. {GetTestInstanceRunLink(entity, url, domain, project)}" });
                 }
             }
 
-            private static string GetTestInstanceRunLink(
-                    IDictionary<string, string> entity,
-                    string url,
-                    string domain,
-                    string project)
+            private static string GetTestInstanceRunLink(IDictionary<string, string> entity, string url, string domain, string project)
             {
                 string res = string.Empty;
                 entity.TryGetValue(RUN_ID, out string runId);
@@ -210,9 +159,13 @@ namespace AlmLabMgmtClient.SDK.Util
 
             private static string GetAzureStatus(string status)
             {
-                return status == PASSED
-                        ? JUnitTestCaseStatus.PASS
-                        : JUnitTestCaseStatus.ERROR;
+                return status switch
+                {
+                    PASSED => JUnitTestCaseStatus.PASS,
+                    NO_RUN => JUnitTestCaseStatus.ERROR,
+                    FAILED => JUnitTestCaseStatus.FAIL,
+                    _ => status,
+                };
             }
         }
     }

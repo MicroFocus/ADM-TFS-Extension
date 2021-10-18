@@ -6,6 +6,7 @@ using PSModule.AlmLabMgmtClient.SDK.Handler;
 using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Util;
 using System;
+using System.IO;
 using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,15 +25,17 @@ namespace PSModule.AlmLabMgmtClient.SDK
 
         private readonly RestClient _client;
         private readonly Args _args;
+        private readonly string _fullPathReportName;
 
         public bool IsRunning => _isRunning;
         public bool IsPolling => _isPolling;
 
-        public RunManager(RestClient client, Args args)
+        public RunManager(RestClient client, Args args, string fullPathReportName)
         {
             _client = client;
             _logger = client.Logger;
             _args = args;
+            _fullPathReportName = fullPathReportName;
             _runHandler = new RunHandlerFactory().Create(client, args.RunType, args.EntityId);
             _pollHandler = new PollHandlerFactory().Create(client, args.RunType, args.EntityId);
         }
@@ -85,6 +88,20 @@ namespace PSModule.AlmLabMgmtClient.SDK
             {
                 string reportUrl = await _runHandler.ReportUrl(_args);
                 await _logger.LogInfo($"{_args.RunType} run report for run id {_runHandler.RunId} is at: {reportUrl}");
+                try
+                {
+                    using StreamWriter file = new StreamWriter(_fullPathReportName, true);
+                    await file.WriteLineAsync($"[Report {_runHandler.RunId}]({reportUrl})");
+                    await _logger.LogInfo($"Created the report URL file [{_fullPathReportName}].");
+                }
+                catch (ThreadInterruptedException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    await _logger.LogError(e.Message);
+                }
             }
             else
             {

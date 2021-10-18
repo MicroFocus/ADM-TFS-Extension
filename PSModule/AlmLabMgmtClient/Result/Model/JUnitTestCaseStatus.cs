@@ -4,6 +4,6 @@ namespace PSModule.AlmLabMgmtClient.Result.Model
     {
         public const string ERROR = "error";
         public const string PASS = "pass";
-        public const string FAILURE = "failure";
+        public const string FAIL = "fail";
     }
 }

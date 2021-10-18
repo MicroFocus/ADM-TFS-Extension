@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using PSModule.AlmLabMgmtClient.Result.Model;
 using PSModule.AlmLabMgmtClient.SDK;
 using PSModule.AlmLabMgmtClient.SDK.Util;
@@ -13,6 +13,7 @@ using PSModule.AlmLabMgmtClient.SDK.Util;
 namespace PSModule
 {
     using C = Constants;
+    using H = Helper;
 
     [Cmdlet(VerbsLifecycle.Invoke, "AlmLabManagementTask")]
     public class InvokeAlmLabManagementTaskCmdlet : AbstractLauncherTaskCmdlet
@@ -166,15 +167,25 @@ namespace PSModule
                 }
 
                 //run the build task
-                runMgr = GetRunManager();
-                var runStatus = Run(resultsFileName, runMgr).Result;
+                runMgr = GetRunManager(resdir);
+                bool hasResults = Run(resultsFileName, runMgr).Result;
 
-                //collect results
-                //bool hasResults = CollateResults(resultsFileName, _launcherConsole.ToString(), resdir);
-
+                RunStatus runStatus = RunStatus.FAILED;
+                if (hasResults)
+                {
+                    var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
+                    H.CreateSummaryReport(resdir, RunType.AlmLabManagement, listReport);
+                    //get task return code
+                    runStatus = H.GetRunStatus(listReport);
+                    int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);
+                    if (totalTests > 0)
+                    {
+                        H.CreateRunSummary(runStatus, totalTests, nrOfTests, resdir);
+                    }
+                }
                 CollateRetCode(resdir, (int)runStatus);
             }
-            catch(AlmException ae)
+            catch (AlmException ae)
             {
                 LogError(ae, ae.Category);
                 runMgr?.Stop();
@@ -191,20 +202,20 @@ namespace PSModule
             }
         }
 
-        private async Task<RunStatus> Run(string resFilename, RunManager runMgr)
+        private async Task<bool> Run(string resFilename, RunManager runMgr)
         {
-            var res = RunStatus.FAILED;
             TestSuites testsuites = await runMgr.Execute();
-            await SaveResults(resFilename, testsuites).ConfigureAwait(false);
-            if (testsuites?.ListOfTestSuites.Any() == true && 
-                !testsuites.ListOfTestSuites.Any(ts => ts.ListOfTestCases.Any(tc => tc.Status.In(JUnitTestCaseStatus.ERROR, JUnitTestCaseStatus.FAILURE))))
+            if (await SaveResults(resFilename, testsuites))
             {
-                res = RunStatus.PASSED;
+                return testsuites?.ListOfTestSuites.Any(ts => ts.ListOfTestCases.Any()) == true;
             }
-            return res;
+            else
+            {
+                return false;
+            }
         }
 
-        private RunManager GetRunManager()
+        private RunManager GetRunManager(string rptPath)
         {
             var args = new Args
             {
@@ -218,10 +229,10 @@ namespace PSModule
             };
             var cred = new Credentials(IsSSO, IsSSO ? ClientID : ALMUserName, IsSSO ? ApiKeySecret : ALMPassword);
             var client = new RestClient(args.ServerUrl, args.Domain, args.Project, ClientType, cred);
-            return new RunManager(client, args);
+            return new RunManager(client, args, Path.Combine(rptPath, GetReportFilename()));
         }
 
-        private async Task SaveResults(string filePath, TestSuites testsuites)
+        private async Task<bool> SaveResults(string filePath, TestSuites testsuites)
         {
             if (testsuites != null)
             {
@@ -237,12 +248,13 @@ namespace PSModule
                 catch (Exception e)
                 {
                     LogError(e, ErrorCategory.ParserError);
-                    return;
+                    return false;
                 }
                 try
                 {
                     using StreamWriter file = new StreamWriter(filePath, true);
-                    await file.WriteAsync(xml).ConfigureAwait(false);
+                    await file.WriteAsync(xml);
+                    return true;
                 }
                 catch (ThreadInterruptedException)
                 {
@@ -253,6 +265,7 @@ namespace PSModule
                     LogError(e, ErrorCategory.WriteError);
                 }
             }
+            return false;
         }
     }
 }

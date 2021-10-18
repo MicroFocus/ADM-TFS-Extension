@@ -21,11 +21,11 @@ $uftworkdir = $env:UFT_LAUNCHER
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:BUILD_BUILDNUMBER
-=	[int]$rerunIdx = [convert]::ToInt32($env:SYSTEM_STAGEATTEMPT, 10) - 1
+	[int]$rerunIdx = [convert]::ToInt32($env:SYSTEM_STAGEATTEMPT, 10) - 1
 	$rerunType = "rerun"
 } else {
 	$buildNumber = $env:RELEASE_RELEASEID
-=	[int]$rerunIdx = $env:RELEASE_ATTEMPTNUMBER
+	[int]$rerunIdx = $env:RELEASE_ATTEMPTNUMBER
 	$rerunType = "attempt"
 }
 $resDir = Join-Path $uftworkdir -ChildPath "res\Report_$buildNumber"

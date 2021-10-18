@@ -22,27 +22,19 @@ namespace PSModule.AlmLabMgmtClient.Result
             _nameSuffix = nameSuffix;
         }
 
-        public async Task<TestSuites> Publish(
-                string url,
-                string domain,
-                string project)
+        public async Task<TestSuites> Publish(string url, string domain, string project)
         {
-            TestSuites ret = null;
+            TestSuites testSuites = null;
             GetRequest testSetRunsRequest = GetRunEntityTestSetRunsRequest(_client, _runId);
             Response response = await testSetRunsRequest.Execute();
             var testInstanceRun = GetTestInstanceRun(response);
             string entityName = await GetEntityName();
             if (testInstanceRun?.Any() == true)
             {
-                ret =   new JUnitParser(_entityId).ToModel(
-                                testInstanceRun,
-                                entityName,
-                                url,
-                                domain,
-                                project);
+                testSuites = new JUnitParser(_entityId).ToModel(testInstanceRun, entityName, url, domain, project);
             }
 
-            return ret;
+            return testSuites;
         }
 
         protected async Task<Response> GetRunEntityName()

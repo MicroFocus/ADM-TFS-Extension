@@ -54,6 +54,9 @@ namespace PSModule.AlmLabMgmtClient.Result.Model
         [XmlAttribute(AttributeName = "time")]
         public string Time { get; set; }
 
+        [XmlAttribute(AttributeName = "startExecDateTime")]
+        public string StartExecDateTime { get; set; }
+
         [XmlAttribute(AttributeName = "classname")]
         public string Classname { get; set; }
 
@@ -65,6 +68,5 @@ namespace PSModule.AlmLabMgmtClient.Result.Model
 
         [XmlAttribute(AttributeName = "report")]
         public string Report { get; set; }
-
     }
 }
