@@ -100,12 +100,22 @@
       }
     },
     {
-      "name": "varTestSet",
+      "name": "varEntity",
       "type": "string",
-      "label": "Test Set/Build Verification Suite ID",
+      "label": "Test Set ID",
       "defaultValue": "",
+      "visibleRule": "varRunType=TEST_SET",
       "required": true,
-      "helpMarkDown": "The ID number (found in ALM) for the test set or build verification suite"
+      "helpMarkDown": "The ID number (found in ALM) for the test set"
+    },
+    {
+      "name": "varEntity",
+      "type": "string",
+      "label": "Build Verification Suite ID",
+      "defaultValue": "",
+      "visibleRule": "varRunType=BVS",
+      "required": true,
+      "helpMarkDown": "The ID number (found in ALM) for the build verification suite"
     },
     {
       "name": "varDescription",
