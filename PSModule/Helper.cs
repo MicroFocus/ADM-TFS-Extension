@@ -197,7 +197,7 @@ namespace PSModule
                                                bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
                                                string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
         {
-            var table = new HtmlTable { ClientIDMode = ClientIDMode.Static, ID = "tblSummaryReportId" };
+            var table = new HtmlTable();
             var header = new HtmlTableRow();
             var h1 = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
             h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
@@ -296,7 +296,7 @@ namespace PSModule
 
         public static void CreateRunSummary(RunStatus runStatus, int totalTests, IDictionary<string, int> nrOfTests, string rptPath)
         {
-            var table = new HtmlTable { ClientIDMode = ClientIDMode.Static, ID = "tblRunSummaryId"};
+            var table = new HtmlTable();
             var header = new HtmlTableRow();
 
             var h1 = new HtmlTableCell { InnerText = RUN_STATUS, Width = _200, Align = LEFT };
@@ -380,7 +380,7 @@ namespace PSModule
             if (failedSteps.IsNullOrEmpty())
                 return;
 
-            var table = new HtmlTable { ClientIDMode = ClientIDMode.Static, ID = "tblFailedStepsId" };
+            var table = new HtmlTable();
             var header = new HtmlTableRow();
 
             var h1 = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };

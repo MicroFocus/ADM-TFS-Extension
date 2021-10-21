@@ -215,30 +215,25 @@ if ($uploadArtifact -eq "yes") {
 
 #---------------------------------------------------------------------------------------------------
 # uploads report files to build artifacts
-# upload and display Run Summary
-if (Test-Path $runSummary) {
-	if ($rerunIdx) {
-		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Run Summary ($rerunType $rerunIdx);]$runSummary"
-	} else {
-		Write-Host "##vso[task.uploadsummary]$runSummary"
+$all = "$resDir\all_" + $rerunIdx
+if ((Test-Path $runSummary) -and (Test-Path $uftReport)) {
+	$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+	$html = [System.Text.StringBuilder]""
+	$html.Append("<div class=`"margin-right-8 margin-left-8 padding-8 depth-8`"><div class=`"body-xl`">Run Sumary</div>")
+	$html.AppendLine((Get-Content -Path $runSummary))
+	$html.AppendLine("</div><div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">UFT Report</div>")
+	$html.AppendLine((Get-Content -Path $uftReport))
+	$html.AppendLine("</div>")
+	if (Test-Path $failedTests) {
+		$html.AppendLine("<div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">Failed Tests</div>")
+		$html.AppendLine((Get-Content -Path $failedTests))
+		$html.AppendLine("</div>")
 	}
-}
-
-# upload and display UFT report
-if (Test-Path $uftReport) {
+	$html.ToString() >> $all
 	if ($rerunIdx) {
-		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=UFT Report ($rerunType $rerunIdx);]$uftReport"
+		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Reports ($rerunType $rerunIdx);]$all"
 	} else {
-		Write-Host "##vso[task.uploadsummary]$uftReport"
-	}
-}
-
-# upload and display Failed Tests
-if (Test-Path $failedTests) {
-	if ($rerunIdx) {
-		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Failed Tests ($rerunType $rerunIdx);]$failedTests"
-	} else {
-		Write-Host "##vso[task.uploadsummary]$failedTests"
+		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Reports;]$all"
 	}
 }
 
