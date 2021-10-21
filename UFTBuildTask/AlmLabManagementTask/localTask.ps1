@@ -105,7 +105,6 @@ if ((Test-Path $runSummary) -and (Test-Path $uftReport)) {
 	} else {
 		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Reports;]$all"
 	}
-}
 
 # read return code
 if (Test-Path $retcodefile) {
