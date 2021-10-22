@@ -131,7 +131,9 @@ namespace PSModule.AlmLabMgmtClient.SDK
             bool ok = false;
             if (response.IsOK)
             {
-                _logger.LogInfo($"Executing {_args.RunType} ID: {_args.EntityId} in {_args.Domain}/{_args.Project} {Environment.NewLine}Description: {_args.Description}");
+                _logger.LogInfo($"Executing {_args.RunType} ID: {_args.EntityId} in {_args.Domain}/{_args.Project}");
+                if (!_args.Description.IsNullOrWhiteSpace())
+                    _logger.LogInfo($"Description: {_args.Description}");
                 ok = true;
             }
             else

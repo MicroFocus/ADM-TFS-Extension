@@ -29,7 +29,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Auth
 
             var res = await client.HttpPost(client.ServerUrl.AppendSuffix(APIKEY_LOGIN_API), headers, body);
             bool ok = res.IsOK;
-            await client.Logger.LogInfo(ok ? $"Logged in successfully to ALM Server {client.ServerUrl} using clientId [{clientId}]"
+            await client.Logger.LogInfo(ok ? $"Logged in successfully to ALM Server {client.ServerUrl}"
                                   : $"Login to ALM Server at {client.ServerUrl} failed. Status Code: [{res.StatusCode}]");
             return ok;
         }

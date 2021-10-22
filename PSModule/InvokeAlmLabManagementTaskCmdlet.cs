@@ -228,7 +228,8 @@ namespace PSModule
                 RunType = TestRunType
             };
             var cred = new Credentials(IsSSO, IsSSO ? ClientID : ALMUserName, IsSSO ? ApiKeySecret : ALMPassword);
-            var client = new RestClient(args.ServerUrl, args.Domain, args.Project, ClientType, cred);
+            bool isDebug = (ActionPreference)GetVariableValue("DebugPreference") != ActionPreference.SilentlyContinue;
+            var client = new RestClient(args.ServerUrl, args.Domain, args.Project, ClientType, cred, new ConsoleLogger(isDebug));
             return new RunManager(client, args, Path.Combine(rptPath, GetReportFilename()));
         }
 

@@ -50,7 +50,8 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
                     }
                     else
                     {
-                        await _logger.ShowProgress();
+                        if (logRequestUrl)
+                            await _logger.ShowProgress();
                         logRequestUrl = false;
                     }
                 }

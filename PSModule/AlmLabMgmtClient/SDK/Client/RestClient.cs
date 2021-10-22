@@ -31,14 +31,14 @@ namespace PSModule.AlmLabMgmtClient.SDK
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RestClient(string serverUrl, string domain, string project, string clientType, Credentials credentials, ILogger logger = null)
+        public RestClient(string serverUrl, string domain, string project, string clientType, Credentials credentials, ILogger logger)
         {
             _serverUrl = new Uri(serverUrl);
             _clientType = clientType;
             _credentials = credentials;
             _restPrefix = new Uri(_serverUrl.AppendSuffix($"rest/domains/{domain}/projects/{project}"));
             _webuiPrefix = new Uri(_serverUrl.AppendSuffix($"webui/alm/{domain}/{project}"));
-            _logger = logger ?? new ConsoleLogger();
+            _logger = logger;
 
             _xsrfTokenValue = Guid.NewGuid().ToString();
             _cookies.Add(XSRF_TOKEN, _xsrfTokenValue);
@@ -72,7 +72,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
 
                     if (logRequestUrl)
                     {
-                        await _logger.LogInfo($"GET {url}");
+                        await _logger.LogDebug($"GET {url}");
                     }
 
                     DecorateRequestHeaders(client, resourceAccessLevel);
@@ -113,7 +113,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
             {
                 if (logRequestUrl)
                 {
-                    await _logger.LogInfo($"POST {url}");
+                    await _logger.LogDebug($"POST {url}");
                 }
                 DecorateRequestHeaders(client, resourceAccessLevel);
                 string data = await client.UploadStringTaskAsync(url, body);
@@ -199,19 +199,19 @@ namespace PSModule.AlmLabMgmtClient.SDK
         {
             var headers = client.Headers;
             var keys = headers.AllKeys;
-            _logger.LogInfo("Headers:");
+            _logger.LogDebug("Headers:");
             foreach (string key in keys)
             {
-                _logger.LogInfo($"{key} = {headers[key]}");
+                _logger.LogDebug($"{key} = {headers[key]}");
             }
             if (client.ResponseHeaders != null)
             {
-                _logger.LogInfo("ResponseHeaders:");
+                _logger.LogDebug("ResponseHeaders:");
                 headers = client.ResponseHeaders;
                 keys = headers.AllKeys;
                 foreach (string key in keys)
                 {
-                    _logger.LogInfo($"{key} = {headers[key]}");
+                    _logger.LogDebug($"{key} = {headers[key]}");
                 }
             }
         }

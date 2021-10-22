@@ -94,7 +94,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Auth
             Response response = await client.HttpGet(client.ServerUrl.AppendSuffix(AUTH_ENDPOINT), headers);
 
             bool ok = response.IsOK;
-            await client.Logger.LogInfo(ok ? $"Logged in successfully to ALM Server {client.ServerUrl} using username [{username}]"
+            await client.Logger.LogInfo(ok ? $"Logged in successfully to ALM Server {client.ServerUrl}"
                                  : $"Login to ALM Server at {client.ServerUrl} failed. Status Code: {response.StatusCode}");
             return ok;
         }
@@ -109,7 +109,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Auth
             if (res.IsOK)
             {
                 string xml = res.Data;
-                await client.Logger.LogInfo(xml);
+                await client.Logger.LogDebug(xml);
                 //check the xml response
                 try
                 {
@@ -129,7 +129,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Auth
                     await client.Logger.LogError(e.Message);
                     //PrintHeaders(client);
                 }
-                await client.Logger.LogError($"Is Authenticated = {ok}");
+                await client.Logger.LogInfo($"Is Authenticated = {ok}");
             }
             return ok;
         }
