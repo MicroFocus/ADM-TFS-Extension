@@ -102,14 +102,22 @@
     {
       "name": "varEntity",
       "type": "string",
-      "label": "Test Set ID",
+      "label": "Test Set/Build Verification Suite ID",
       "defaultValue": "",
-      "visibleRule": "varRunType=TEST_SET",
+      "required": false,
+      "visible": false
+    },
+    {
+      "name": "varTSEntity",
+      "type": "string",
+      "label": "Build Verification Suite ID",
+      "defaultValue": "",
+      "visibleRule": "varRunType=BVS",
       "required": true,
       "helpMarkDown": "The ID number (found in ALM) for the test set"
     },
     {
-      "name": "varEntity",
+      "name": "varBVSEntity",
       "type": "string",
       "label": "Build Verification Suite ID",
       "defaultValue": "",
@@ -129,7 +137,7 @@
       "name": "varTimeslotDuration",
       "type": "string",
       "label": "Timeslot Duration (in minutes, minimum = 30)",
-      "defaultValue": "",
+      "defaultValue": "30",
       "required": true,
       "helpMarkDown": "The amount of time needed on the host to run this test set/verification suite"
     },

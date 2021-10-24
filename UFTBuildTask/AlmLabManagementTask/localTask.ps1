@@ -11,13 +11,23 @@ $varPass = Get-VstsInput -Name 'varPass'
 $varDomain = Get-VstsInput -Name 'varDomain' -Require
 $varProject = Get-VstsInput -Name 'varProject' -Require
 $varRunType = Get-VstsInput -Name 'varRunType'
-$varEntityId = Get-VstsInput -Name 'varEntity' -Require
+$varEntityId = Get-VstsInput -Name 'varEntity'
 $varDescription = Get-VstsInput -Name 'varDescription'
 $varTimeslotDuration = Get-VstsInput -Name 'varTimeslotDuration' -Require
 $varClientType = Get-VstsInput -Name 'varClientType'
 $varReportName = Get-VstsInput -Name 'varReportName'
-
 $uftworkdir = $env:UFT_LAUNCHER
+
+# determine whether the entity to run is a Test Set or a Build Verification Suite
+$varTSId = Get-VstsInput -Name 'varTSEntity'
+$varBVSId = Get-VstsInput -Name 'varBVSEntity'
+
+if ($varRunType -eq "TEST_SET") {
+	$varEntityId = $varTSId
+} else {
+	$varEntityId = $varBVSId
+}
+
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:BUILD_BUILDNUMBER
