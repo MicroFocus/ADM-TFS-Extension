@@ -4,6 +4,7 @@ using PSModule.AlmLabMgmtClient.SDK.Auth;
 using PSModule.AlmLabMgmtClient.SDK.Factory;
 using PSModule.AlmLabMgmtClient.SDK.Handler;
 using PSModule.AlmLabMgmtClient.SDK.Interface;
+using PSModule.AlmLabMgmtClient.SDK.Request;
 using PSModule.AlmLabMgmtClient.SDK.Util;
 using System;
 using System.IO;
@@ -47,15 +48,22 @@ namespace PSModule.AlmLabMgmtClient.SDK
             _isLoggedIn = await authHandler.Authenticate(_client);
             if (_isLoggedIn)
             {
-                if (await Start())
+                if (await HasTestInstances())
                 {
-                    _isPolling = true;
-                    if (await _pollHandler.Poll())
+                    if (await Start())
                     {
-                        var publisher = new LabPublisher(_client, _args.EntityId, _runHandler.RunId, _runHandler.NameSuffix);
-                        res = await publisher.Publish(_args.ServerUrl, _args.Domain, _args.Project);
+                        _isPolling = true;
+                        if (await _pollHandler.Poll())
+                        {
+                            var publisher = new LabPublisher(_client, _args.EntityId, _runHandler.RunId, _runHandler.NameSuffix);
+                            res = await publisher.Publish(_args.ServerUrl, _args.Domain, _args.Project);
+                        }
+                        _isPolling = false;
                     }
-                    _isPolling = false;
+                }
+                else
+                {
+                    await _logger.LogError($"Testset {_args.EntityId} is empty!");
                 }
                 await authHandler.Logout(_client);
                 _isLoggedIn = false;
@@ -171,6 +179,12 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 _isRunning = false;
                 _isPolling = false;
             }
+        }
+
+        private async Task<bool> HasTestInstances()
+        {
+            var res = await new GetTestInstancesRequest(_client, _args.EntityId).Execute();
+            return res.IsOK && Xml.HasResults(res.Data);
         }
 
     }

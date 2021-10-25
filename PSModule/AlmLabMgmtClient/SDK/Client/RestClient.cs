@@ -77,6 +77,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
 
                     DecorateRequestHeaders(client, resourceAccessLevel);
                     string data = await client.DownloadStringTaskAsync(url);
+                    await _logger.LogDebug($"{data}");
                     //PrintHeaders(client);
 
                     res = new Response(data, client.ResponseHeaders, HttpStatusCode.OK);

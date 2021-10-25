@@ -89,7 +89,13 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
 
         protected void LogPollingError(Response res)
         {
-            _logger.LogError($"Polling try failed. Status code: {res.StatusCode}, Error: {res.Error ?? "Not Available"}");
+            string err = "Polling try failed. ";
+            if (res.StatusCode != null)
+            {
+                err += $"Status code: {res.StatusCode}, ";
+            }
+            err += $"Error: {res.Error ?? "Not Available"}";
+            _logger.LogError(err);
         }
 
         protected abstract Task LogProgress(bool logRequestUrl);

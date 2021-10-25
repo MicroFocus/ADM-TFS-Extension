@@ -12,6 +12,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
         private const string NAME = "Name";
         private const string VALUE = "Value";
         private const string ENTITY = "Entity";
+        private const string TOTAL_RESULTS = "TotalResults";
 
         public static string GetAttributeValue(string xml, string attrName)
         {
@@ -61,5 +62,27 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
             return list;
         }
 
+        internal static bool HasResults(string xml)
+        {
+            bool ok = false;
+            try
+            {
+                var doc = XDocument.Parse(xml);
+                if (doc.Root.HasAttributes && int.TryParse(doc.Root.Attribute(TOTAL_RESULTS).Value, out int res))
+                { 
+                    ok = res > 0;
+                }
+                else if (doc.Root.HasElements && doc.Root.Elements(ENTITY).Any())
+                {
+                    ok = true;
+                }
+                return ok;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
     }
 }
