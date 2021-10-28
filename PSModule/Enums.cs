@@ -39,4 +39,13 @@ namespace PSModule
         CLOSED_BY_USER = -3,
         UNDEFINED = -9
     }
+    public enum LauncherExitCode
+    {
+        Passed = 0,
+        Failed = -1,
+        PartialFailed = -2,
+        Aborted = -3,
+        Unstable = -4,
+        NotConnected = -5
+    }
 }

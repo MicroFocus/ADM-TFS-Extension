@@ -41,6 +41,7 @@ namespace PSModule
         #endregion
 
         private readonly StringBuilder _launcherConsole = new StringBuilder();
+        private bool _hasLauncherErrors = false;
         private readonly ConcurrentQueue<string> outputToProcess = new ConcurrentQueue<string>();
         private readonly ConcurrentQueue<string> errorToProcess = new ConcurrentQueue<string>();
 
@@ -102,57 +103,62 @@ namespace PSModule
                 }
 
                 //run the build task
-                Run(launcherPath, paramFileName);
-
-                //collect results
-                bool hasResults = CollateResults(resultsFileName, _launcherConsole.ToString(), resdir);
-                RunStatus runStatus = RunStatus.FAILED;
-                if (hasResults)
+                var exitCode = Run(launcherPath, paramFileName);
+                if (exitCode == LauncherExitCode.NotConnected && _hasLauncherErrors) // currently it applies to ALM only
                 {
-                    var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
+                    CollateRetCode(resdir, (int)exitCode);
+                }
+                else
+                {
+                    RunStatus runStatus = RunStatus.FAILED;
+                    //collect results
+                    bool hasResults = CollateResults(resultsFileName, _launcherConsole.ToString(), resdir);
+                    if (hasResults)
+                    {
+                        var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
 
-                    var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
-                    //create html report
-                    if (runType == RunType.FileSystem && properties[UPLOAD_ARTIFACT] == YES)
-                    {
-                        string storageAccount = properties.GetValueOrDefault(STORAGE_ACCOUNT, string.Empty);
-                        string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
-                        var artifactType = (ArtifactType)Enum.Parse(typeof(ArtifactType), properties[ARTIFACT_TYPE]);
-                        H.CreateSummaryReport(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
-                    }
-                    else
-                    {
-                        H.CreateSummaryReport(resdir, runType, listReport);
-                    }
-                    //get task return code
-                    runStatus = H.GetRunStatus(listReport);
-                    int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);
-                    if (totalTests > 0)
-                    {
-                        H.CreateRunSummary(runStatus, totalTests, nrOfTests, resdir);
-
-                        var reportFolders = new List<string>();
-                        foreach (var item in listReport)
+                        var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
+                        //create html report
+                        if (runType == RunType.FileSystem && properties[UPLOAD_ARTIFACT] == YES)
                         {
-                            if (!item.ReportPath.IsNullOrWhiteSpace())
-                                reportFolders.Add(item.ReportPath);
+                            string storageAccount = properties.GetValueOrDefault(STORAGE_ACCOUNT, string.Empty);
+                            string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
+                            var artifactType = (ArtifactType)Enum.Parse(typeof(ArtifactType), properties[ARTIFACT_TYPE]);
+                            H.CreateSummaryReport(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
                         }
-
-                        if (runType == RunType.FileSystem && reportFolders.Any() && properties[ENABLE_FAILED_TESTS_RPT] == YES)
+                        else
                         {
-                            //run junit report converter
-                            string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
-                            RunConverter(converterPath, outputFileReport, reportFolders);
-                            if (File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0 && nrOfTests[H.FAIL] > 0)
+                            H.CreateSummaryReport(resdir, runType, listReport);
+                        }
+                        //get task return code
+                        runStatus = H.GetRunStatus(listReport);
+                        int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);
+                        if (totalTests > 0)
+                        {
+                            H.CreateRunSummary(runStatus, totalTests, nrOfTests, resdir);
+
+                            var reportFolders = new List<string>();
+                            foreach (var item in listReport)
                             {
-                                H.ReadReportFromXMLFile(outputFileReport, true, out IDictionary<string, IList<ReportMetaData>> failedSteps);
-                                H.CreateFailedStepsReport(failedSteps, resdir);
+                                if (!item.ReportPath.IsNullOrWhiteSpace())
+                                    reportFolders.Add(item.ReportPath);
+                            }
+
+                            if (runType == RunType.FileSystem && reportFolders.Any() && properties[ENABLE_FAILED_TESTS_RPT] == YES)
+                            {
+                                //run junit report converter
+                                string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
+                                RunConverter(converterPath, outputFileReport, reportFolders);
+                                if (File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0 && nrOfTests[H.FAIL] > 0)
+                                {
+                                    H.ReadReportFromXMLFile(outputFileReport, true, out IDictionary<string, IList<ReportMetaData>> failedSteps);
+                                    H.CreateFailedStepsReport(failedSteps, resdir);
+                                }
                             }
                         }
                     }
+                    CollateRetCode(resdir, (int)runStatus);
                 }
-
-                CollateRetCode(resdir, (int)runStatus);
             }
             catch (IOException ioe)
             {
@@ -190,10 +196,11 @@ namespace PSModule
             return result;
         }
 
-        private int Run(string launcherPath, string paramFile)
+        private LauncherExitCode? Run(string launcherPath, string paramFile)
         {
             Console.WriteLine($"{launcherPath} -paramfile {paramFile}");
 
+            _hasLauncherErrors = false;
             _launcherConsole.Clear();
             try
             {
@@ -234,8 +241,8 @@ namespace PSModule
 
                     if (errorToProcess.TryDequeue(out line))
                     {
-                        _launcherConsole.Append(line);
-                        WriteObject(line);
+                        _hasLauncherErrors = true;
+                        LogError(new Exception(line)); // this will print the error in red-color
                     }
                 }
 
@@ -244,7 +251,7 @@ namespace PSModule
 
                 launcher.WaitForExit();
 
-                return launcher.ExitCode;
+                return (LauncherExitCode?)launcher.ExitCode;
             }
             catch (ThreadInterruptedException)
             {
@@ -253,7 +260,7 @@ namespace PSModule
             catch (Exception e)
             {
                 LogError(e, ErrorCategory.InvalidData);
-                return -1;
+                return LauncherExitCode.Failed;
             }
         }
 
@@ -314,7 +321,10 @@ namespace PSModule
 
         private void Launcher_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            errorToProcess.Enqueue(e.Data);
+            if (!e.Data.IsNullOrWhiteSpace())
+            {
+                errorToProcess.Enqueue(e.Data);
+            }
         }
 
         private void Launcher_OutputDataReceived(object sender, DataReceivedEventArgs e)
