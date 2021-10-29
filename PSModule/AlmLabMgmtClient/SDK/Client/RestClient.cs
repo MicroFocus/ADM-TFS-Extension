@@ -60,7 +60,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
 
         public string BuildWebUIEndpoint(string suffix) => _webuiPrefix.AppendSuffix(suffix);
 
-        public async Task<Response> HttpGet(string url, WebHeaderCollection headers = null, ResourceAccessLevel resourceAccessLevel = ResourceAccessLevel.PUBLIC, string query = "", bool logRequestUrl = true)
+        public async Task<Response> HttpGet(string url, WebHeaderCollection headers = null, ResourceAccessLevel resourceAccessLevel = ResourceAccessLevel.PUBLIC, string query = "", bool logRequestUrl = true, bool logError = true)
         {
             Response res = null;
             using (var client = new WebClient { Headers = headers })
@@ -89,7 +89,8 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 }
                 catch (WebException we)
                 {
-                    await _logger.LogError(we.Message);
+                    if (logError || _logger.IsDebug)
+                        await _logger.LogError(we.Message);
                     //PrintHeaders(client);
                     if (we.Response is HttpWebResponse resp)
                         return new Response(we.Message, resp.StatusCode);

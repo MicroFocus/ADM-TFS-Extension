@@ -10,6 +10,8 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
         private const string PLEASE_WAIT = "Please wait ....";
         private readonly bool _isDebug;
 
+        public bool IsDebug => _isDebug;
+
         public ConsoleLogger(bool isDebug)
         {
             _isDebug = isDebug;

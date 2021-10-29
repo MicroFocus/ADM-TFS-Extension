@@ -89,7 +89,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
                 string xml = response.ToString();
                 string state = Xml.GetAttributeValue(xml, STATE);
                 string completedSuccessfully = Xml.GetAttributeValue(xml, COMPLETED_SUCCESSFULLY);
-                _logger.LogInfo($"Run state of {_runId}: {state}, Completed successfully: {completedSuccessfully}");
+                _logger.LogDebug($"Run state of {_runId}: {state}, Completed successfully: {completedSuccessfully}");
                 ok = true;
             }
             catch (ThreadInterruptedException)

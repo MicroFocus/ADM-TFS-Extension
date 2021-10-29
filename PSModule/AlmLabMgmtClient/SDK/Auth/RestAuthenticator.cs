@@ -105,7 +105,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Auth
             await client.Logger.LogInfo(CHECK_IF_AUTHENTICATED);
             string isAuthUrl = client.ServerUrl.AppendSuffix(IS_AUTH_ENDPOINT);
             using var webclient = new WebClient { Headers = new WebHeaderCollection { { HttpRequestHeader.Accept, C.APP_XML } } };
-            var res = await client.HttpGet(isAuthUrl, new WebHeaderCollection { { HttpRequestHeader.Accept, C.APP_XML } });
+            var res = await client.HttpGet(isAuthUrl, new WebHeaderCollection { { HttpRequestHeader.Accept, C.APP_XML } }, logError: false);
             if (res.IsOK)
             {
                 string xml = res.Data;

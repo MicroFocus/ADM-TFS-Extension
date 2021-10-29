@@ -13,7 +13,8 @@ namespace PSModule.AlmLabMgmtClient.SDK.Interface
                 WebHeaderCollection headers = null,
                 ResourceAccessLevel resourceAccessLevel = ResourceAccessLevel.PUBLIC,
                 string query = "",
-                bool logUrl = true);
+                bool logUrl = true,
+                bool logError = true);
 
         Task<Response> HttpPost(
                 string url,
