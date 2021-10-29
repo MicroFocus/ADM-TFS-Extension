@@ -2,7 +2,7 @@
 
 namespace PSModule.AlmLabMgmtClient.SDK.Request
 {
-    class GetTestInstancesRequest : GetRequestBase
+    public class GetTestInstancesRequest : GetRequestBase
     {
         private const string TEST_INSTANCES = "test-instances";
         private readonly string _testsetId;

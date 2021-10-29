@@ -8,7 +8,6 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
         public const string REST = "rest";
         public const string TEST_SET = "TEST_SET";
         public const string BVS = "BVS";
-        public const string PC = "PC";
         public const string NO_RUN_ID = "No Run ID";
         public const string ONE = "1";
         public const char EQUAL = '=';

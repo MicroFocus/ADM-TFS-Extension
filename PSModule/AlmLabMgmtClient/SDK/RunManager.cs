@@ -48,22 +48,15 @@ namespace PSModule.AlmLabMgmtClient.SDK
             _isLoggedIn = await authHandler.Authenticate(_client);
             if (_isLoggedIn)
             {
-                if (await HasTestInstances())
+                if (await IsValidTestset() && await Start())
                 {
-                    if (await Start())
+                    _isPolling = true;
+                    if (await _pollHandler.Poll())
                     {
-                        _isPolling = true;
-                        if (await _pollHandler.Poll())
-                        {
-                            var publisher = new LabPublisher(_client, _args.EntityId, _runHandler.RunId, _runHandler.NameSuffix);
-                            res = await publisher.Publish(_args.ServerUrl, _args.Domain, _args.Project);
-                        }
-                        _isPolling = false;
+                        var publisher = new LabPublisher(_client, _args.EntityId, _runHandler.RunId, _runHandler.NameSuffix);
+                        res = await publisher.Publish(_args.ServerUrl, _args.Domain, _args.Project);
                     }
-                }
-                else
-                {
-                    await _logger.LogError($"Testset {_args.EntityId} is empty!");
+                    _isPolling = false;
                 }
                 await authHandler.Logout(_client);
                 _isLoggedIn = false;
@@ -186,6 +179,30 @@ namespace PSModule.AlmLabMgmtClient.SDK
             var res = await new GetTestInstancesRequest(_client, _args.EntityId).Execute();
             return res.IsOK && Xml.HasResults(res.Data);
         }
+        private async Task<bool> IsExistingTestset()
+        {
+            var res = await new GetTestsetRequest(_client, _args.EntityId).Execute();
+            return res.IsOK && Xml.HasResults(res.Data);
+        }
 
+        private async Task<bool> IsValidTestset()
+        {
+            if (await IsExistingTestset())
+            {
+                if (await HasTestInstances())
+                {
+                    return true;
+                }
+                else
+                {
+                    await _logger.LogError($"The {_args.RunType} {_args.EntityId} is empty!");
+                }
+            }
+            else
+            {
+                await _logger.LogError($"The {_args.RunType} {_args.EntityId} does not exist!");
+            }
+            return false;
+        }
     }
 }

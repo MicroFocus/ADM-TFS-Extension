@@ -104,6 +104,7 @@
     <Compile Include="AlmLabMgmtClient\SDK\Request\GetRequestBase.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Request\GetRunEntityNameRequest.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Request\GetTestInstancesRequest.cs" />
+    <Compile Include="AlmLabMgmtClient\SDK\Request\GetTestsetRequest.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Request\PollAlmLabMgmtRunRequest.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Request\PostRequest.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Request\PostRequestBase.cs" />
