@@ -46,6 +46,6 @@ namespace PSModule
         PartialFailed = -2,
         Aborted = -3,
         Unstable = -4,
-        NotConnected = -5
+        AlmNotConnected = -5
     }
 }

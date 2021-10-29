@@ -104,7 +104,7 @@ namespace PSModule
 
                 //run the build task
                 var exitCode = Run(launcherPath, paramFileName);
-                if (exitCode == LauncherExitCode.NotConnected && _hasLauncherErrors) // currently it applies to ALM only
+                if (exitCode == LauncherExitCode.AlmNotConnected && _hasLauncherErrors) // currently it applies to ALM only
                 {
                     CollateRetCode(resdir, (int)exitCode);
                 }
