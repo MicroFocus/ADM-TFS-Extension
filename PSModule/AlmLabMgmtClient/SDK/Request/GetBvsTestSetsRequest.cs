@@ -13,6 +13,6 @@ namespace PSModule.AlmLabMgmtClient.SDK.Request
         }
 
         protected override string Suffix => PROCEDURE_TESTSETS;
-        protected override string QueryString => $"query={{parent-id[{_bvsId}]}}&fields=cycle-id";
+        protected override string QueryString => $"query={{parent-id[{_bvsId}]}}&fields=cycle-id&page-size=max";
     }
 }
