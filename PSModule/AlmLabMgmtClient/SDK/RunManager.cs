@@ -207,7 +207,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 }
                 else
                 {
-                    await _logger.LogError($"{C.BUILD_VERIFICATION_SUITE} with ID {_args.EntityId} could not be found.");
+                    await _logger.LogError($"No {C.BUILD_VERIFICATION_SUITE} could be found by ID {_args.EntityId}.");
                 }
             }
             else
@@ -218,7 +218,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 }
                 else
                 {
-                    await _logger.LogError($"Functional type {C.TESTSET} with ID {_args.EntityId} could not be found.");
+                    await _logger.LogError($"No {C.TESTSET} of functional type could be found by ID {_args.EntityId}.\nNote: You can run only functional test sets and build verification suites using this task. Check to make sure that the configured ID is valid (and that it is not a performance test ID).");
                 }
             }
             return false;
