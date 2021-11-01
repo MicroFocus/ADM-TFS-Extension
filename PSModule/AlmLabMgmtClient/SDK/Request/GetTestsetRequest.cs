@@ -2,16 +2,17 @@
 
 namespace PSModule.AlmLabMgmtClient.SDK.Request
 {
-    public class GetTestsetRequest : GetRequestBase
+    public class GetTestSetRequest : GetRequestBase
     {
         private const string TEST_SETS = "test-sets";
-        private readonly string _testsetId;
+        private readonly string _testSetId;
 
-        public GetTestsetRequest(IClient client, string testsetId) : base(client)
+        public GetTestSetRequest(IClient client, string testSetId) : base(client)
         {
-            _testsetId = testsetId;
+            _testSetId = testSetId;
         }
+
         protected override string Suffix => TEST_SETS;
-        protected override string QueryString => $"query={{id[{_testsetId}]}}&fields=id,name,subtype-id";
+        protected override string QueryString => @$"query={{id[{_testSetId}];subtype-id[""hp.sse.test-set.process""]}}&fields=id,name&page-size=1";
     }
 }

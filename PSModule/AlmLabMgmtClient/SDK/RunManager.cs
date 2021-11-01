@@ -7,7 +7,9 @@ using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Request;
 using PSModule.AlmLabMgmtClient.SDK.Util;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,7 +50,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
             _isLoggedIn = await authHandler.Authenticate(_client);
             if (_isLoggedIn)
             {
-                if (await IsValidTestset() && await Start())
+                if (await IsValidBvsOrTestSet() && await Start())
                 {
                     _isPolling = true;
                     if (await _pollHandler.Poll())
@@ -177,32 +179,84 @@ namespace PSModule.AlmLabMgmtClient.SDK
         private async Task<bool> HasTestInstances()
         {
             var res = await new GetTestInstancesRequest(_client, _args.EntityId).Execute();
-            return res.IsOK && Xml.HasResults(res.Data);
+            bool ok = res.IsOK && Xml.HasResults(res.Data);
+            if (!ok)
+                await _logger.LogError($"The {C.TESTSET} {_args.EntityId} is empty!");
+
+            return ok;
         }
-        private async Task<bool> IsExistingTestset()
+
+        private async Task<bool> IsExistingTestSet()
         {
-            var res = await new GetTestsetRequest(_client, _args.EntityId).Execute();
+            var res = await new GetTestSetRequest(_client, _args.EntityId).Execute();
             return res.IsOK && Xml.HasResults(res.Data);
         }
 
-        private async Task<bool> IsValidTestset()
+        private async Task<bool> IsExistingBvs()
         {
-            if (await IsExistingTestset())
+            var res = await new GetBvsRequest(_client, _args.EntityId).Execute();
+            return res.IsOK && Xml.HasResults(res.Data);
+        }
+        private async Task<bool> IsValidBvsOrTestSet()
+        {
+            if (_args.RunType == C.BVS)
             {
-                if (await HasTestInstances())
+                if (await IsExistingBvs())
                 {
-                    return true;
+                    return await IsValidBvs();
                 }
                 else
                 {
-                    await _logger.LogError($"The {_args.RunType} {_args.EntityId} is empty!");
+                    await _logger.LogError($"The {C.BUILD_VERIFICATION_SUITE} {_args.EntityId} does not exist!");
                 }
             }
             else
             {
-                await _logger.LogError($"The {_args.RunType} {_args.EntityId} does not exist!");
+                if (await IsExistingTestSet())
+                {
+                    return await HasTestInstances();
+                }
+                else
+                {
+                    await _logger.LogError($"The {C.TESTSET} {_args.EntityId} does not exist or is not of Functional type!");
+                }
             }
             return false;
+        }
+
+        private async Task<IList<int>> GetBvsTestSetsIds()
+        {
+            Response res = await new GetBvsTestSetsRequest(_client, _args.EntityId).Execute();
+            IList<int> ids = new List<int>();
+
+            if (res == null || !res.IsOK || res.Data == null)
+            {
+                return ids;
+            }
+
+            return Xml.GetTestSetIds(res.ToString());
+        }
+
+        private async Task<bool> IsValidBvs()
+        {
+            var testSetIds = await GetBvsTestSetsIds();
+            bool ok = testSetIds.Any();
+            if (ok)
+            {
+                var res = await new GetTestInstancesRequest(_client, testSetIds).Execute();
+                var nonEmptyTestSetIds = Xml.GetTestSetIds(res.ToString());
+                var emptyTestSetIds = nonEmptyTestSetIds.Any() ? testSetIds.Except(nonEmptyTestSetIds) : testSetIds;
+                if (emptyTestSetIds.Any())
+                {
+                    await _logger.LogError($"The {C.BUILD_VERIFICATION_SUITE} {_args.EntityId} is invalid. The following TestSets are empty: {string.Join(C.COMMA, emptyTestSetIds)}.");
+                    ok = false;
+                }
+            }
+            else
+            {
+                await _logger.LogError($"The {C.BUILD_VERIFICATION_SUITE} {_args.EntityId} is empty!");
+            }
+            return ok;
         }
     }
 }

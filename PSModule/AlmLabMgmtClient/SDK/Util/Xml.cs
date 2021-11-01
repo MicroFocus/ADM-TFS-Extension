@@ -84,5 +84,20 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
                 throw;
             }
         }
+
+        internal static IList<int> GetTestSetIds(string xml)
+        {
+            var doc = XDocument.Parse(xml);
+            var ids = new List<int>();
+
+            doc.Root?.Elements("Entity")?.Elements("Fields")?.Elements("Field")?.
+                Where(el => el?.Attribute("Name")?.Value == "cycle-id")?.Elements("Value")?.
+                ForEach(v =>
+                {
+                    if (int.TryParse(v?.Value, out int id))
+                        ids.Add(id);
+                });
+            return ids;
+        }
     }
 }

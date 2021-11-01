@@ -31,7 +31,10 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
 
         public async Task LogError(string err, [CallerMemberName] string methodName = "")
         {
-            await Console.Error.WriteLineAsync($"{methodName}: {err}");
+            if (_isDebug)
+                await Console.Error.WriteLineAsync($"{methodName}: {err}");
+            else
+                await Console.Error.WriteLineAsync($"{err}");
         }
 
         public async Task ShowProgress()
