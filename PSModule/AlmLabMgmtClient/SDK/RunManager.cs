@@ -207,7 +207,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 }
                 else
                 {
-                    await _logger.LogError($"The {C.BUILD_VERIFICATION_SUITE} {_args.EntityId} does not exist!");
+                    await _logger.LogError($"{C.BUILD_VERIFICATION_SUITE} with ID {_args.EntityId} could not be found.");
                 }
             }
             else
@@ -218,7 +218,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 }
                 else
                 {
-                    await _logger.LogError($"The {C.TESTSET} {_args.EntityId} does not exist or is not of Functional type!");
+                    await _logger.LogError($"Functional type {C.TESTSET} with ID {_args.EntityId} could not be found.");
                 }
             }
             return false;
