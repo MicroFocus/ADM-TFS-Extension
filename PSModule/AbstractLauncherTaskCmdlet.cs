@@ -344,7 +344,7 @@ namespace PSModule
             }
             if (!Directory.Exists(resdir))
             {
-                LogError(new DirectoryNotFoundException(resdir), ErrorCategory.ResourceUnavailable);
+                ThrowTerminatingError(new ErrorRecord(new DirectoryNotFoundException($"The result folder {resdir} cannot be found."), nameof(CollateRetCode), ErrorCategory.ResourceUnavailable, nameof(CollateRetCode)));
                 return;
             }
             string retCodeFilename = Path.Combine(resdir, fileName);
@@ -370,6 +370,11 @@ namespace PSModule
 
         protected virtual bool CollateResults(string resultFile, string log, string resdir)
         {
+            if (!Directory.Exists(resdir))
+            {
+                ThrowTerminatingError(new ErrorRecord(new DirectoryNotFoundException($"The result folder {resdir} cannot be found."), nameof(CollateRetCode), ErrorCategory.ResourceUnavailable, nameof(CollateRetCode)));
+            }
+
             if (!File.Exists(resultFile))
             {
                 LogError(new FileNotFoundException("result file does not exist"), ErrorCategory.ResourceUnavailable);
@@ -489,6 +494,5 @@ namespace PSModule
         {
             WriteError(new ErrorRecord(ex, $"{ex.GetType()}", categ, methodName));
         }
-
     }
 }

@@ -258,4 +258,6 @@ if (Test-Path $retcodefile) {
 	} else {
 		Write-Error "The file [$retcodefile] is empty!"
 	}
+} else {
+	Write-Error "The file [$retcodefile] is missing!"
 }
