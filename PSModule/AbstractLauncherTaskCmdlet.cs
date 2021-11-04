@@ -372,7 +372,7 @@ namespace PSModule
         {
             if (!Directory.Exists(resdir))
             {
-                ThrowTerminatingError(new ErrorRecord(new DirectoryNotFoundException($"The result folder {resdir} cannot be found."), nameof(CollateRetCode), ErrorCategory.ResourceUnavailable, nameof(CollateRetCode)));
+                ThrowTerminatingError(new ErrorRecord(new DirectoryNotFoundException($"The result folder {resdir} cannot be found."), nameof(CollateResults), ErrorCategory.ResourceUnavailable, nameof(CollateResults)));
             }
 
             if (!File.Exists(resultFile))
