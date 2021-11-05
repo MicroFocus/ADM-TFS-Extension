@@ -41,7 +41,6 @@ namespace PSModule
         #endregion
 
         private readonly StringBuilder _launcherConsole = new StringBuilder();
-        private bool _hasLauncherErrors = false;
         private readonly ConcurrentQueue<string> outputToProcess = new ConcurrentQueue<string>();
         private readonly ConcurrentQueue<string> errorToProcess = new ConcurrentQueue<string>();
 
@@ -58,7 +57,7 @@ namespace PSModule
                 try
                 {
                     properties = GetTaskProperties();
-                    if (properties == null || !properties.Any())
+                    if (properties.IsNullOrEmpty())
                     {
                         ThrowTerminatingError(new ErrorRecord(new Exception("Invalid or missing properties!"), nameof(GetTaskProperties), ErrorCategory.InvalidData, nameof(GetTaskProperties)));
                         return;
@@ -104,8 +103,12 @@ namespace PSModule
 
                 //run the build task
                 var exitCode = Run(launcherPath, paramFileName);
-                if (exitCode == LauncherExitCode.AlmNotConnected && _hasLauncherErrors) // currently it applies to ALM only
+                if (exitCode == LauncherExitCode.AlmNotConnected)
                 {
+                    if (errorToProcess.TryDequeue(out string error))
+                    {
+                        ThrowTerminatingError(new ErrorRecord(new Exception(error), nameof(ProcessRecord), ErrorCategory.ConnectionError, nameof(ProcessRecord)));
+                    }
                     CollateRetCode(resdir, (int)exitCode);
                 }
                 else
@@ -200,7 +203,6 @@ namespace PSModule
         {
             Console.WriteLine($"{launcherPath} -paramfile {paramFile}");
 
-            _hasLauncherErrors = false;
             _launcherConsole.Clear();
             try
             {
@@ -237,12 +239,6 @@ namespace PSModule
                     {
                         _launcherConsole.Append(line);
                         WriteObject(line);
-                    }
-
-                    if (errorToProcess.TryDequeue(out line))
-                    {
-                        _hasLauncherErrors = true;
-                        LogError(new Exception(line)); // this will print the error in red-color
                     }
                 }
 

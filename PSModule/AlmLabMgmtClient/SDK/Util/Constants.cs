@@ -7,7 +7,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
         public const string APP_JSON = "application/json";
         public const string REST = "rest";
         public const string TEST_SET = "TEST_SET";
-        public const string TESTSET = "TestSet";
+        public const string TESTSET = "Test Set";
         public const string BVS = "BVS";
         public const string BUILD_VERIFICATION_SUITE = "Build Verification Suite";
         public const string NO_RUN_ID = "No Run ID";
