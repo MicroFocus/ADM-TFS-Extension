@@ -172,26 +172,18 @@ if ($rerunIdx) {
 #Run the tests
 Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt -Verbose 
 
-if ($testPathInput.Contains(".mtb")) { #batch file with multiple tests
-	$XMLfile = $testPathInput
-	[XML]$testDetails = Get-Content $XMLfile
-	foreach($test in $testDetails.Mtbx.Test) {
-		$rptFolder = Join-Path $test.path -ChildPath "Report"
-		$rptFolders.Add($rptFolder)
-	}
-} else { #single test or multiline tests
-	$resFile = (Get-ChildItem -File $results | Sort-Object -Property CreationTime -Descending | Select-Object -First 1)
-	if ($resFile -and (Test-Path $resFile.FullName)) {
-		[XML]$testDetails = Get-Content $resFile.FullName
-		$rptAttributes = $testDetails.SelectNodes("/testsuites/testsuite/testcase[@report != '']/@report")
-		if ($rptAttributes) {
-			foreach($attr in $rptAttributes) {
-				$rptFolders.Add($attr.Value)
-			}
+#single test or multiline tests
+$resFile = (Get-ChildItem -File $results | Sort-Object -Property CreationTime -Descending | Select-Object -First 1)
+if ($resFile -and (Test-Path $resFile.FullName)) {
+	[XML]$testDetails = Get-Content $resFile.FullName
+	$rptAttributes = $testDetails.SelectNodes("/testsuites/testsuite/testcase[@report != '']/@report")
+	if ($rptAttributes) {
+		foreach($attr in $rptAttributes) {
+			$rptFolders.Add($attr.Value)
 		}
-	} else {
-		Write-Error "Cannot find the $results file."
 	}
+} else {
+	Write-Error "Cannot find the $results file."
 }
 $ind = 1
 foreach ($item in $rptFolders) {
