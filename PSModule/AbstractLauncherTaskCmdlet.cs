@@ -103,7 +103,8 @@ namespace PSModule
 
                 //run the build task
                 var exitCode = Run(launcherPath, paramFileName);
-                if (exitCode == LauncherExitCode.AlmNotConnected)
+                var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
+                if (runType == RunType.Alm && exitCode.In(LauncherExitCode.AlmNotConnected, LauncherExitCode.Failed) && errorToProcess.Any())
                 {
                     if (errorToProcess.TryDequeue(out string error))
                     {
@@ -119,8 +120,6 @@ namespace PSModule
                     if (hasResults)
                     {
                         var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
-
-                        var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
                         //create html report
                         if (runType == RunType.FileSystem && properties[UPLOAD_ARTIFACT] == YES)
                         {

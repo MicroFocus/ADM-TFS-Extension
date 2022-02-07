@@ -125,7 +125,7 @@ namespace PSModule
         public void SetApiKeySecret(string apiKeySecret)
         {
             string encAlmApiKey = EncryptParameter(apiKeySecret);
-            SetParamValue("almApiKey", encAlmApiKey);
+            SetParamValue("almApiKeySecret", encAlmApiKey);
         }
 
         public void SetAlmRunMode(AlmRunMode almRunMode)
