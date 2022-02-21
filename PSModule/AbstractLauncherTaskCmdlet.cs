@@ -104,20 +104,20 @@ namespace PSModule
                 //run the build task
                 var exitCode = Run(launcherPath, paramFileName);
                 var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
-                if (runType == RunType.Alm && exitCode.In(LauncherExitCode.AlmNotConnected, LauncherExitCode.Failed) && errorToProcess.Any())
+                bool hasResults = HasResults(resultsFileName, out string xmlResults);
+                if (!hasResults)
                 {
+                    ErrorCategory categ = exitCode == LauncherExitCode.AlmNotConnected ? ErrorCategory.ConnectionError : ErrorCategory.InvalidData;
                     if (errorToProcess.TryDequeue(out string error))
                     {
-                        ThrowTerminatingError(new ErrorRecord(new Exception(error), nameof(ProcessRecord), ErrorCategory.ConnectionError, nameof(ProcessRecord)));
+                        ThrowTerminatingError(new ErrorRecord(new Exception(error), nameof(ProcessRecord), categ, nameof(ProcessRecord)));
                     }
                     CollateRetCode(resdir, (int)exitCode);
                 }
                 else
                 {
                     RunStatus runStatus = RunStatus.FAILED;
-                    //collect results
-                    bool hasResults = CollateResults(resultsFileName, _launcherConsole.ToString(), resdir);
-                    if (hasResults)
+                    if (CollateResults(xmlResults, resdir))
                     {
                         var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
                         //create html report
@@ -363,17 +363,11 @@ namespace PSModule
             return string.Empty;
         }
 
-        protected virtual bool CollateResults(string resultFile, string log, string resdir)
+        protected virtual bool CollateResults(string xmlResults, string resdir)
         {
             if (!Directory.Exists(resdir))
             {
                 ThrowTerminatingError(new ErrorRecord(new DirectoryNotFoundException($"The result folder {resdir} cannot be found."), nameof(CollateResults), ErrorCategory.ResourceUnavailable, nameof(CollateResults)));
-            }
-
-            if (!File.Exists(resultFile))
-            {
-                LogError(new FileNotFoundException("result file does not exist"), ErrorCategory.ResourceUnavailable);
-                File.Create(resultFile).Dispose();
             }
 
             string reportFileName = GetReportFilename();
@@ -384,45 +378,10 @@ namespace PSModule
                 return false;
             }
 
-            if ((resultFile.IsNullOrWhiteSpace() || !File.Exists(resultFile)) && log.IsNullOrWhiteSpace())
-            {
-                LogError(new FileNotFoundException($"No results file ({resultFile}) nor result log provided"), ErrorCategory.InvalidData);
-                return false;
-            }
-
-            //read result xml file
-            string xml = File.ReadAllText(resultFile);
-
-            if (xml.IsNullOrWhiteSpace())
-            {
-                LogError(new FileNotFoundException("Empty results file"), ErrorCategory.InvalidData);
-                return false;
-            }
-            else
-            {
-                try
-                {
-                    var doc = XDocument.Parse(xml);
-                    if (doc?.Root == null || !doc.Root.HasElements)
-                    {
-                        LogError(new FileNotFoundException("Invalid or empty results file"), ErrorCategory.InvalidData);
-                        return false;
-                    }
-                }
-                catch (ThreadInterruptedException)
-                {
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    LogError(e, ErrorCategory.ParserError);
-                    return false;
-                }
-            }
-            var links = GetRequiredLinksFromString(xml);
+            var links = GetRequiredLinksFromString(xmlResults);
             if (links.IsNullOrEmpty())
             {
-                links = GetRequiredLinksFromString(log);
+                links = GetRequiredLinksFromString(_launcherConsole.ToString());
                 if (links.IsNullOrEmpty())
                 {
                     LogError(new FileNotFoundException("No report links in results file or log found"), ErrorCategory.InvalidData);
@@ -449,6 +408,47 @@ namespace PSModule
                 return false;
             }
             return true;
+        }
+
+        private bool HasResults(string resultFile, out string xmlResults)
+        {
+            xmlResults = null;
+            if (!File.Exists(resultFile))
+            {
+                WriteDebug("result file not found");
+                return false;
+            }
+
+            //read result xml file
+            xmlResults = File.ReadAllText(resultFile);
+
+            if (xmlResults.IsNullOrWhiteSpace())
+            {
+                WriteDebug("Empty results file");
+                return false;
+            }
+            else
+            {
+                try
+                {
+                    var doc = XDocument.Parse(xmlResults);
+                    if (doc?.Root == null || !doc.Root.HasElements)
+                    {
+                        WriteDebug("Invalid xml data in results file");
+                        return false;
+                    }
+                    return true;
+                }
+                catch (ThreadInterruptedException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    WriteDebug(e.Message);
+                    return false;
+                }
+            }
         }
 
         private List<Tuple<string, string>> GetRequiredLinksFromString(string s)
