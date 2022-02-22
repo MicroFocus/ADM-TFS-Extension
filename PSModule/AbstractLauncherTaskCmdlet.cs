@@ -427,27 +427,24 @@ namespace PSModule
                 WriteDebug("Empty results file");
                 return false;
             }
-            else
+            try
             {
-                try
+                var doc = XDocument.Parse(xmlResults);
+                if (doc?.Root == null || !doc.Root.HasElements)
                 {
-                    var doc = XDocument.Parse(xmlResults);
-                    if (doc?.Root == null || !doc.Root.HasElements)
-                    {
-                        WriteDebug("Invalid xml data in results file");
-                        return false;
-                    }
-                    return true;
-                }
-                catch (ThreadInterruptedException)
-                {
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    WriteDebug(e.Message);
+                    WriteDebug("Invalid xml data in results file");
                     return false;
                 }
+                return true;
+            }
+            catch (ThreadInterruptedException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                WriteDebug(e.Message);
+                return false;
             }
         }
 
