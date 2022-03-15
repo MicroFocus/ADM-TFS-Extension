@@ -60,10 +60,12 @@
     <Content Include="AlmLabEnvPrepareTask\localTask.ps1" />
     <Content Include="AlmLabManagementTask\localTask.ps1" />
     <Content Include="AlmLabManagementTask\icon.png" />
-    <Content Include="RunFromFileSystemTask\Strings\resources.resjson\en-US\resources.resjson" />
     <Content Include="RunFromFileSystemTask\task.json" />
     <Content Include="RunFromALMTask\localTask.ps1" />
     <Content Include="RunFromALMTask\task.json" />
+    <Content Include="GetAvailableDevicesTask\icon.png" />
+    <Content Include="GetAvailableDevicesTask\localTask.ps1" />
+    <Content Include="GetAvailableDevicesTask\task.json" />
     <None Include="RunFromFileSystemTask\localTask.ps1" />
     <Content Include="LICENSE" />
     <Content Include="README.md" />
