@@ -1,0 +1,57 @@
+﻿{
+  "id": "33EE3299-D0B4-4E23-B5F1-580E758D5407",
+  "name": "GetAvailableDevicesTask",
+  "friendlyName": "UFT Mobile Get Available Devices",
+  "description": "UFT Mobile Get Available Devices",
+  "category": "Test",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "Micro Focus",
+  "version": {
+    "Major": 3,
+    "Minor": 0,
+    "Patch": 5
+  },
+  "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
+  "demands": "UFTM_PASSWORD",
+  "inputs": [
+    {
+      "name": "mcServerUrl",
+      "type": "string",
+      "label": "Mobile Server URL",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Mobile Server URL, including the port number"
+    },
+    {
+      "name": "mcUsername",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Mobile Center Username"
+    },
+    {
+      "name": "mcPassword",
+      "type": "string",
+      "label": "Password",
+      "defaultValue": "$(UFTM_PASSWORD)",
+      "required": true,
+      "helpMarkDown": "Mobile Center Password"
+    }
+  ],
+
+  "instanceNameFormat": "Get Available Devices",
+  "execution": {
+    "PowerShell3": {
+      "target": "localTask.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)",
+      "platforms": [
+        "windows"
+      ]
+    }
+  }
+}
