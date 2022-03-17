@@ -12,10 +12,17 @@
   "version": {
     "Major": 3,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "demands": "UFT_LAUNCHER",
+  "groups": [
+    {
+      "name": "parallelRunner",
+      "displayName": "Parallel Runner",
+      "isExpanded": false
+    }
+  ],
   "inputs": [
     {
       "name": "testPathInput",
@@ -32,6 +39,119 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
+    },
+    {
+      "name": "useParallelRunner",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Use Parallel running mode",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps. You can view these results in the Extensions tab."
+    },
+    {
+      "name": "envType",
+      "groupName": "parallelRunner",
+      "type": "radio",
+      "label": "Environment Type",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "useParallelRunner = true",
+      "helpMarkDown": "The enironemnt type to use when running parallel tests",
+      "options": {
+        "mobile": "Mobile",
+        "web": "Web"
+      }
+    },
+    {
+      "name": "chrome",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Chrome",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web",
+      "helpMarkDown": "Google Chrome"
+    },
+    {
+      "name": "firefox",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Firefox",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web",
+      "helpMarkDown": "Mozilla Firefox"
+    },
+    {
+      "name": "firefox64",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Firefox 64",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web",
+      "helpMarkDown": "Mozilla Firefox 64"
+    },
+    {
+      "name": "iExplorer",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Internet Explorer",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web",
+      "helpMarkDown": "Microsoft Internet Explorer"
+    },
+    {
+      "name": "iExplorer64",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Internet Explorer 64",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web",
+      "helpMarkDown": "Microsoft Internet Explorer 64"
+    },
+    {
+      "name": "mcServerUrl",
+      "groupName": "parallelRunner",
+      "type": "string",
+      "label": "Mobile Server URL",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = mobile",
+      "helpMarkDown": "Mobile Server URL, including the port number"
+    },
+    {
+      "name": "mcUsername",
+      "groupName": "parallelRunner",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = mobile",
+      "helpMarkDown": "Mobile Center Username"
+    },
+    {
+      "name": "mcPassword",
+      "groupName": "parallelRunner",
+      "type": "string",
+      "label": "Password",
+      "defaultValue": "$(UFTM_PASSWORD)",
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = mobile",
+      "helpMarkDown": "Mobile Center Password"
+    },
+    {
+      "name": "devices",
+      "groupName": "parallelRunner",
+      "type": "multiLine",
+      "label": "Devices",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = mobile",
+      "helpMarkDown": "List of devices to be used. Each line should contain a single device"
     },
     {
       "name": "enableFailedTestsReport",
