@@ -13,5 +13,10 @@ namespace PSModule.UftMobile.SDK.Util
         public const char EQUAL = '=';
         public const char SEMICOLON = ';';
         public const char LINE_FEED = '\n';
+        public const string DeviceId = "deviceid";
+        public const string OsType = "ostype";
+        public const string OsVersion = "osversion";
+        public const string ManufacturerAndModel = "manufacturerandmodel";
+
     }
 }

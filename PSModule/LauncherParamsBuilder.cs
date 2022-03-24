@@ -1,5 +1,7 @@
-﻿using System;
+﻿using PSModule.UftMobile.SDK.UI;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -51,6 +53,21 @@ namespace PSModule
         public void SetEnableFailedTestsReport(bool enableJunitRpt)
         {
             SetParamValue("enableFailedTestsReport", enableJunitRpt ? YES : NO);
+        }
+
+        public void SetParallelTestEnv(int testIdx, int envIdx, string device)
+        {
+            SetParamValue($"ParallelTest{testIdx}Env{envIdx}", device);
+        }
+
+        public void SetUseParallelRunner(bool useParallelRunner)
+        {
+            SetParamValue("parallelRunnerMode", $"{useParallelRunner}");
+        }
+
+        public void SetParallelRunnerEnvType(string envType)
+        {
+            SetParamValue("envType", envType);
         }
 
         public void SetReportName(string reportName)
