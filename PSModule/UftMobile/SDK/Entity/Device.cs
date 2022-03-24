@@ -16,7 +16,7 @@ namespace PSModule.UftMobile.SDK.Entity
         }
         public string ToRawString()
         {
-            return $@"deviceId: {DeviceId}, manufacturer: {Manufacturer}, model: {Model}, osType: {OSType}, osVersion: {OSVersion}";
+            return $@"deviceId: {DeviceId}, manufacturerAndModel: {Manufacturer} {Model}, osType: {OSType}, osVersion: {OSVersion}";
         }
     }
 }
