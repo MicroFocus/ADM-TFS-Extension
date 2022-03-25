@@ -17,13 +17,26 @@ $envType = Get-VstsInput -Name 'envType'
 $mcDevices = Get-VstsInput -Name 'mcDevices'
 
 [bool]$useChrome = Get-VstsInput -Name 'chrome' -AsBool
+[bool]$useChromeH = Get-VstsInput -Name 'chromeH' -AsBool
+[bool]$useChromium = Get-VstsInput -Name 'chromium' -AsBool
+[bool]$useEdge = Get-VstsInput -Name 'edge' -AsBool
 [bool]$useFirefox = Get-VstsInput -Name 'firefox' -AsBool
 [bool]$useFirefox64 = Get-VstsInput -Name 'firefox64' -AsBool
 [bool]$useIExplorer = Get-VstsInput -Name 'iExplorer' -AsBool
 [bool]$useIExplorer64 = Get-VstsInput -Name 'iExplorer64' -AsBool
+[bool]$useSafari = Get-VstsInput -Name 'safari' -AsBool
 $browsers = [List[string]]::new()
 if ($useChrome) {
 	$browsers.Add("chrome")
+}
+if ($useChromeH) {
+	$browsers.Add("chromeH")
+}
+if ($useChromium) {
+	$browsers.Add("chromium")
+}
+if ($useEdge) {
+	$browsers.Add("edge")
 }
 if ($useFirefox) {
 	$browsers.Add("firefox")
@@ -36,6 +49,9 @@ if ($useIExplorer) {
 }
 if ($useIExplorer64) {
 	$browsers.Add('iexplorer64')
+}
+if ($useSafari) {
+	$browsers.Add('safari')
 }
 
 if ($useParallelRunner) {

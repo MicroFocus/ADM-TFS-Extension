@@ -47,7 +47,7 @@
       "label": "Use Parallel running mode",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps. You can view these results in the Extensions tab."
+      "helpMarkDown": "Choose whether to run the tests using the Parallel Runner mode. Enabling this option requires you to configure the devices or the browsers on which you choose to run your tests"
     },
     {
       "name": "envType",
@@ -57,7 +57,7 @@
       "defaultValue": "",
       "required": false,
       "visibleRule": "useParallelRunner = true",
-      "helpMarkDown": "The enironemnt type to use when running parallel tests",
+      "helpMarkDown": "Choose whether to run the tests on a list of specified devices, or on any of the available browsers (if you choose multiple browsers, the test is run multiple times, one run on each browser)",
       "options": {
         "mobile": "Mobile",
         "web": "Web"
@@ -70,8 +70,34 @@
       "label": "Chrome",
       "defaultValue": false,
       "required": false,
-      "visibleRule": "useParallelRunner = true && envType = web",
-      "helpMarkDown": "Google Chrome"
+      "visibleRule": "useParallelRunner = true && envType = web"
+    },
+    {
+      "name": "chromeH",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Chrome Headless",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web"
+    },
+    {
+      "name": "chromium",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Chromium Edge",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web"
+    },
+    {
+      "name": "edge",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Edge",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
       "name": "firefox",
@@ -80,8 +106,7 @@
       "label": "Firefox",
       "defaultValue": false,
       "required": false,
-      "visibleRule": "useParallelRunner = true && envType = web",
-      "helpMarkDown": "Mozilla Firefox"
+      "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
       "name": "firefox64",
@@ -90,8 +115,7 @@
       "label": "Firefox 64",
       "defaultValue": false,
       "required": false,
-      "visibleRule": "useParallelRunner = true && envType = web",
-      "helpMarkDown": "Mozilla Firefox 64"
+      "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
       "name": "iExplorer",
@@ -100,8 +124,7 @@
       "label": "Internet Explorer",
       "defaultValue": false,
       "required": false,
-      "visibleRule": "useParallelRunner = true && envType = web",
-      "helpMarkDown": "Microsoft Internet Explorer"
+      "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
       "name": "iExplorer64",
@@ -110,8 +133,16 @@
       "label": "Internet Explorer 64",
       "defaultValue": false,
       "required": false,
-      "visibleRule": "useParallelRunner = true && envType = web",
-      "helpMarkDown": "Microsoft Internet Explorer 64"
+      "visibleRule": "useParallelRunner = true && envType = web"
+    },
+    {
+      "name": "safari",
+      "groupName": "parallelRunner",
+      "type": "boolean",
+      "label": "Safari",
+      "defaultValue": false,
+      "required": false,
+      "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
       "name": "mcDevices",
@@ -121,7 +152,7 @@
       "defaultValue": "",
       "required": false,
       "visibleRule": "useParallelRunner = true && envType = mobile",
-      "helpMarkDown": "List of devices to be used. Each line should contain a single device"
+      "helpMarkDown": "Specify the list of devices, each line should represent one single device's information. Parallel Runner runs the test(s) multiple times, to test on all specified devices"
     },
     {
       "name": "enableFailedTestsReport",
