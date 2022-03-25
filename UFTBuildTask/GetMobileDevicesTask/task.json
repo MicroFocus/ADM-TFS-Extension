@@ -15,15 +15,14 @@
     "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
-  "demands": "UFTM_PASSWORD",
   "inputs": [
     {
       "name": "mcServerUrl",
       "type": "string",
-      "label": "Mobile Server URL",
+      "label": "Mobile Center Server",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Mobile Server URL, including the port number"
+      "helpMarkDown": "The address of your Mobile Center server, in the format http[s]://(MC server name):(port)"
     },
     {
       "name": "mcUsername",
@@ -31,15 +30,15 @@
       "label": "Username",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Mobile Center Username"
+      "helpMarkDown": "The username that will access this Mobile Center server during the build step run"
     },
     {
       "name": "mcPassword",
       "type": "string",
       "label": "Password",
-      "defaultValue": "$(UFTM_PASSWORD)",
+      "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Mobile Center Password"
+      "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
     }
   ],
 
