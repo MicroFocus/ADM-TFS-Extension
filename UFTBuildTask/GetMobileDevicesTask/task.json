@@ -43,7 +43,7 @@
     }
   ],
 
-  "instanceNameFormat": "UFT Mobile Get Devices",
+  "instanceNameFormat": "Get Mobile Devices",
   "execution": {
     "PowerShell3": {
       "target": "localTask.ps1",
