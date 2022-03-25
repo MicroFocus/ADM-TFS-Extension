@@ -40,7 +40,7 @@ if ($rerunIdx) {
 }
 #---------------------------------------------------------------------------------------------------
 #Run the tests
-Invoke-GADTask $mcServerUrl $mcUsername $mcPassword $buildNumber -Verbose 
+Invoke-GMDTask $mcServerUrl $mcUsername $mcPassword $buildNumber -Verbose 
 
 # read return code
 if (Test-Path $runStatusCodeFile) {

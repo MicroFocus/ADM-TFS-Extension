@@ -63,9 +63,9 @@
     <Content Include="RunFromFileSystemTask\task.json" />
     <Content Include="RunFromALMTask\localTask.ps1" />
     <Content Include="RunFromALMTask\task.json" />
-    <Content Include="GetAvailableDevicesTask\icon.png" />
-    <Content Include="GetAvailableDevicesTask\localTask.ps1" />
-    <Content Include="GetAvailableDevicesTask\task.json" />
+    <Content Include="GetMobileDevicesTask\icon.png" />
+    <Content Include="GetMobileDevicesTask\localTask.ps1" />
+    <Content Include="GetMobileDevicesTask\task.json" />
     <None Include="RunFromFileSystemTask\localTask.ps1" />
     <Content Include="LICENSE" />
     <Content Include="README.md" />

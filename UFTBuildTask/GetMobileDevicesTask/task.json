@@ -1,6 +1,6 @@
 ﻿{
   "id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
-  "name": "GetAvailableDevicesTask",
+  "name": "GetMobileDevicesTask",
   "friendlyName": "UFT Mobile Get Devices",
   "description": "Use this build step to retrieve devices from a Mobile Center server",
   "category": "Test",

@@ -2,7 +2,7 @@
   "id": "91008DAF-AFF5-4E1A-A6FF-8ACF9D229E3C",
   "name": "AlmLabManagementTask",
   "friendlyName": "UFT One ALM Lab Management Run",
-  "description": "Use this build step to run ALM server-side functional test sets.",
+  "description": "Use this build step to run ALM server-side functional test sets",
   "category": "Test",
   "visibility": [
     "Build",
@@ -12,7 +12,7 @@
   "version": {
     "Major": 3,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-alm-lm.htm#mt-item-1",
   "demands": [

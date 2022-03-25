@@ -66,11 +66,15 @@
 		"color": "rgb(1, 66, 114)",
 		"theme": "dark"
 	},
-	"files": [{
+	"files": [
+		{
 			"path": "AlmLabEnvPrepareTask"
 		},
 		{
 			"path": "AlmLabManagementTask"
+		},
+		{
+			"path": "GetMobileDevicesTask"
 		},
 		{
 			"path": "RunFromALMTask"
@@ -94,7 +98,8 @@
 	],
 
 
-	"contributions": [{
+	"contributions": [
+		{
 			"id": "custom-build-task-1",
 			"type": "ms.vss-distributed-task.task",
 			"targets": [
@@ -132,6 +137,16 @@
 			],
 			"properties": {
 				"name": "RunFromFileSystemTask"
+			}
+		},
+		{
+			"id": "custom-build-task-5",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "GetMobileDevicesTask"
 			}
 		}
 	],

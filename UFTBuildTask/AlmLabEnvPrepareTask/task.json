@@ -2,7 +2,7 @@
   "id": "2A12D98C-8838-40BA-BE69-C0B5D88743F5",
   "name": "AlmLabEnvPrepareTask",
   "friendlyName": "UFT One ALM Lab Environment Preparation",
-  "description": "Use this build step to assign values to AUT Environment Configuration in ALM.",
+  "description": "Use this build step to assign values to AUT Environment Configuration in ALM",
   "category": "Test",
   "visibility": [
     "Build",
@@ -12,7 +12,7 @@
   "version": {
     "Major": 3,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-alm-lm.htm#mt-item-0",
   "demands": [

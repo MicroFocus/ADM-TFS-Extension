@@ -130,7 +130,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="InvokeAlmLabManagementTaskCmdlet.cs" />
-    <Compile Include="InvokeGetAvailableDevicesTaskCmdlet.cs" />
+    <Compile Include="InvokeGetMobileDevicesTaskCmdlet.cs" />
     <Compile Include="InvokeRunFromALMTaskCmdlet.cs" />
     <Compile Include="Models\MobileSettings.cs" />
     <Compile Include="InvokeFSTaskCmdlet.cs" />
