@@ -39,6 +39,13 @@
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
+    },
+    {
+      "name": "includeOfflineDevices",
+      "type": "boolean",
+      "label": "Include disconnected devices in the retrieved list",
+      "defaultValue": false,
+      "required": false
     }
   ],
 

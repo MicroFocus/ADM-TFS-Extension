@@ -16,7 +16,6 @@ namespace PSModule.UftMobile.SDK
         private const string X_HP4MSECRET = "x-hp4msecret";
         private const string JSESSIONID = "JSESSIONID";
         private const string SET_COOKIE = "Set-Cookie";
-        private const string XSRF_TOKEN = "XSRF-TOKEN";
 
         protected readonly Uri _serverUrl; // Example : http://myd-vm21045.swinfra.net:8080/qcbin
         protected IDictionary<string, string> _cookies = new Dictionary<string, string>();
@@ -50,7 +49,7 @@ namespace PSModule.UftMobile.SDK
 
         public ILogger Logger => _logger;
 
-        public async Task<Response<T>> HttpGet<T>(string url, WebHeaderCollection headers = null, string query = "", bool logRequestUrl = true, bool logError = true)
+        public async Task<Response<T>> HttpGet<T>(string url, WebHeaderCollection headers = null, string query = "", bool logError = true)
         {
             Response<T> res = null;
             if (headers == null && _cookies.Any() && !_hp4msecret.IsNullOrWhiteSpace())
@@ -67,10 +66,7 @@ namespace PSModule.UftMobile.SDK
                     if (!query.IsNullOrWhiteSpace())
                         url += $"?{query}";
 
-                    if (logRequestUrl)
-                    {
-                        await _logger.LogDebug($"GET {url}");
-                    }
+                    await _logger.LogDebug($"GET {url}");
 
                     DecorateRequestHeaders(client);
                     string data = await client.DownloadStringTaskAsync(url);
@@ -108,7 +104,7 @@ namespace PSModule.UftMobile.SDK
             return res;
         }
 
-        public async Task<Response> HttpPost(string url, WebHeaderCollection headers = null, string body = null, bool logRequestUrl = true)
+        public async Task<Response> HttpPost(string url, string body, WebHeaderCollection headers = null)
         {
             Response res;
             if (headers == null)
@@ -120,17 +116,13 @@ namespace PSModule.UftMobile.SDK
                 };
                 if (_cookies.Any() && !_hp4msecret.IsNullOrWhiteSpace())
                 {
-                    //headers.Add(JSESSIONID, _cookies[JSESSIONID]);
                     headers.Add(X_HP4MSECRET, _hp4msecret);
                 }
             }
             using var client = new WebClient { Headers = headers };
             try
             {
-                if (logRequestUrl)
-                {
-                    await _logger.LogDebug($"POST {url}\nBODY={body}");
-                }
+                await _logger.LogDebug($"POST {url}");
                 DecorateRequestHeaders(client);
                 string data = await client.UploadStringTaskAsync(url, body);
                 if (_logger.IsDebug)
@@ -167,7 +159,7 @@ namespace PSModule.UftMobile.SDK
             return res;
         }
 
-        public async Task<Response<T>> HttpPost<T>(string url, WebHeaderCollection headers = null, string body = null, bool logRequestUrl = true)
+        public async Task<Response<T>> HttpPost<T>(string url, string body, WebHeaderCollection headers = null)
         {
             Response<T> res;
             if (headers == null)
@@ -187,10 +179,7 @@ namespace PSModule.UftMobile.SDK
             using var client = new WebClient { Headers = headers };
             try
             {
-                if (logRequestUrl)
-                {
-                    await _logger.LogDebug($"POST {url}");
-                }
+                await _logger.LogDebug($"POST {url}");
 
                 DecorateRequestHeaders(client);
                 string data = await client.UploadStringTaskAsync(url, body);

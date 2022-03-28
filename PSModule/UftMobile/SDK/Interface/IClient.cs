@@ -12,14 +12,12 @@ namespace PSModule.UftMobile.SDK.Interface
                 string url,
                 WebHeaderCollection headers = null,
                 string query = "",
-                bool logRequestUrl = true,
                 bool logError = true);
 
         Task<Response> HttpPost(
                 string url,
-                WebHeaderCollection headers = null,
-                string body = null,
-                bool logRequestUrl = true);
+                string body,
+                WebHeaderCollection headers = null);
 
         Task<Response> HttpPut(
                 string url,

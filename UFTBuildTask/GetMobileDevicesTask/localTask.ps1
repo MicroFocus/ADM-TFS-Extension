@@ -6,6 +6,7 @@ param()
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl' -Require
 $mcUsername = Get-VstsInput -Name 'mcUsername' -Require
 $mcPassword = Get-VstsInput -Name 'mcPassword' -Require
+[bool]$includeOfflineDevices = Get-VstsInput -Name 'includeOfflineDevices' -AsBool
 
 $uftworkdir = $env:UFT_LAUNCHER
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
@@ -40,7 +41,7 @@ if ($rerunIdx) {
 }
 #---------------------------------------------------------------------------------------------------
 #Run the tests
-Invoke-GMDTask $mcServerUrl $mcUsername $mcPassword $buildNumber -Verbose 
+Invoke-GMDTask $mcServerUrl $mcUsername $mcPassword $includeOfflineDevices $buildNumber -Verbose 
 
 # read return code
 if (Test-Path $runStatusCodeFile) {
@@ -50,9 +51,7 @@ if (Test-Path $runStatusCodeFile) {
 		$option = [System.StringSplitOptions]::RemoveEmptyEntries
 		$arr = $content.Split($sep, $option)
 		[int]$retcode = [convert]::ToInt32($arr[-1], 10)
-		if ($retcode -eq 0) {
-			Write-Host "Task successfully completed."
-		} else {
+		if ($retcode -lt 0) {
 			Write-Host "##vso[task.complete result=Failed;]"
 		}
 	} else {

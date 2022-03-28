@@ -20,10 +20,15 @@ namespace PSModule
     {
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string REGISTERED = "registered";
+        private const string UNREGISTERED = "unregistered";
+        private const string AVAILABLE = "Available";
+        private const string DISCONNECTED = "Disconnected";
         private const string DEBUG_PREFERENCE = "DebugPreference";
         private const string UFT_LAUNCHER = "UFT_LAUNCHER";
         private const string RUN_STATUS_CODE_TXT = "RunStatusCode.txt";
-        private const string NO_REGISTERED_DEVICE_FOUND = "No registered device was found.";
+        private const string NO_DEVICE_FOUND = "No device has been retrieved from the Mobile Center server";
+        private const string NO_AVAILABLE_DEVICE_FOUND = "No available device has been retrieved from the Mobile Center server";
+        private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Mobile Center server";
         private const string LOGIN_FAILED = "Login failed.";
 
         [Parameter(Position = 0, Mandatory = true)]
@@ -36,15 +41,16 @@ namespace PSModule
         public string Password { get; set; }
 
         [Parameter(Position = 3, Mandatory = true)]
+        public bool IncludeOfflineDevices { get; set; }
+
+        [Parameter(Position = 4, Mandatory = true)]
         public string BuildNumber { get; set; }
 
         protected override async Task ProcessRecordAsync()
         {
             try
             {
-                WriteObject($"ServerlUrl = {ServerlUrl}");
-                WriteObject($"Username = {Username}");
-
+                WriteDebug($"Username = {Username}");
                 string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
                 string resdir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{BuildNumber}"));
 
@@ -60,7 +66,7 @@ namespace PSModule
                 bool ok = await auth.Login(client);
                 if (ok)
                 {
-                    runStatus = await CheckAndPrintAvailableDevices(client);
+                    runStatus = await CheckAndPrintDevices(client);
                     await auth.Logout(client);
                 }
                 else
@@ -74,20 +80,36 @@ namespace PSModule
             }
         }
 
-        private async Task<RunStatus> CheckAndPrintAvailableDevices(IClient client)
+        private async Task<RunStatus> CheckAndPrintDevices(IClient client)
         {
             var res = await client.HttpGet<Device>(client.ServerUrl.AppendSuffix(DEVICES_ENDPOINT));
             if (res.IsOK)
             {
-                var devices = res.Entities.Where(d => d.DeviceStatus == REGISTERED);
-                if (devices.Any())
+                if (res.Entities.Any())
                 {
-                    devices.ForEach(d => WriteObject(d.ToString()));
+                    if (IncludeOfflineDevices)
+                    {
+                        var devices = res.Entities.GroupBy(d => d.DeviceStatus).ToList();
+                        if (!PrintDevices(devices.FirstOrDefault(g => g.Key == REGISTERED)))
+                        {
+                            WriteObject(NO_AVAILABLE_DEVICE_FOUND);
+                        }
+                        if (!PrintDevices(devices.FirstOrDefault(g => g.Key == UNREGISTERED), false))
+                        {
+                            WriteObject(NO_DISCONNECTED_DEVICE_FOUND);
+                        }
+                    }
+                    else if (!PrintDevices(res.Entities.Where(d => d.DeviceStatus == REGISTERED)))
+                    {
+                        LogError(new UftMobileException(NO_AVAILABLE_DEVICE_FOUND));
+                        return RunStatus.UNDEFINED;
+                    }
+
                     return RunStatus.PASSED;
                 }
                 else
                 {
-                    LogError(new UftMobileException(NO_REGISTERED_DEVICE_FOUND));
+                    LogError(new UftMobileException(IncludeOfflineDevices ? NO_DEVICE_FOUND : NO_AVAILABLE_DEVICE_FOUND));
                     return RunStatus.UNDEFINED;
                 }
             }
@@ -96,6 +118,18 @@ namespace PSModule
                 LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
                 return RunStatus.FAILED;
             }
+        }
+
+        private bool PrintDevices(IEnumerable<Device> devices, bool isOnline = true)
+        {
+            if (devices?.Any() == true)
+            {
+                WriteObject($"{(isOnline ? AVAILABLE : DISCONNECTED)} devices ({devices.Count()}):");
+                int x = 0;
+                devices.ForEach(d => WriteObject($"Device #{++x} - {d}"));
+                return true;
+            }
+            return false;
         }
 
         private async Task SaveRunStatus(string resdir, RunStatus runStatus)
