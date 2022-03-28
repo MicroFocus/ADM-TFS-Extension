@@ -43,9 +43,10 @@
     {
       "name": "includeOfflineDevices",
       "type": "boolean",
-      "label": "Include disconnected devices in the retrieved list",
+      "label": "Include disconnected devices in response",
       "defaultValue": false,
-      "required": false
+      "required": false,
+      "helpMarkDown": "Choose whether to include the disconnected devices within the list of devices retrieved by running this task"
     }
   ],
 

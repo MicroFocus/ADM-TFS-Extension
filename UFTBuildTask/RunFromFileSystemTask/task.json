@@ -70,6 +70,7 @@
       "label": "Chrome",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -79,6 +80,7 @@
       "label": "Chrome Headless",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -88,6 +90,7 @@
       "label": "Chromium Edge",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -97,6 +100,7 @@
       "label": "Edge",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -106,6 +110,7 @@
       "label": "Firefox",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -115,6 +120,7 @@
       "label": "Firefox 64",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -124,6 +130,7 @@
       "label": "Internet Explorer",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -133,6 +140,7 @@
       "label": "Internet Explorer 64",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {
@@ -142,6 +150,7 @@
       "label": "Safari",
       "defaultValue": false,
       "required": false,
+      "helpMarkDown": null,
       "visibleRule": "useParallelRunner = true && envType = web"
     },
     {

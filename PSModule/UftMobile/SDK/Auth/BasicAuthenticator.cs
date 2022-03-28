@@ -23,7 +23,8 @@ namespace PSModule.UftMobile.SDK.Auth
                 var res = await client.HttpPost(client.ServerUrl.AppendSuffix(LOGIN_ENDPOINT), body: body);
                 if (!res.IsOK)
                 {
-                    await client.Logger.LogInfo($"StatusCode={res.StatusCode}, Error={res.Error}");
+                    await client.Logger.LogDebug($"StatusCode=[{res.StatusCode}]");
+                    await client.Logger.LogInfo($"{res.Error}");
                 }
                 return res.IsOK;
             }

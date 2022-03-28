@@ -29,7 +29,7 @@ namespace PSModule
         private const string NO_DEVICE_FOUND = "No device has been retrieved from the Mobile Center server";
         private const string NO_AVAILABLE_DEVICE_FOUND = "No available device has been retrieved from the Mobile Center server";
         private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Mobile Center server";
-        private const string LOGIN_FAILED = "Login failed.";
+        private const string LOGIN_FAILED = "Login failed";
 
         [Parameter(Position = 0, Mandatory = true)]
         public string ServerlUrl { get; set; }
