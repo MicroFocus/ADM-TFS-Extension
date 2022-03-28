@@ -12,7 +12,7 @@ namespace PSModule.UftMobile.SDK.Entity
 
         public override string ToString()
         {
-            return $@"DeviceId: ""{DeviceId}"", Manufacturer: ""{Manufacturer}"", Model: ""{Model}"", OSType: ""{OSType}"", OSVersion: ""{OSVersion}""";
+            return $@"DeviceID: ""{DeviceId}"", Manufacturer: ""{Manufacturer}"", Model: ""{Model}"", OSType: ""{OSType}"", OSVersion: ""{OSVersion}""";
         }
         public string ToRawString()
         {
