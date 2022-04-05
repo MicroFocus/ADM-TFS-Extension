@@ -1,5 +1,5 @@
 ﻿{
-  "id": "CFBE6793-3BB1-44D5-AC87-7F14A148A6F5",
+  "id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F2",
   "name": "RunFromFileSystemTask",
   "friendlyName": "UFT One File System Run",
   "description": "Run UFT One tests from file system",
@@ -11,8 +11,8 @@
   "author": "Micro Focus",
   "version": {
     "Major": 3,
-    "Minor": 3,
-    "Patch": 6
+    "Minor": 0,
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "demands": "UFT_LAUNCHER",
