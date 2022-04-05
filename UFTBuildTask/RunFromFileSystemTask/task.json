@@ -1,5 +1,5 @@
 ﻿{
-  "id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F2",
+  "id": "CFBE6793-3BB1-44D5-AC87-7F14A148A6F5",
   "name": "RunFromFileSystemTask",
   "friendlyName": "UFT One File System Run",
   "description": "Run UFT One tests from file system",
@@ -11,8 +11,8 @@
   "author": "Micro Focus",
   "version": {
     "Major": 3,
-    "Minor": 0,
-    "Patch": 1
+    "Minor": 3,
+    "Patch": 6
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "demands": "UFT_LAUNCHER",
@@ -20,6 +20,11 @@
     {
       "name": "parallelRunner",
       "displayName": "Parallel Runner",
+      "isExpanded": false
+    },
+    {
+      "name": "mobileCenter",
+      "displayName": "Mobile Center",
       "isExpanded": false
     }
   ],
@@ -204,6 +209,33 @@
       "defaultValue": "$(System.DefinitionName)",
       "visibleRule": "artifactType = onlyReport || artifactType = bothReportArchive",
       "helpMarkDown": "Choose a name for the UFT One report file"
+    },
+    {
+      "name": "mcServerUrl",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Server",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The address of your Mobile Center server, in the format http[s]://(MC server name):(port)"
+    },
+    {
+      "name": "mcUsername",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Username",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The username that will access this Mobile Center server during the build step run"
+    },
+    {
+      "name": "mcPassword",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Password",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
     }
   ],
 

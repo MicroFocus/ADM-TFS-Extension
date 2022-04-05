@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 using PSModule.Models;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
+using PSModule.UftMobile.SDK.UI;
 
 namespace PSModule
 {
@@ -47,6 +48,7 @@ namespace PSModule
         protected bool _enableFailedTestsReport;
         protected bool _isParallelRunnerMode;
         protected IList<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 and passed to InvokeFSTaskCmdlet
+        protected MobileConfig _mobileConfig;
 
         protected AbstractLauncherTaskCmdlet() { }
 

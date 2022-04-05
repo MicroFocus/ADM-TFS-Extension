@@ -234,14 +234,11 @@ namespace PSModule
             SetParamValue("PerScenarioTimeOut", paramToSet);
         }
 
-        public void setServerUrl(String serverUrl)
+        public void SetMobileConfig(MobileConfig mobileConfig)
         {
-            SetParamValue("MobileHostAddress", serverUrl);
-        }
-
-        public void setUserName(String username)
-        {
-            SetParamValue("MobileUserName", username);
+            SetParamValue("MobileHostAddress", mobileConfig.ServerUrl);
+            SetParamValue("MobileUserName", mobileConfig.Username);
+            SetParamValue("MobilePassword", EncryptParameter(mobileConfig.Password));
         }
 
         public void setProxyHost(String proxyHost)

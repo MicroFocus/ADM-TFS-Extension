@@ -10,7 +10,7 @@
     <RootNamespace>PSModule</RootNamespace>
     <AssemblyName>PSModule</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -158,6 +158,7 @@
     <Compile Include="UftMobile\SDK\Interface\IClient.cs" />
     <Compile Include="UftMobile\SDK\Interface\ILogger.cs" />
     <Compile Include="UftMobile\SDK\Response\Response.cs" />
+    <Compile Include="UftMobile\SDK\UI\MobileConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ParallelRunnerConfig.cs" />
     <Compile Include="UftMobile\SDK\Util\ConsoleLogger.cs" />
     <Compile Include="UftMobile\SDK\Util\UftMobileException.cs" />

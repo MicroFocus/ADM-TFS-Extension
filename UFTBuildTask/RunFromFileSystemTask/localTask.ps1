@@ -25,6 +25,11 @@ $mcDevices = Get-VstsInput -Name 'mcDevices'
 [bool]$useIExplorer = Get-VstsInput -Name 'iExplorer' -AsBool
 [bool]$useIExplorer64 = Get-VstsInput -Name 'iExplorer64' -AsBool
 [bool]$useSafari = Get-VstsInput -Name 'safari' -AsBool
+
+$mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
+$mcUsername = Get-VstsInput -Name 'mcUsername'
+$mcPassword = Get-VstsInput -Name 'mcPassword'
+
 $browsers = [List[string]]::new()
 if ($useChrome) {
 	$browsers.Add("chrome")
@@ -57,8 +62,14 @@ if ($useSafari) {
 if ($useParallelRunner) {
 	if ($envType -eq "") {
 		Throw "Environment type not selected."
-	} elseif ($envType -eq "mobile" -and [string]::IsNullOrWhiteSpace($mcDevices)) {
-		Throw "The Devices field is required."
+	} elseif ($envType -eq "mobile") {
+		if ([string]::IsNullOrWhiteSpace($mcDevices)) {
+			Throw "The Devices field is required."
+		} elseif ([string]::IsNullOrWhiteSpace($mcServerUrl)) {
+			Throw "Mobile Center Server is empty."
+		} elseif ([string]::IsNullOrWhiteSpace($mcUsername)) {
+			Throw "Mobile Center Username is empty."
+		}
 	} elseif ($envType -eq "web" -and $browsers.Count -eq 0) {
 		Throw "At least one browser is required to be checked."
 	}
@@ -68,6 +79,7 @@ $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
 
 $parallelRunnerConfig = New-Object -TypeName ParallelRunnerConfig $envType, $mcDevices, $browsers
+$mobileConfig = New-Object -TypeName MobileConfig $mcServerUrl, $mcUsername, $mcPassword
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
@@ -131,7 +143,6 @@ function UploadArchive() {
 $uftReport = "$resDir\UFT Report"
 $runSummary = "$resDir\Run Summary"
 $retcodefile = "$resDir\TestRunReturnCode.txt"
-$results = "$resDir\Results*SSS.xml"
 $failedTests = "$resDir\Failed Tests"
 
 $rptFolders = [List[string]]::new()
@@ -226,7 +237,7 @@ if ($rerunIdx) {
 
 #---------------------------------------------------------------------------------------------------
 #Run the tests
-Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders -Verbose 
+Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders $mobileConfig -Verbose 
 
 $ind = 1
 foreach ($item in $rptFolders) {

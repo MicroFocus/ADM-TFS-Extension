@@ -8,3 +8,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Minor Code Smell", "S2292:Trivial properties should be auto-implemented", Justification = "<Pending>", Scope = "member", Target = "~P:PSModule.InvokeFSTaskCmdlet.EnableFailedTestsReport")]
 [assembly: SuppressMessage("Minor Code Smell", "S2292:Trivial properties should be auto-implemented", Justification = "<Pending>", Scope = "member", Target = "~P:PSModule.InvokeFSTaskCmdlet.UseParallelRunner")]
 [assembly: SuppressMessage("Minor Code Smell", "S2292:Trivial properties should be auto-implemented", Justification = "<Pending>", Scope = "member", Target = "~P:PSModule.InvokeFSTaskCmdlet.ReportPaths")]
+[assembly: SuppressMessage("Minor Code Smell", "S2292:Trivial properties should be auto-implemented", Justification = "<Pending>", Scope = "member", Target = "~P:PSModule.InvokeFSTaskCmdlet.MobileConfig")]

@@ -32,7 +32,7 @@ namespace PSModule
         private const string LOGIN_FAILED = "Login failed";
 
         [Parameter(Position = 0, Mandatory = true)]
-        public string ServerlUrl { get; set; }
+        public string ServerUrl { get; set; }
 
         [Parameter(Position = 1, Mandatory = true)]
         public string Username { get; set; }
@@ -62,7 +62,7 @@ namespace PSModule
                 IAuthenticator auth = new BasicAuthenticator();
                 Credentials cred = new Credentials(Username, Password);
                 bool isDebug = (ActionPreference)GetVariableValue(DEBUG_PREFERENCE) != ActionPreference.SilentlyContinue;
-                IClient client = new RestClient(ServerlUrl, cred, new ConsoleLogger(isDebug));
+                IClient client = new RestClient(ServerUrl, cred, new ConsoleLogger(isDebug));
                 bool ok = await auth.Login(client);
                 if (ok)
                 {
