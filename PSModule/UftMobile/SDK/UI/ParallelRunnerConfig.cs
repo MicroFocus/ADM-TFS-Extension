@@ -2,6 +2,7 @@
 using PSModule.UftMobile.SDK.Entity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PSModule.UftMobile.SDK.UI
 {
@@ -19,15 +20,9 @@ namespace PSModule.UftMobile.SDK.UI
 
         public ParallelRunnerConfig(string envType, string strDevices, IList<string> browsers)
         {
-            _envType = (EnvType)Enum.Parse(typeof(EnvType), envType, true);
+            Enum.TryParse(envType, true, out _envType);
             _browsers = browsers;
-            string[] devices = strDevices.Split(sep);
-            foreach (string d in devices)
-            {
-                Device device = JsonConvert.DeserializeObject<Device>($"{{{d}}}");
-                _devices.Add(device);
-            }
-
+            strDevices?.Split(sep)?.ForEach(d => _devices.Add(JsonConvert.DeserializeObject<Device>($"{{{d}}}")));
         }
     }
 }
