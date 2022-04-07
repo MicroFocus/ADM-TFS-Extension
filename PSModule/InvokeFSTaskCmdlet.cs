@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using PSModule.UftMobile.SDK.UI;
-using System;
 using PSModule.UftMobile.SDK.Interface;
 using PSModule.UftMobile.SDK.Auth;
 using PSModule.UftMobile.SDK.Util;
@@ -20,6 +19,7 @@ namespace PSModule
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
+        private static readonly char[] _comparisonChars = new char[] {'<', '>'};
 
         [Parameter(Position = 0, Mandatory = true)]
         public string TestsPath { get; set; }
@@ -154,7 +154,10 @@ namespace PSModule
                     //TOOO
                 }
             }
-            builder.SetMobileConfig(_mobileConfig);
+            if (_mobileConfig != null)
+            {
+                builder.SetMobileConfig(_mobileConfig);
+            }
 
             return builder.GetProperties();
         }
@@ -166,8 +169,9 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
-            if (_isParallelRunnerMode)
+            if (_isParallelRunnerMode && ParallelRunnerConfig.EnvType == EnvType.Mobile && ParallelRunnerConfig.Devices.Any() && MobileConfig != null)
             {
+                //TODO check if devices have properties
                 ValidateDevices().Wait();
             }
             base.ProcessRecord();
@@ -176,24 +180,29 @@ namespace PSModule
         private async Task ValidateDevices()
         {
             WriteDebug("Validating the devices....");
-            var deviceIds = ParallelRunnerConfig.Devices.Select(d => d.DeviceId).Where(id => !string.IsNullOrWhiteSpace(id));
-            if (deviceIds.Any())
+            GetGroupedDevices(out IList<Device> idDevices, out IList<Device> noIdDevices);
+            if (!idDevices.Any() && noIdDevices.Any(d => d.Manufacturer.IsNullOrWhiteSpace() && d.Model.IsNullOrWhiteSpace() && d.OSType.IsNullOrWhiteSpace() && d.OSVersion.IsNullOrWhiteSpace()))
             {
-                var allDevices = await GetAllDevices();
-                GetAllDeviceIds(allDevices, out IList<string> onlineDeviceIds, out IList<string> offlineDeviceIds);
-                if (offlineDeviceIds.Any())
+                ThrowTerminatingError(new(new("One or more provided devices are empty"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+            }
+
+            var allDevices = await GetAllDevices();
+            GetAllDeviceIds(allDevices, out IList<Device> onlineDevices, out IList<Device> offlineDevices);
+            if (idDevices.Any())
+            {
+                var deviceIds = idDevices.Select(d => d.DeviceId);
+                if (offlineDevices.Any())
                 {
-                    var invalidDeviceIds = deviceIds.Intersect(offlineDeviceIds);
+                    var invalidDeviceIds = deviceIds.Intersect(offlineDevices.Select(d => d.DeviceId));
                     if (invalidDeviceIds.Any())
                     {
                         var ids = invalidDeviceIds.Aggregate((a, b) => $"{a}, {b}");
                         ThrowTerminatingError(new(new($"Disconnected devices are not allowed: {ids}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
                     }
-
                 }
-                if (onlineDeviceIds.Any())
+                if (onlineDevices.Any())
                 {
-                    var invalidDeviceIds = deviceIds.Except(onlineDeviceIds);
+                    var invalidDeviceIds = deviceIds.Except(onlineDevices.Select(d => d.DeviceId));
                     if (invalidDeviceIds.Any())
                     {
                         var ids = invalidDeviceIds.Aggregate((a, b) => $"{a}, {b}");
@@ -205,13 +214,35 @@ namespace PSModule
                     ThrowTerminatingError(new(new($"No available devices found."), nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices)));
                 }
             }
+            if (noIdDevices.Any())
+            {
+                foreach(var device in noIdDevices)
+                {
+                    if (device.OSVersion.StartsWithAny(_comparisonChars))
+                    {
+                        //TODO
+                    }
+                    else if (!device.IsAvailable(onlineDevices.AsQueryable(), out string msg))
+                    {
+                        ThrowTerminatingError(new(new($"No available device matches the criteria: {msg}"), nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices)));
+                    }
+                }
+
+            }
         }
 
-        private void GetAllDeviceIds(IList<Device> allDevices, out IList<string> onlineDeviceIds, out IList<string> offlineDeviceIds)
+        private void GetAllDeviceIds(IList<Device> allDevices, out IList<Device> onlineDevices, out IList<Device> offlineDevices)
         {
             var devices = allDevices.GroupBy(d => d.DeviceStatus).ToList();
-            onlineDeviceIds = devices.FirstOrDefault(g => g.Key == REGISTERED)?.Select(d => d.DeviceId).ToList() ?? new();
-            offlineDeviceIds = devices.FirstOrDefault(g => g.Key == UNREGISTERED)?.Select(d => d.DeviceId).ToList() ?? new();
+            onlineDevices = devices.FirstOrDefault(g => g.Key == REGISTERED)?.ToList() ?? new();
+            offlineDevices = devices.FirstOrDefault(g => g.Key == UNREGISTERED)?.ToList() ?? new();
+        }
+
+        private void GetGroupedDevices(out IList<Device> idDevices, out IList<Device> noIdDevices)
+        {
+            var devices = ParallelRunnerConfig.Devices.GroupBy(d => d.DeviceId.IsNullOrWhiteSpace()).ToList();
+            noIdDevices = devices.FirstOrDefault(g => g.Key).ToList();
+            idDevices = devices.FirstOrDefault(g => !g.Key).ToList();
         }
 
         private async Task<IList<Device>> GetAllDevices()

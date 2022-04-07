@@ -59,6 +59,10 @@ if ($useSafari) {
 	$browsers.Add('safari')
 }
 
+$uftworkdir = $env:UFT_LAUNCHER
+Import-Module $uftworkdir\bin\PSModule.dll
+$parallelRunnerConfig = $null
+$mobileConfig = $null
 if ($useParallelRunner) {
 	if ($envType -eq "") {
 		Throw "Environment type not selected."
@@ -70,16 +74,12 @@ if ($useParallelRunner) {
 		} elseif ([string]::IsNullOrWhiteSpace($mcUsername)) {
 			Throw "Mobile Center Username is empty."
 		}
+		$mobileConfig = New-Object -TypeName MobileConfig $mcServerUrl, $mcUsername, $mcPassword
 	} elseif ($envType -eq "web" -and $browsers.Count -eq 0) {
 		Throw "At least one browser is required to be checked."
 	}
+	$parallelRunnerConfig = New-Object -TypeName ParallelRunnerConfig $envType, $mcDevices, $browsers
 }
-
-$uftworkdir = $env:UFT_LAUNCHER
-Import-Module $uftworkdir\bin\PSModule.dll
-
-$parallelRunnerConfig = New-Object -TypeName ParallelRunnerConfig $envType, $mcDevices, $browsers
-$mobileConfig = New-Object -TypeName MobileConfig $mcServerUrl, $mcUsername, $mcPassword
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {

@@ -22,7 +22,7 @@ namespace PSModule.UftMobile.SDK.UI
         {
             Enum.TryParse(envType, true, out _envType);
             _browsers = browsers;
-            strDevices?.Split(sep)?.ForEach(d => _devices.Add(JsonConvert.DeserializeObject<Device>($"{{{d}}}")));
+            strDevices?.Split(sep, StringSplitOptions.RemoveEmptyEntries)?.ForEach(d => _devices.Add(JsonConvert.DeserializeObject<Device>($"{{{d}}}")));
         }
     }
 }

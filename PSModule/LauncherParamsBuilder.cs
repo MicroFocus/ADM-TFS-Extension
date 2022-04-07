@@ -236,9 +236,9 @@ namespace PSModule
 
         public void SetMobileConfig(MobileConfig mobileConfig)
         {
-            SetParamValue("MobileHostAddress", mobileConfig.ServerUrl);
-            SetParamValue("MobileUserName", mobileConfig.Username);
-            SetParamValue("MobilePassword", EncryptParameter(mobileConfig.Password));
+            SetParamValue("MobileHostAddress", mobileConfig?.ServerUrl);
+            SetParamValue("MobileUserName", mobileConfig?.Username);
+            SetParamValue("MobilePassword", EncryptParameter(mobileConfig?.Password));
         }
 
         public void setProxyHost(String proxyHost)
