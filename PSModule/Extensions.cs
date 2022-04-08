@@ -151,5 +151,9 @@ namespace PSModule
 		{
 			return !string.IsNullOrEmpty(str) && chars.Any(c => c == str[0]);
 		}
+		public static bool StartsWithAny(this string str, params string[] strs)
+		{
+			return !string.IsNullOrEmpty(str) && strs.Any(str.StartsWith);
+		}
 	}
 }

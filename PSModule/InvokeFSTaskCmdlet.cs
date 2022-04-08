@@ -8,6 +8,7 @@ using PSModule.UftMobile.SDK.Util;
 using PSModule.UftMobile.SDK;
 using System.Threading.Tasks;
 using PSModule.UftMobile.SDK.Entity;
+using System;
 
 namespace PSModule
 {
@@ -19,7 +20,6 @@ namespace PSModule
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
-        private static readonly char[] _comparisonChars = new char[] {'<', '>'};
 
         [Parameter(Position = 0, Mandatory = true)]
         public string TestsPath { get; set; }
@@ -144,7 +144,7 @@ namespace PSModule
                         {
                             for (int j = 0; j < devices.Count; j++)
                             {
-                                builder.SetParallelTestEnv(i+1, j+1, devices[j].ToRawString());
+                                builder.SetParallelTestEnv(i + 1, j + 1, devices[j].ToRawString());
                             }
                         }
                     }
@@ -216,39 +216,41 @@ namespace PSModule
             }
             if (noIdDevices.Any())
             {
-                foreach(var device in noIdDevices)
+                foreach (var device in noIdDevices)
                 {
-                    if (device.OSVersion.StartsWithAny(_comparisonChars))
+                    try
                     {
-                        //TODO
+                        if (!device.IsAvailable(onlineDevices.AsQueryable(), out string msg))
+                        {
+                            ThrowTerminatingError(new(new($"No available device matches the criteria: {msg}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                        }
                     }
-                    else if (!device.IsAvailable(onlineDevices.AsQueryable(), out string msg))
+                    catch (Exception ex)
                     {
-                        ThrowTerminatingError(new(new($"No available device matches the criteria: {msg}"), nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices)));
+                        ThrowTerminatingError(new(ex, nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
                     }
                 }
-
             }
         }
 
         private void GetAllDeviceIds(IList<Device> allDevices, out IList<Device> onlineDevices, out IList<Device> offlineDevices)
         {
-            var devices = allDevices.GroupBy(d => d.DeviceStatus).ToList();
+            var devices = allDevices.GroupBy(d => d.DeviceStatus)?.ToList() ?? new();
             onlineDevices = devices.FirstOrDefault(g => g.Key == REGISTERED)?.ToList() ?? new();
             offlineDevices = devices.FirstOrDefault(g => g.Key == UNREGISTERED)?.ToList() ?? new();
         }
 
         private void GetGroupedDevices(out IList<Device> idDevices, out IList<Device> noIdDevices)
         {
-            var devices = ParallelRunnerConfig.Devices.GroupBy(d => d.DeviceId.IsNullOrWhiteSpace()).ToList();
-            noIdDevices = devices.FirstOrDefault(g => g.Key).ToList();
-            idDevices = devices.FirstOrDefault(g => !g.Key).ToList();
+            var devices = ParallelRunnerConfig.Devices.GroupBy(d => d.DeviceId.IsNullOrWhiteSpace())?.ToList() ?? new();
+            noIdDevices = devices.FirstOrDefault(g => g.Key)?.ToList() ?? new();
+            idDevices = devices.FirstOrDefault(g => !g.Key)?.ToList() ?? new();
         }
 
         private async Task<IList<Device>> GetAllDevices()
         {
             IAuthenticator auth = new BasicAuthenticator();
-            Credentials cred = new (_mobileConfig.Username, _mobileConfig.Password);
+            Credentials cred = new(_mobileConfig.Username, _mobileConfig.Password);
             bool isDebug = (ActionPreference)GetVariableValue(DEBUG_PREFERENCE) != ActionPreference.SilentlyContinue;
             IClient client = new RestClient(_mobileConfig.ServerUrl, cred, new ConsoleLogger(isDebug));
             bool ok = await auth.Login(client);
