@@ -222,7 +222,7 @@ namespace PSModule
                     {
                         if (!device.IsAvailable(onlineDevices.AsQueryable(), out string msg))
                         {
-                            ThrowTerminatingError(new(new($"No available device matches the criteria: {msg}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                            ThrowTerminatingError(new(new($"No available device matches the criteria -> {msg}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
                         }
                     }
                     catch (Exception ex)
