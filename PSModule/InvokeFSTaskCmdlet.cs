@@ -180,13 +180,16 @@ namespace PSModule
         {
             WriteDebug("Validating the devices....");
             GetGroupedDevices(out IList<Device> idDevices, out IList<Device> noIdDevices);
+            var devicesWithIdAndOtherProps = idDevices.Where(d => d.HasSecondaryProperties());
+            if (devicesWithIdAndOtherProps.Any())
+            {
+                WriteObject($"DeviceID and other attributes were provided for {devicesWithIdAndOtherProps.Count()} device(s). In this case only the DeviceID will be considered ({devicesWithIdAndOtherProps.Select(d => d.DeviceId).Aggregate((id1, id2) => $"{id1}, {id2}")})");
+            }
 
             var allDevices = await GetAllDevices();
             GetAllDeviceIds(allDevices, out IList<Device> onlineDevices, out IList<Device> offlineDevices);
             if (idDevices.Any())
             {
-                string idsOfdevicesWithIdAndSecondaryProps = idDevices.Where(d => d.HasSecondaryProperties()).Select(d => d.DeviceId).Aggregate((id1, id2) => $"{id1}, {id2}");
-                WriteObject($"There are devices to which DeviceID and other attributes were provided. In this case only the DeviceID will be considered: {idsOfdevicesWithIdAndSecondaryProps}");
                 var deviceIds = idDevices.Select(d => d.DeviceId);
                 if (offlineDevices.Any())
                 {
