@@ -14,6 +14,9 @@ namespace PSModule.UftMobile.SDK.Entity
         private const string Greater = ">";
         private const string GreaterOrEqual = ">=";
 
+        private static readonly string[] _pipelineAttributes = new string[] { nameof(DeviceId), nameof(Model), nameof(Manufacturer), nameof(OSType), nameof(OSVersion)};
+        public static string[] PipelineAttributes => _pipelineAttributes;
+
         public string DeviceId { get; set; }
         public string Model { get; set; }
         public string OSType { get; set; }
@@ -105,6 +108,15 @@ namespace PSModule.UftMobile.SDK.Entity
                 return true;
             }
             return false;
+        }
+
+        public bool HasSecondaryProperties()
+        {
+            return !(Manufacturer.IsNullOrWhiteSpace() && Model.IsNullOrWhiteSpace() && OSVersion.IsNullOrWhiteSpace() && OSType.IsNullOrWhiteSpace());
+        }
+        public bool IsEmpty()
+        {
+            return (DeviceId.IsNullOrWhiteSpace() && Manufacturer.IsNullOrWhiteSpace() && Model.IsNullOrWhiteSpace() && OSVersion.IsNullOrWhiteSpace() && OSType.IsNullOrWhiteSpace());
         }
     }
 }

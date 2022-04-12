@@ -171,7 +171,6 @@ namespace PSModule
         {
             if (_isParallelRunnerMode && ParallelRunnerConfig.EnvType == EnvType.Mobile && ParallelRunnerConfig.Devices.Any() && MobileConfig != null)
             {
-                //TODO check if devices have properties
                 ValidateDevices().Wait();
             }
             base.ProcessRecord();
@@ -181,15 +180,13 @@ namespace PSModule
         {
             WriteDebug("Validating the devices....");
             GetGroupedDevices(out IList<Device> idDevices, out IList<Device> noIdDevices);
-            if (!idDevices.Any() && noIdDevices.Any(d => d.Manufacturer.IsNullOrWhiteSpace() && d.Model.IsNullOrWhiteSpace() && d.OSType.IsNullOrWhiteSpace() && d.OSVersion.IsNullOrWhiteSpace()))
-            {
-                ThrowTerminatingError(new(new("One or more provided devices are empty"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
-            }
 
             var allDevices = await GetAllDevices();
             GetAllDeviceIds(allDevices, out IList<Device> onlineDevices, out IList<Device> offlineDevices);
             if (idDevices.Any())
             {
+                string idsOfdevicesWithIdAndSecondaryProps = idDevices.Where(d => d.HasSecondaryProperties()).Select(d => d.DeviceId).Aggregate((id1, id2) => $"{id1}, {id2}");
+                WriteObject($"There are devices to which DeviceID and other attributes were provided. In this case only the DeviceID will be considered: {idsOfdevicesWithIdAndSecondaryProps}");
                 var deviceIds = idDevices.Select(d => d.DeviceId);
                 if (offlineDevices.Any())
                 {
