@@ -47,7 +47,7 @@ namespace PSModule
 
         protected bool _enableFailedTestsReport;
         protected bool _isParallelRunnerMode;
-        protected IList<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 and passed to InvokeFSTaskCmdlet
+        protected List<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 and passed to InvokeFSTaskCmdlet
         protected MobileConfig _mobileConfig;
 
         protected AbstractLauncherTaskCmdlet() { }
@@ -155,14 +155,14 @@ namespace PSModule
                                         {
                                             foreach (var path in rptPaths)
                                             {
-                                                var dir = new DirectoryInfo(path).GetFiles(RUN_RESULTS_XML, SearchOption.AllDirectories).OrderByDescending(f => f.CreationTime).Select(f => f.Directory.FullName).FirstOrDefault();
-                                                if (dir == null)
+                                                var dirs = new DirectoryInfo(path).GetFiles(RUN_RESULTS_XML, SearchOption.AllDirectories).Select(f => f.Directory.FullName).OrderBy(d => d);
+                                                if (dirs.Any())
                                                 {
-                                                    LogError(new FileNotFoundException($"The report file '{RUN_RESULTS_XML}' is not found in '{path}'."), ErrorCategory.ResourceUnavailable);
+                                                    _rptPaths.AddRange(dirs);
                                                 }
                                                 else
                                                 {
-                                                    _rptPaths.Add(dir);
+                                                    LogError(new FileNotFoundException($"The report file '{RUN_RESULTS_XML}' is not found in '{path}'."), ErrorCategory.ResourceUnavailable);
                                                 }
                                             }
                                         }

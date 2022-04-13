@@ -78,7 +78,7 @@ namespace PSModule
         public ParallelRunnerConfig ParallelRunnerConfig { get; set; }
 
         [Parameter(Position = 12)]
-        public IList<string> ReportPaths
+        public List<string> ReportPaths
         {
             get
             {
@@ -142,16 +142,26 @@ namespace PSModule
                     {
                         for (int i = 0; i < tests.Length; i++)
                         {
-                            for (int j = 0; j < devices.Count; j++)
+                            foreach (var (d, j) in devices.WithIndex())
                             {
-                                builder.SetParallelTestEnv(i + 1, j + 1, devices[j].ToRawString());
+                                builder.SetParallelTestEnv(i + 1, j + 1, d.ToRawString());
                             }
                         }
                     }
                 }
                 else if (ParallelRunnerConfig.EnvType == EnvType.Web)
                 {
-                    //TOOO
+                    var browsers = ParallelRunnerConfig.Browsers;
+                    if (browsers.Any())
+                    {
+                        for (int i = 0; i < tests.Length; i++)
+                        {
+                            foreach (var (b, j) in browsers.WithIndex())
+                            {
+                                builder.SetParallelTestEnv(i + 1, j + 1, $"browser: {b}");
+                            }
+                        }
+                    }
                 }
             }
             if (_mobileConfig != null)

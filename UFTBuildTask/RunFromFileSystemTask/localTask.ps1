@@ -76,7 +76,7 @@ if ($useParallelRunner) {
 		}
 		$mobileConfig = New-Object -TypeName MobileConfig $mcServerUrl, $mcUsername, $mcPassword
 	} elseif ($envType -eq "web" -and $browsers.Count -eq 0) {
-		Throw "At least one browser is required to be checked."
+		Throw "At least one browser is required to be selected."
 	}
 	try {
 		$parallelRunnerConfig = New-Object -TypeName ParallelRunnerConfig $envType, $mcDevices, $browsers
