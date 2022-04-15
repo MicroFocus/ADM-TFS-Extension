@@ -2,6 +2,7 @@
 # localTask.ps1
 #
 using namespace PSModule.UftMobile.SDK.UI
+using namespace PSModule.UftMobile.SDK.Entity
 using namespace System.Collections.Generic
 
 param()
@@ -30,40 +31,13 @@ $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
 
-$browsers = [List[string]]::new()
-if ($useChrome) {
-	$browsers.Add("chrome")
-}
-if ($useChromeH) {
-	$browsers.Add("chromeH")
-}
-if ($useChromium) {
-	$browsers.Add("chromium")
-}
-if ($useEdge) {
-	$browsers.Add("edge")
-}
-if ($useFirefox) {
-	$browsers.Add("firefox")
-}
-if ($useFirefox64) {
-	$browsers.Add("firefox64")
-}
-if ($useIExplorer) {
-	$browsers.Add('iexplorer')
-}
-if ($useIExplorer64) {
-	$browsers.Add('iexplorer64')
-}
-if ($useSafari) {
-	$browsers.Add('safari')
-}
-
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
 $parallelRunnerConfig = $null
 $mobileConfig = $null
+
 if ($useParallelRunner) {
+	[List[Device]]$devices = $null
 	if ($envType -eq "") {
 		Throw "Environment type not selected."
 	} elseif ($envType -eq "mobile") {
@@ -75,18 +49,47 @@ if ($useParallelRunner) {
 			Throw "Mobile Center Username is empty."
 		}
 		$mobileConfig = New-Object -TypeName MobileConfig $mcServerUrl, $mcUsername, $mcPassword
-	} elseif ($envType -eq "web" -and $browsers.Count -eq 0) {
-		Throw "At least one browser is required to be selected."
-	}
-	try {
-		$parallelRunnerConfig = New-Object -TypeName ParallelRunnerConfig $envType, $mcDevices, $browsers
-	} catch {
-		if ($_.Exception.InnerException) {
-			throw $_.Exception.InnerException
-		} else {
-			throw
+		[List[string]]$invalidDeviceLines = $null
+		[ParallelRunnerConfig]::ParseDeviceLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
+		if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {
+			foreach ($line in $invalidDeviceLines) {
+				Write-Warning "Invalid device line -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
+			}
+		}
+	} elseif ($envType -eq "web") {
+		$browsers = [List[string]]::new()
+		if ($useChrome) {
+			$browsers.Add("chrome")
+		}
+		if ($useChromeH) {
+			$browsers.Add("chromeH")
+		}
+		if ($useChromium) {
+			$browsers.Add("chromium")
+		}
+		if ($useEdge) {
+			$browsers.Add("edge")
+		}
+		if ($useFirefox) {
+			$browsers.Add("firefox")
+		}
+		if ($useFirefox64) {
+			$browsers.Add("firefox64")
+		}
+		if ($useIExplorer) {
+			$browsers.Add('iexplorer')
+		}
+		if ($useIExplorer64) {
+			$browsers.Add('iexplorer64')
+		}
+		if ($useSafari) {
+			$browsers.Add('safari')
+		}
+		if ($browsers.Count -eq 0) {
+			throw "At least one browser is required to be selected."
 		}
 	}
+	$parallelRunnerConfig = New-Object -TypeName ParallelRunnerConfig $envType, $devices, $browsers
 }
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"

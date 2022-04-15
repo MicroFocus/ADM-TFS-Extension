@@ -17,6 +17,7 @@ namespace PSModule
     {
         private const string DEBUG_PREFERENCE = "DebugPreference";
         private const string LOGIN_FAILED = "Login failed";
+        private const string MISSING_OR_INVALID_DEVICES = "Missing or invalid devices";
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
@@ -181,14 +182,23 @@ namespace PSModule
         {
             if (_isParallelRunnerMode && ParallelRunnerConfig.EnvType == EnvType.Mobile && ParallelRunnerConfig.Devices.Any() && MobileConfig != null)
             {
-                ValidateDevices().Wait();
+                List<string> warns = ValidateDevices().Result;
+                if (warns.Any())
+                {
+                    warns.ForEach(w => WriteWarning(w));
+                }
+                if (ParallelRunnerConfig.Devices.IsNullOrEmpty())
+                {
+                    ThrowTerminatingError(new(new(MISSING_OR_INVALID_DEVICES), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                }
             }
             base.ProcessRecord();
         }
 
-        private async Task ValidateDevices()
+        private async Task<List<string>> ValidateDevices()
         {
             WriteDebug("Validating the devices....");
+            List<string> warnings = new();
             GetGroupedDevices(out IList<Device> idDevices, out IList<Device> noIdDevices);
             var devicesWithIdAndOtherProps = idDevices.Where(d => d.HasSecondaryProperties());
             if (devicesWithIdAndOtherProps.Any())
@@ -200,14 +210,18 @@ namespace PSModule
             GetAllDeviceIds(allDevices, out IList<Device> onlineDevices, out IList<Device> offlineDevices);
             if (idDevices.Any())
             {
-                var deviceIds = idDevices.Select(d => d.DeviceId);
+                var deviceIds = idDevices.Select(d => d.DeviceId).ToList();
                 if (offlineDevices.Any())
                 {
                     var invalidDeviceIds = deviceIds.Intersect(offlineDevices.Select(d => d.DeviceId));
                     if (invalidDeviceIds.Any())
                     {
-                        var ids = invalidDeviceIds.Aggregate((a, b) => $"{a}, {b}");
-                        ThrowTerminatingError(new(new($"Disconnected devices are not allowed: {ids}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                        foreach(var id in invalidDeviceIds)
+                        {
+                            ParallelRunnerConfig.Devices.RemoveAll(d => d.DeviceId == id);
+                            deviceIds.Remove(id);
+                            warnings.Add($@"The device with ID ""{id}"" is disconnected, therefore no test run will start for this device");
+                        }
                     }
                 }
                 if (onlineDevices.Any())
@@ -215,8 +229,11 @@ namespace PSModule
                     var invalidDeviceIds = deviceIds.Except(onlineDevices.Select(d => d.DeviceId));
                     if (invalidDeviceIds.Any())
                     {
-                        var ids = invalidDeviceIds.Aggregate((a, b) => $"{a}, {b}");
-                        ThrowTerminatingError(new(new($"Invalid device IDs: {ids}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                        foreach (var id in invalidDeviceIds)
+                        {
+                            ParallelRunnerConfig.Devices.RemoveAll(d => d.DeviceId == id);
+                            warnings.Add(@$"No available device found by ID ""{id}"", therefore no test run will start for this device");
+                        }
                     }
                 }
                 else
@@ -228,19 +245,14 @@ namespace PSModule
             {
                 foreach (var device in noIdDevices)
                 {
-                    try
+                    if (!device.IsAvailable(onlineDevices.AsQueryable(), out string msg))
                     {
-                        if (!device.IsAvailable(onlineDevices.AsQueryable(), out string msg))
-                        {
-                            ThrowTerminatingError(new(new($"No available device matches the criteria -> {msg}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ThrowTerminatingError(new(ex, nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                        ParallelRunnerConfig.Devices.Remove(device);
+                        warnings.Add($"No available device matches the criteria -> {msg}, therefore no test run will start for this device");
                     }
                 }
             }
+            return warnings;
         }
 
         private void GetAllDeviceIds(IList<Device> allDevices, out IList<Device> onlineDevices, out IList<Device> offlineDevices)
