@@ -56,6 +56,9 @@ if ($useParallelRunner) {
 				Write-Warning "Invalid device line -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
 			}
 		}
+		if ($devices.Count -eq 0) {
+			throw "Missing or invalid devices."
+		}
 	} elseif ($envType -eq "web") {
 		$browsers = [List[string]]::new()
 		if ($useChrome) {
