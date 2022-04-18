@@ -1,5 +1,5 @@
 ﻿using PSModule.AlmLabMgmtClient.SDK.Interface;
-using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
 using System;
 using System.Net;
 using System.Text;

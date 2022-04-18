@@ -1,8 +1,6 @@
 ﻿using PSModule.UftMobile.SDK.Interface;
-using PSModule.UftMobile.SDK.Util;
+using PSModule.Common;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace PSModule.UftMobile.SDK.Auth

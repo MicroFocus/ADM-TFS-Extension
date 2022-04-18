@@ -1,5 +1,6 @@
 using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -13,7 +14,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Request
         protected PostRequestBase(IClient client) : base(client) { }
 
         protected override WebHeaderCollection Headers =>
-            new WebHeaderCollection
+            new()
             {
                 { HttpRequestHeader.ContentType, C.APP_XML },
                 { HttpRequestHeader.Accept, C.APP_XML },

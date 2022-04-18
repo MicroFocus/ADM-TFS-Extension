@@ -1,4 +1,5 @@
-﻿using PSModule.UftMobile.SDK.Interface;
+﻿using PSModule.Common;
+using PSModule.UftMobile.SDK.Interface;
 using PSModule.UftMobile.SDK.Util;
 using System;
 using System.Collections.Generic;

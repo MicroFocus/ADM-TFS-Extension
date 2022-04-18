@@ -1,21 +1,18 @@
 ﻿
 namespace PSModule.UftMobile.SDK.UI
 {
-    public class MobileConfig
+    public class MobileConfig: ServerConfig
     {
-        private readonly string _serverUrl;
-        private readonly string _username;
-        private readonly string _password;
+        private readonly bool _useProxy;
+        private readonly ProxyConfig _proxyConfig;
 
-        public string ServerUrl => _serverUrl;
-        public string Username => _username;
-        public string Password => _password;
+        public bool UseProxy => _useProxy;
+        public ProxyConfig ProxyConfig => _proxyConfig;
 
-        public MobileConfig(string serverUrl, string username, string password)
+        public MobileConfig(string serverUrl, string username, string password, bool useProxy, ProxyConfig proxyConfig): base(serverUrl, username, password)
         {
-            _serverUrl = serverUrl;
-            _username = username;
-            _password = password;
+            _useProxy = useProxy;
+            _proxyConfig = proxyConfig;
         }
     }
 }

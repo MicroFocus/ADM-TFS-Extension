@@ -1,5 +1,5 @@
 ﻿using PSModule.UftMobile.SDK.Interface;
-using PSModule.UftMobile.SDK.Util;
+using PSModule.Common;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

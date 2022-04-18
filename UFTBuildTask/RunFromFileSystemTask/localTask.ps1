@@ -30,11 +30,17 @@ $mcDevices = Get-VstsInput -Name 'mcDevices'
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
+[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
+$mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
+[bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
+$mcProxyUsername = Get-VstsInput -Name 'mcProxyUsername'
+$mcProxyPassword = Get-VstsInput -Name 'mcProxyPassword'
 
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
 $parallelRunnerConfig = $null
 $mobileConfig = $null
+$proxyConfig = $null
 
 if ($useParallelRunner) {
 	[List[Device]]$devices = $null
@@ -48,7 +54,10 @@ if ($useParallelRunner) {
 		} elseif ([string]::IsNullOrWhiteSpace($mcUsername)) {
 			Throw "Mobile Center Username is empty."
 		}
-		$mobileConfig = New-Object -TypeName MobileConfig $mcServerUrl, $mcUsername, $mcPassword
+		if ($useMcProxy) {
+			$proxyConfig = [ProxyConfig]::new($mcProxyUrl, $useMcProxyCredentials, $mcProxyUsername, $mcProxyPassword)
+		}
+		$mobileConfig = [MobileConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $useMcProxy, $proxyConfig)
 		[List[string]]$invalidDeviceLines = $null
 		[ParallelRunnerConfig]::ParseDeviceLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
 		if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {
@@ -92,7 +101,7 @@ if ($useParallelRunner) {
 			throw "At least one browser is required to be selected."
 		}
 	}
-	$parallelRunnerConfig = New-Object -TypeName ParallelRunnerConfig $envType, $devices, $browsers
+	$parallelRunnerConfig = [ParallelRunnerConfig]::new($envType, $devices, $browsers)
 }
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"

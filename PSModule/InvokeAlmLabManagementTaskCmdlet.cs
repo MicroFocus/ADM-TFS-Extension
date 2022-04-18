@@ -5,10 +5,10 @@ using System.Linq;
 using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using PSModule.AlmLabMgmtClient.Result.Model;
 using PSModule.AlmLabMgmtClient.SDK;
 using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
 
 namespace PSModule
 {

@@ -236,6 +236,55 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
+    },
+    {
+      "name": "useMcProxy",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Use proxy settings",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": null
+    },
+    {
+      "name": "mcProxyUrl",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Proxy Sever",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "useMcProxy = true",
+      "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
+    },
+    {
+      "name": "useMcProxyCredentials",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Use proxy credentials",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": null,
+      "visibleRule": "useMcProxy = true"
+    },
+    {
+      "name": "mcProxyUsername",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Proxy Username",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
+      "helpMarkDown": "The username that will access this Proxy server during the build step run"
+    },
+    {
+      "name": "mcProxyPassword",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Proxy Password",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
+      "helpMarkDown": "The password for the user that will access this Proxy server during the build step run"
     }
   ],
 

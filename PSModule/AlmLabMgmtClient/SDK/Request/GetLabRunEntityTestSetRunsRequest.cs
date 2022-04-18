@@ -1,9 +1,8 @@
 using PSModule.AlmLabMgmtClient.SDK.Interface;
-using PSModule.AlmLabMgmtClient.SDK.Request;
-using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
 using System.Net;
 
-namespace AlmLabMgmtClient.SDK.Request
+namespace PSModule.AlmLabMgmtClient.SDK.Request
 {
     using C = Constants;
     public class GetLabRunEntityTestSetRunsRequest : GetRequest
@@ -19,7 +18,7 @@ namespace AlmLabMgmtClient.SDK.Request
 
         // It's pretty weird that in 1260 p1 the xml header should be provided. Otherwise the server would generate wrong query sql.
         protected override WebHeaderCollection Headers =>
-            new WebHeaderCollection
+            new()
             {
                 { HttpRequestHeader.ContentType, C.APP_XML },
                 { HttpRequestHeader.Accept, C.APP_XML }

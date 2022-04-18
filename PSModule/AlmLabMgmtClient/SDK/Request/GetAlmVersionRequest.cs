@@ -1,5 +1,5 @@
 using PSModule.AlmLabMgmtClient.SDK.Interface;
-using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
 using System.Net;
 
 namespace PSModule.AlmLabMgmtClient.SDK.Request
@@ -15,7 +15,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Request
         protected override string Url => _client.ServerUrl.AppendSuffix(Suffix);
 
         protected override WebHeaderCollection Headers => 
-            new WebHeaderCollection
+            new()
             {
                 { HttpRequestHeader.ContentType, C.APP_XML },
                 { HttpRequestHeader.Accept, C.APP_XML }

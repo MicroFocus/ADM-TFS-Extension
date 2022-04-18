@@ -1,7 +1,7 @@
 ﻿using PSModule.UftMobile.SDK.UI;
+using PSModule.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -22,13 +22,12 @@ namespace PSModule
 
  */
 
+    using C = Constants;
     public class LauncherParamsBuilder
     {
         private const string secretkey = "EncriptionPass4Java";
         private readonly List<string> requiredParameters = new List<string> { "almRunHost", "almUserName", "almPassword" };
         private readonly Dictionary<string, string> properties = new Dictionary<string, string>();
-        private const string YES = "yes";
-        private const string NO = "no";
 
         public Dictionary<string, string> GetProperties()
         {
@@ -52,7 +51,7 @@ namespace PSModule
 
         public void SetEnableFailedTestsReport(bool enableJunitRpt)
         {
-            SetParamValue("enableFailedTestsReport", enableJunitRpt ? YES : NO);
+            SetParamValue("enableFailedTestsReport", enableJunitRpt ? C.YES : C.NO);
         }
 
         public void SetParallelTestEnv(int testIdx, int envIdx, string device)
@@ -195,35 +194,6 @@ namespace PSModule
             SetParamValue("Test" + index, test);
         }
 
-        public void SetDeploymentAction(string deploymentAction)
-        {
-            SetParamValue("DeploymentAction", deploymentAction);
-        }
-        
-        public void SetDeployedEnvironmentName(string deploymentEnvironmentName)
-        {
-            SetParamValue("DeploymentEnvironmentName", deploymentEnvironmentName);
-        }
-
-        public void SetDeprovisioningAction(string deprovisioningAction)
-        {
-            SetParamValue("DeprovisioningAction", deprovisioningAction);
-        }
-
-        public void SetFileSystemPassword(string oriPass)
-        {
-            string encPass;
-            try
-            {
-                encPass = EncryptParameter(oriPass);
-                SetParamValue("MobilePassword", encPass);
-            }
-            catch
-            {
-
-            }
-        }
-
         public void SetPerScenarioTimeOut(string perScenarioTimeOut)
         {
             string paramToSet = "-1";
@@ -236,19 +206,22 @@ namespace PSModule
 
         public void SetMobileConfig(MobileConfig mobileConfig)
         {
-            SetParamValue("MobileHostAddress", mobileConfig?.ServerUrl);
-            SetParamValue("MobileUserName", mobileConfig?.Username);
-            SetParamValue("MobilePassword", EncryptParameter(mobileConfig?.Password));
-        }
-
-        public void setProxyHost(String proxyHost)
-        {
-            SetParamValue("proxyHost", proxyHost);
-        }
-
-        public void setProxyPort(String proxyPort)
-        {
-            SetParamValue("proxyPort", proxyPort);
+            SetParamValue("MobileHostAddress", mobileConfig.ServerUrl);
+            SetParamValue("MobileUserName", mobileConfig.Username);
+            SetParamValue("MobilePassword", EncryptParameter(mobileConfig.Password));
+            if (mobileConfig.UseProxy)
+            {
+                var proxy = mobileConfig.ProxyConfig;
+                SetParamValue("MobileUseProxy", C.ONE);
+                SetParamValue("MobileProxyType", C.TWO);
+                SetParamValue("MobileProxySetting_Address", proxy.ServerUrl);
+                if (proxy.UseCredentials)
+                {
+                    SetParamValue("MobileProxySetting_Authentication", C.ONE);
+                    SetParamValue("MobileProxySetting_UserName", proxy.Username);
+                    SetParamValue("MobileProxySetting_Password", EncryptParameter(proxy.Password));
+                }
+            }
         }
 
         #region mobile
@@ -262,44 +235,6 @@ namespace PSModule
             SetParamValue("MobileUseSSL", type.ToString());
         }
 
-        public void setMobileUseProxy(int proxy)
-        {
-            SetParamValue("MobileUseProxy", proxy.ToString());
-        }
-
-        public void setMobileProxyType(int type)
-        {
-            SetParamValue("MobileProxyType", type.ToString());
-        }
-
-        public void setMobileProxySetting_Address(String proxyAddress)
-        {
-            SetParamValue("MobileProxySetting_Address", proxyAddress);
-        }
-
-        public void SetMobileProxySetting_Authentication(int authentication)
-        {
-            SetParamValue("MobileProxySetting_Authentication", authentication.ToString());
-        }
-
-        public void SetMobileProxySetting_UserName(string proxyUserName)
-        {
-            SetParamValue("MobileProxySetting_UserName", proxyUserName);
-        }
-
-        public void SetMobileProxySetting_Password(string proxyPassword)
-        {
-            string proxyPass;
-            try
-            {
-                proxyPass = EncryptParameter(proxyPassword);
-                SetParamValue("MobileProxySetting_Password", proxyPass);
-            }
-            catch
-            {
-
-            }
-        }
         #endregion
 
         private void SetParamValue(string paramName, string paramValue)

@@ -1,6 +1,7 @@
 using PSModule.AlmLabMgmtClient.SDK.Handler;
 using PSModule.AlmLabMgmtClient.SDK.Interface;
 using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
 using System.Management.Automation;
 
 namespace PSModule.AlmLabMgmtClient.SDK.Factory

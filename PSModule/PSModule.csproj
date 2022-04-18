@@ -119,20 +119,20 @@
     <Compile Include="AlmLabMgmtClient\SDK\Util\AlmVersion.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\Args.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ConsoleLogger.cs" />
-    <Compile Include="AlmLabMgmtClient\SDK\Util\Constants.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\Credentials.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\JUnitParser.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ResourceAccessLevel.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\StringValue.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\Xml.cs" />
     <Compile Include="AsyncCmdlet.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Helper.cs" />
-    <Compile Include="Enums.cs" />
+    <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\GlobalSuppressions.cs" />
+    <Compile Include="Common\Helper.cs" />
+    <Compile Include="Common\Enums.cs" />
     <Compile Include="InvokeAlmLabManagementTaskCmdlet.cs" />
     <Compile Include="InvokeGetMobileDevicesTaskCmdlet.cs" />
-    <Compile Include="InvokeRunFromALMTaskCmdlet.cs" />
+    <Compile Include="InvokeRunFromAlmTaskCmdlet.cs" />
     <Compile Include="Models\MobileSettings.cs" />
     <Compile Include="InvokeFSTaskCmdlet.cs" />
     <Compile Include="LauncherParamsBuilder.cs" />
@@ -160,9 +160,10 @@
     <Compile Include="UftMobile\SDK\Response\Response.cs" />
     <Compile Include="UftMobile\SDK\UI\MobileConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ParallelRunnerConfig.cs" />
+    <Compile Include="UftMobile\SDK\UI\ProxyConfig.cs" />
+    <Compile Include="UftMobile\SDK\UI\ServerConfig.cs" />
     <Compile Include="UftMobile\SDK\Util\ConsoleLogger.cs" />
     <Compile Include="UftMobile\SDK\Util\UftMobileException.cs" />
-    <Compile Include="UftMobile\SDK\Util\Constants.cs" />
     <Compile Include="UftMobile\SDK\Util\Credentials.cs" />
   </ItemGroup>
   <ItemGroup>
