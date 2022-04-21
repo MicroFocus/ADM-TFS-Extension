@@ -55,6 +55,11 @@ if ($useParallelRunner) {
 			Throw "Mobile Center Username is empty."
 		}
 		if ($useMcProxy) {
+			if ([string]::IsNullOrWhiteSpace($mcProxyUrl)) {
+				throw "Proxy Server is empty."
+			} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
+				throw "Proxy Username is empty."
+			}
 			$proxyConfig = [ProxyConfig]::new($mcProxyUrl, $useMcProxyCredentials, $mcProxyUsername, $mcProxyPassword)
 		}
 		$mobileConfig = [MobileConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $useMcProxy, $proxyConfig)
