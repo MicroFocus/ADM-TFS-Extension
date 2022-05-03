@@ -83,6 +83,9 @@
 			"path": "RunFromFileSystemTask"
 		},
 		{
+			"path": "ParallelRunnerTask"
+		},
+		{
 			"path": "node_modules/vss-web-extension-sdk/lib/VSS.SDK.js",
 			"addressable": true
 		},
@@ -147,6 +150,16 @@
 			],
 			"properties": {
 				"name": "GetMobileDevicesTask"
+			}
+		},
+		{
+			"id": "custom-build-task-6",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "ParallelRunnerTask"
 			}
 		}
 	],

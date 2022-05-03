@@ -13,6 +13,19 @@ $artifactType = Get-VstsInput -Name 'artifactType'
 $rptFileName = Get-VstsInput -Name 'reportFileName'
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 
+$envType = Get-VstsInput -Name 'envType'
+$mcDevices = Get-VstsInput -Name 'mcDevices'
+
+[bool]$useChrome = Get-VstsInput -Name 'chrome' -AsBool
+[bool]$useChromeH = Get-VstsInput -Name 'chromeH' -AsBool
+[bool]$useChromium = Get-VstsInput -Name 'chromium' -AsBool
+[bool]$useEdge = Get-VstsInput -Name 'edge' -AsBool
+[bool]$useFirefox = Get-VstsInput -Name 'firefox' -AsBool
+[bool]$useFirefox64 = Get-VstsInput -Name 'firefox64' -AsBool
+[bool]$useIExplorer = Get-VstsInput -Name 'iExplorer' -AsBool
+[bool]$useIExplorer64 = Get-VstsInput -Name 'iExplorer64' -AsBool
+[bool]$useSafari = Get-VstsInput -Name 'safari' -AsBool
+
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
@@ -24,10 +37,74 @@ $mcProxyPassword = Get-VstsInput -Name 'mcProxyPassword'
 
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
-[bool]$useParallelRunner = $false
 $parallelRunnerConfig = $null
 $mobileConfig = $null
 $proxyConfig = $null
+
+[List[Device]]$devices = $null
+if ($envType -eq "") {
+	throw "Environment type not selected."
+} elseif ($envType -eq "mobile") {
+	if ([string]::IsNullOrWhiteSpace($mcDevices)) {
+		throw "The Devices field is required."
+	} elseif ([string]::IsNullOrWhiteSpace($mcServerUrl)) {
+		throw "Mobile Center Server is empty."
+	} elseif ([string]::IsNullOrWhiteSpace($mcUsername)) {
+		throw "Mobile Center Username is empty."
+	}
+	if ($useMcProxy) {
+		if ([string]::IsNullOrWhiteSpace($mcProxyUrl)) {
+			throw "Proxy Server is empty."
+		} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
+			throw "Proxy Username is empty."
+		}
+		$proxyConfig = [ProxyConfig]::new($mcProxyUrl, $useMcProxyCredentials, $mcProxyUsername, $mcProxyPassword)
+	}
+	$mobileConfig = [MobileConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $useMcProxy, $proxyConfig)
+	[List[string]]$invalidDeviceLines = $null
+	[ParallelRunnerConfig]::ParseDeviceLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
+	if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {
+		foreach ($line in $invalidDeviceLines) {
+			Write-Warning "Invalid device line -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
+		}
+	}
+	if ($devices.Count -eq 0) {
+		throw "Missing or invalid devices."
+	}
+} elseif ($envType -eq "web") {
+	$browsers = [List[string]]::new()
+	if ($useChrome) {
+		$browsers.Add("chrome")
+	}
+	if ($useChromeH) {
+		$browsers.Add("chromeH")
+	}
+	if ($useChromium) {
+		$browsers.Add("chromium")
+	}
+	if ($useEdge) {
+		$browsers.Add("edge")
+	}
+	if ($useFirefox) {
+		$browsers.Add("firefox")
+	}
+	if ($useFirefox64) {
+		$browsers.Add("firefox64")
+	}
+	if ($useIExplorer) {
+		$browsers.Add('iexplorer')
+	}
+	if ($useIExplorer64) {
+		$browsers.Add('iexplorer64')
+	}
+	if ($useSafari) {
+		$browsers.Add('safari')
+	}
+	if ($browsers.Count -eq 0) {
+		throw "At least one browser is required to be selected."
+	}
+}
+$parallelRunnerConfig = [ParallelRunnerConfig]::new($envType, $devices, $browsers)
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
@@ -185,7 +262,7 @@ if ($rerunIdx) {
 
 #---------------------------------------------------------------------------------------------------
 #Run the tests
-Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders $mobileConfig -Verbose 
+Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $parallelRunnerConfig $rptFolders $mobileConfig -Verbose 
 
 $ind = 1
 foreach ($item in $rptFolders) {

@@ -61,12 +61,16 @@
     <Content Include="AlmLabManagementTask\localTask.ps1" />
     <Content Include="AlmLabManagementTask\icon.png" />
     <Content Include="RunFromFileSystemTask\task.json" />
+    <Content Include="RunFromFileSystemTask\localTask.ps1" />
+    <Content Include="RunFromFileSystemTask\icon.png" />
     <Content Include="RunFromALMTask\localTask.ps1" />
     <Content Include="RunFromALMTask\task.json" />
     <Content Include="GetMobileDevicesTask\icon.png" />
     <Content Include="GetMobileDevicesTask\localTask.ps1" />
     <Content Include="GetMobileDevicesTask\task.json" />
-    <None Include="RunFromFileSystemTask\localTask.ps1" />
+    <Content Include="ParallelRunnerTask\localTask.ps1" />
+    <Content Include="ParallelRunnerTask\task.json" />
+    <Content Include="ParallelRunnerTask\icon.png" />
     <Content Include="LICENSE" />
     <Content Include="README.md" />
     <Content Include="overview.md" />
@@ -85,7 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".vscode\tasks.json" />
-    <Content Include="RunFromFileSystemTask\icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data.DataSetExtensions" />
