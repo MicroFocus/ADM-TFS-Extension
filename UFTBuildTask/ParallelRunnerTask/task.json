@@ -11,8 +11,8 @@
   "author": "Micro Focus",
   "version": {
     "Major": 3,
-    "Minor": 4,
-    "Patch": 3
+    "Minor": 0,
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "demands": "UFT_LAUNCHER",
