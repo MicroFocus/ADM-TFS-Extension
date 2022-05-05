@@ -28,6 +28,10 @@ namespace PSModule
 			return string.IsNullOrWhiteSpace(str);
 		}
 
+		public static bool IsNullOrEmpty(this string str)
+		{
+			return string.IsNullOrEmpty(str);
+		}
 		public static bool IsEmptyOrWhiteSpace(this string str)
 		{
 			return str != null && str.Trim() == string.Empty;

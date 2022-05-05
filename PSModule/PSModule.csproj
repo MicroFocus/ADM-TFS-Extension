@@ -152,6 +152,9 @@
     <Compile Include="UftMobile\Result.cs" />
     <Compile Include="UftMobile\SDK\Auth\OAuth2Authenticator.cs" />
     <Compile Include="UftMobile\SDK\Auth\BasicAuthenticator.cs" />
+    <Compile Include="UftMobile\SDK\Client\ExWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UftMobile\SDK\Client\RestClient.cs" />
     <Compile Include="UftMobile\SDK\Entity\Device.cs" />
     <Compile Include="UftMobile\SDK\Interface\IAuthenticator.cs" />

@@ -9,6 +9,8 @@ using PSModule.UftMobile.SDK;
 using System.Threading.Tasks;
 using PSModule.UftMobile.SDK.Entity;
 using System;
+using System.Net;
+using PSModule.UftMobile.SDK.Client;
 
 namespace PSModule
 {
@@ -21,6 +23,9 @@ namespace PSModule
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
+        private const string HEAD = "HEAD";
+        private const string MISSING_OR_INVALID_CREDENTIALS = "Missing or Invalid Credentials";
+        private const string GOOGLE = "https://www.google.com";
 
         [Parameter(Position = 0, Mandatory = true)]
         public string TestsPath { get; set; }
@@ -191,8 +196,77 @@ namespace PSModule
                 {
                     ThrowTerminatingError(new(new(MISSING_OR_INVALID_DEVICES), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
                 }
+
+                if (MobileConfig.UseProxy)
+                {
+                    try
+                    {
+                        CheckProxy(MobileConfig.ProxyConfig).Wait();
+                    }
+                    catch (WebException wex)
+                    {
+                        ThrowTerminatingError(new(new(GetErrorFromWebException(wex)), nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy)));
+                    }
+                    catch (Exception ex)
+                    {
+                        ex = ex.InnerException ?? ex;
+                        string err = ex is WebException wex ? GetErrorFromWebException(wex) : $"Proxy Error: {ex.Message}";
+                        WriteDebug($"{ex.GetType().Name}: {ex.Message}");
+                        ThrowTerminatingError(new(new(err), nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy)));
+                    }
+                }
             }
             base.ProcessRecord();
+        }
+
+        private string GetErrorFromWebException(WebException wex)
+        {
+            string err;
+            if (wex.Status == WebExceptionStatus.ProtocolError)
+            {
+                if (wex.Response is HttpWebResponse res)
+                {
+                    err = res.StatusCode switch
+                    {
+                        HttpStatusCode.ProxyAuthenticationRequired => MISSING_OR_INVALID_CREDENTIALS,
+                        _ => wex.Message,
+                    };
+                    err = $"Proxy Error: {err}";
+                    WriteDebug($"{res.StatusCode}: {wex.Message}");
+                }
+                else
+                {
+                    err = $"Proxy Error: {wex.Message}";
+                    WriteDebug($"{wex.Status}: {wex.Message}");
+                }
+            }
+            else
+            {
+                err = $"Proxy Error: {wex.Message}";
+                WriteDebug($"{wex.Status}: {wex.Message}");
+            }
+            return err;
+        }
+
+        private async Task CheckProxy(ProxyConfig config)
+        {
+            await CheckProxy(config.ServerUrl, config.UseCredentials, config.Username, config.Password);
+        }
+        private async Task CheckProxy(string server, bool useCredentials, string username, string password)
+        {
+            var proxy = new WebProxy
+            {
+                Address = new Uri($"http://{server}"),
+                BypassProxyOnLocal = false
+            };
+            if (useCredentials)
+            {
+                proxy.UseDefaultCredentials = false;
+                proxy.Credentials = new NetworkCredential(userName: username, password: password);
+            }
+
+            using ExWebClient client = new() { Proxy = proxy, Method = HEAD };
+            await client.DownloadStringTaskAsync(GOOGLE);
         }
 
         private async Task<List<string>> ValidateDevices()
