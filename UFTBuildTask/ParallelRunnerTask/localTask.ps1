@@ -74,31 +74,31 @@ if ($envType -eq "") {
 } elseif ($envType -eq "web") {
 	$browsers = [List[string]]::new()
 	if ($useChrome) {
-		$browsers.Add("chrome")
+		$browsers.Add("Chrome")
 	}
 	if ($useChromeH) {
-		$browsers.Add("chromeH")
+		$browsers.Add("Chrome_Headless")
 	}
 	if ($useChromium) {
-		$browsers.Add("chromium")
+		$browsers.Add("ChromiumEdge")
 	}
 	if ($useEdge) {
-		$browsers.Add("edge")
+		$browsers.Add("Edge")
 	}
 	if ($useFirefox) {
-		$browsers.Add("firefox")
+		$browsers.Add("Firefox")
 	}
 	if ($useFirefox64) {
-		$browsers.Add("firefox64")
+		$browsers.Add("Firefox64")
 	}
 	if ($useIExplorer) {
-		$browsers.Add('iexplorer')
+		$browsers.Add('IE')
 	}
 	if ($useIExplorer64) {
-		$browsers.Add('iexplorer64')
+		$browsers.Add('IE64')
 	}
 	if ($useSafari) {
-		$browsers.Add('safari')
+		$browsers.Add('Safari')
 	}
 	if ($browsers.Count -eq 0) {
 		throw "At least one browser is required to be selected."

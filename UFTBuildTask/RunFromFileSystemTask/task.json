@@ -124,7 +124,7 @@
       "type": "string",
       "label": "Proxy Sever",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "visibleRule": "useMcProxy = true",
       "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
     },
@@ -144,7 +144,7 @@
       "type": "string",
       "label": "Proxy Username",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
       "helpMarkDown": "The username that will access this Proxy server during the build step run"
     },
