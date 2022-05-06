@@ -146,7 +146,7 @@
       "defaultValue": "",
       "required": true,
       "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
-      "helpMarkDown": "The username that will access this Proxy server during the build step run"
+      "helpMarkDown": "The username that will access this proxy server during the build step run"
     },
     {
       "name": "mcProxyPassword",
@@ -156,7 +156,7 @@
       "defaultValue": "",
       "required": false,
       "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
-      "helpMarkDown": "The password for the user that will access this Proxy server during the build step run"
+      "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
     }
   ],
 
