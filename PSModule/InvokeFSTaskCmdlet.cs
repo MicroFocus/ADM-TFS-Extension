@@ -26,6 +26,9 @@ namespace PSModule
         private const string HEAD = "HEAD";
         private const string MISSING_OR_INVALID_CREDENTIALS = "Missing or Invalid Credentials";
         private const string GOOGLE = "https://www.google.com";
+        private const char COLON = ':';
+        private const string HTTP_PREFIX = "http://";
+        private const string HTTPS_PREFIX = "https://";
 
         [Parameter(Position = 0, Mandatory = true)]
         public string TestsPath { get; set; }
@@ -187,16 +190,6 @@ namespace PSModule
         {
             if (_isParallelRunnerMode && ParallelRunnerConfig.EnvType == EnvType.Mobile && ParallelRunnerConfig.Devices.Any() && MobileConfig != null)
             {
-                List<string> warns = ValidateDevices().Result;
-                if (warns.Any())
-                {
-                    warns.ForEach(w => WriteWarning(w));
-                }
-                if (ParallelRunnerConfig.Devices.IsNullOrEmpty())
-                {
-                    ThrowTerminatingError(new(new(MISSING_OR_INVALID_DEVICES), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
-                }
-
                 if (MobileConfig.UseProxy)
                 {
                     try
@@ -214,6 +207,16 @@ namespace PSModule
                         WriteDebug($"{ex.GetType().Name}: {ex.Message}");
                         ThrowTerminatingError(new(new(err), nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy)));
                     }
+                }
+
+                List<string> warns = ValidateDevices().Result;
+                if (warns.Any())
+                {
+                    warns.ForEach(w => WriteWarning(w));
+                }
+                if (ParallelRunnerConfig.Devices.IsNullOrEmpty())
+                {
+                    ThrowTerminatingError(new(new(MISSING_OR_INVALID_DEVICES), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
                 }
             }
             base.ProcessRecord();
@@ -254,9 +257,26 @@ namespace PSModule
         }
         private async Task CheckProxy(string server, bool useCredentials, string username, string password)
         {
+            if (server.StartsWith(HTTP_PREFIX) || server.StartsWith(HTTPS_PREFIX))
+            {
+                throw new ArgumentException(@$"Invalid server name format ""{server}"". The prefix ""http(s)://"" is not expected here.");
+            }
+            string[] tokens = server.Split(COLON);
+            if (tokens.Length == 1)
+            {
+                throw new ArgumentException("Port number is missing. The expected format is [server name or IP]:[port]");
+            }
+            else if (tokens.Length > 2)
+            {
+                throw new ArgumentException("Invalid server name format. The expected format is [server name or IP]:[port]");
+            }
+            else if (!int.TryParse(tokens[1], out int _))
+            {
+                throw new ArgumentException($"Invalid port value [{tokens[1]}]. A numeric value is expected.");
+            }
             var proxy = new WebProxy
             {
-                Address = new Uri($"http://{server}"),
+                Address = new Uri($"{HTTP_PREFIX}{server}"),
                 BypassProxyOnLocal = false
             };
             if (useCredentials)
