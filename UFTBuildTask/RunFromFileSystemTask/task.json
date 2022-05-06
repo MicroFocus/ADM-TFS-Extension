@@ -116,7 +116,7 @@
       "label": "Use proxy settings",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": null
+      "helpMarkDown": "Choose whether to use a proxy for connecting to the Mobile Center server"
     },
     {
       "name": "mcProxyUrl",
@@ -126,7 +126,7 @@
       "defaultValue": "",
       "required": true,
       "visibleRule": "useMcProxy = true",
-      "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
+      "helpMarkDown": "The address of your proxy server, in the format (proxy server name):(port)"
     },
     {
       "name": "useMcProxyCredentials",
@@ -135,7 +135,7 @@
       "label": "Use proxy credentials",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": null,
+      "helpMarkDown": "Choose whether to specify credentials for connecting to the proxy server",
       "visibleRule": "useMcProxy = true"
     },
     {
