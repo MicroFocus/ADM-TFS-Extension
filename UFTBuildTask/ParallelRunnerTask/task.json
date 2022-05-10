@@ -1,7 +1,7 @@
 ﻿{
   "id": "8A2A673B-D762-486B-854D-75C57E8D6B8A",
   "name": "ParallelRunnerTask",
-  "friendlyName": "UFT One Parallel Runner Run",
+  "friendlyName": "UFT One Parallel Test Run",
   "description": "Run UFT One tests from file system using parallel runner",
   "category": "Test",
   "visibility": [
@@ -23,7 +23,7 @@
       "label": "Test type",
       "defaultValue": "web",
       "required": true,
-      "helpMarkDown": "Choose whether to run the tests on a list of specified devices, or on any of the available browsers (if you choose multiple browsers, the test is run multiple times, one run on each browser)",
+      "helpMarkDown": "Choose the test type to be run in parallel",
       "options": {
         "web": "GUI Web",
         "mobile": "GUI Mobile",
@@ -253,7 +253,7 @@
     }
   ],
 
-  "instanceNameFormat": "Run From Parallel Runner",
+  "instanceNameFormat": "Run Using Parallel Runner",
   "execution": {
     "PowerShell3": {
       "target": "localTask.ps1",
