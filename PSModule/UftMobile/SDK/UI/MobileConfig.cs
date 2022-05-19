@@ -9,7 +9,7 @@ namespace PSModule.UftMobile.SDK.UI
         public bool UseProxy => _useProxy;
         public ProxyConfig ProxyConfig => _proxyConfig;
 
-        public MobileConfig(string serverUrl, string username, string password, bool useProxy, ProxyConfig proxyConfig): base(serverUrl, username, password)
+        public MobileConfig(ServerConfig srvConfig, bool useProxy, ProxyConfig proxyConfig): base(srvConfig.ServerUrl, srvConfig.Username, srvConfig.Password)
         {
             _useProxy = useProxy;
             _proxyConfig = proxyConfig;

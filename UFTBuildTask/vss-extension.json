@@ -74,7 +74,7 @@
 			"path": "AlmLabManagementTask"
 		},
 		{
-			"path": "GetMobileDevicesTask"
+			"path": "GetMobileResourcesTask"
 		},
 		{
 			"path": "RunFromALMTask"
@@ -149,7 +149,7 @@
 				"ms.vss-distributed-task.tasks"
 			],
 			"properties": {
-				"name": "GetMobileDevicesTask"
+				"name": "GetMobileResourcesTask"
 			}
 		},
 		{

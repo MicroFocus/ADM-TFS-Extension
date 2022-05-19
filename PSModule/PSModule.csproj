@@ -131,7 +131,7 @@
     <Compile Include="Common\Helper.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="InvokeAlmLabManagementTaskCmdlet.cs" />
-    <Compile Include="InvokeGetMobileDevicesTaskCmdlet.cs" />
+    <Compile Include="InvokeGetMobileResourcesTaskCmdlet.cs" />
     <Compile Include="InvokeRunFromAlmTaskCmdlet.cs" />
     <Compile Include="Models\MobileSettings.cs" />
     <Compile Include="InvokeFSTaskCmdlet.cs" />
@@ -156,12 +156,15 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UftMobile\SDK\Client\RestClient.cs" />
+    <Compile Include="UftMobile\SDK\Entity\App.cs" />
     <Compile Include="UftMobile\SDK\Entity\Device.cs" />
+    <Compile Include="UftMobile\SDK\Entity\Workspace.cs" />
     <Compile Include="UftMobile\SDK\Interface\IAuthenticator.cs" />
     <Compile Include="UftMobile\SDK\Interface\IClient.cs" />
     <Compile Include="UftMobile\SDK\Interface\ILogger.cs" />
     <Compile Include="UftMobile\SDK\Response\Response.cs" />
     <Compile Include="UftMobile\SDK\UI\MobileConfig.cs" />
+    <Compile Include="UftMobile\SDK\UI\MobileResxConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ParallelRunnerConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ProxyConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ServerConfig.cs" />

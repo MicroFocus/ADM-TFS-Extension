@@ -7,7 +7,7 @@ namespace PSModule.UftMobile.SDK.UI
 
         public bool UseCredentials => _useCredentials;
 
-        public ProxyConfig(string serverUrl, bool useCredentials, string username, string password) : base(serverUrl, username, password)
+        public ProxyConfig(ServerConfig srvConfig, bool useCredentials) : base(srvConfig.ServerUrl, srvConfig.Username, srvConfig.Password)
         {
             _useCredentials = useCredentials;
         }

@@ -1,11 +1,13 @@
 #
 # localTask.ps1
 #
+using namespace PSModule.UftMobile.SDK.UI
 
 param()
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl' -Require
 $mcUsername = Get-VstsInput -Name 'mcUsername' -Require
 $mcPassword = Get-VstsInput -Name 'mcPassword' -Require
+$mcResources = Get-VstsInput -Name 'mcResources' -Require
 [bool]$includeOfflineDevices = Get-VstsInput -Name 'includeOfflineDevices' -AsBool
 
 $uftworkdir = $env:UFT_LAUNCHER
@@ -25,6 +27,9 @@ $runStatusCodeFile = "$resDir\RunStatusCode.txt"
 
 Import-Module $uftworkdir\bin\PSModule.dll
 
+$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
+$config = [MobileResxConfig]::new($srvConfig, $mcResources, $includeOfflineDevices, $false)
+
 #---------------------------------------------------------------------------------------------------
 
 $report = "$resDir\UFTM Report"
@@ -41,7 +46,7 @@ if ($rerunIdx) {
 }
 #---------------------------------------------------------------------------------------------------
 #Run the tests
-Invoke-GMDTask $mcServerUrl $mcUsername $mcPassword $includeOfflineDevices $buildNumber -Verbose 
+Invoke-GMRTask $config $buildNumber -Verbose 
 
 # read return code
 if (Test-Path $runStatusCodeFile) {

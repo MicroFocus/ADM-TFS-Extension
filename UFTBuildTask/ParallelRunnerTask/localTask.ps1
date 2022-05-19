@@ -58,9 +58,11 @@ if ($envType -eq "") {
 		} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
 			throw "Proxy Username is empty."
 		}
-		$proxyConfig = [ProxyConfig]::new($mcProxyUrl, $useMcProxyCredentials, $mcProxyUsername, $mcProxyPassword)
+		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
+		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
 	}
-	$mobileConfig = [MobileConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $useMcProxy, $proxyConfig)
+	$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
+	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig)
 	[List[string]]$invalidDeviceLines = $null
 	[ParallelRunnerConfig]::ParseDeviceLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
 	if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {

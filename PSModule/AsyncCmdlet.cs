@@ -79,6 +79,10 @@ namespace PSModule
             AsyncCmdletSynchronizationContext.PostItem(new MarshalItemAction<object>(base.WriteObject, sendToPipeline));
         }
 
+        public void BaseWriteObject(object sendToPipeline)
+        {
+            base.WriteObject(sendToPipeline);
+        }
         public new void WriteObject(object sendToPipeline, bool enumerateCollection)
         {
             AsyncCmdletSynchronizationContext.PostItem(new MarshalItemAction<object, bool>(base.WriteObject, sendToPipeline, enumerateCollection));
