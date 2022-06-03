@@ -46,7 +46,7 @@
       "label": "Resources to retrieve",
       "defaultValue": "onlyDevices",
       "required": false,
-      "helpMarkDown": "Choose what resource will be retrieved from the Mobile Center server",
+      "helpMarkDown": "Choose what resources will be retrieved from the Mobile Center server",
       "options": {
         "onlyDevices": "Only devices",
         "onlyApps": "Only applications",

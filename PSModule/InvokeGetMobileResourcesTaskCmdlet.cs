@@ -33,8 +33,9 @@ namespace PSModule
         private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Mobile Center server";
         private const string NO_APP_FOUND = "No application has been retrieved from the Mobile Center server";
         private const string LOGIN_FAILED = "Login failed";
-        private const string DEVICES_HEAD = "========== Devices ===============================";
-        private const string APPS_HEAD = "========== Applications ===============================";
+        private const string DEVICES_HEAD = "================================== Devices ===================================";
+        private const string APPS_HEAD = "================================== Applications ==============================";
+        private const string RESOURCES_BOTTOM = "==============================================================================";
 
         private MobileResxConfig _config;
 
@@ -128,6 +129,8 @@ namespace PSModule
                 LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
                 return RunStatus.FAILED;
             }
+
+            WriteObject(RESOURCES_BOTTOM);
         }
 
         private bool PrintDevices(IEnumerable<Device> devices, bool isOnline = true)
@@ -168,6 +171,8 @@ namespace PSModule
                 LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
                 return RunStatus.FAILED;
             }
+
+            WriteObject(RESOURCES_BOTTOM);
         }
 
         private async Task SaveRunStatus(string resdir, RunStatus runStatus)
