@@ -29,6 +29,7 @@ $mcDevices = Get-VstsInput -Name 'mcDevices'
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
+$mcTenantId = Get-VstsInput -Name 'mcTenantId'
 [bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 $mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
 [bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
@@ -62,7 +63,7 @@ if ($envType -eq "") {
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
 	}
 	$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
-	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig)
+	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig, $mcTenantId)
 	[List[string]]$invalidDeviceLines = $null
 	[ParallelRunnerConfig]::ParseDeviceLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
 	if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {

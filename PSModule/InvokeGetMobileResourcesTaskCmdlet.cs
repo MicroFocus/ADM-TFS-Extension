@@ -94,6 +94,7 @@ namespace PSModule
 
         private async Task<RunStatus> CheckAndPrintDevices(IClient client)
         {
+            RunStatus status = RunStatus.FAILED;
             WriteObject(DEVICES_HEAD);
             var res = await client.HttpGet<Device>(client.ServerUrl.AppendSuffix(DEVICES_ENDPOINT));
             if (res.IsOK)
@@ -116,21 +117,20 @@ namespace PSModule
                     {
                         LogError(new UftMobileException(NO_AVAILABLE_DEVICE_FOUND));
                     }
-
                 }
                 else
                 {
                     LogError(new UftMobileException(_config.IncludeOfflineDevices ? NO_DEVICE_FOUND : NO_AVAILABLE_DEVICE_FOUND));
                 }
-                return RunStatus.PASSED;
+                status = RunStatus.PASSED;
             }
             else
             {
                 LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
-                return RunStatus.FAILED;
             }
 
             WriteObject(RESOURCES_BOTTOM);
+            return status;
         }
 
         private bool PrintDevices(IEnumerable<Device> devices, bool isOnline = true)
@@ -147,6 +147,7 @@ namespace PSModule
 
         private async Task<RunStatus> GetAndPrintApps(IClient client)
         {
+            RunStatus status = RunStatus.FAILED;
             WriteObject(APPS_HEAD);
             var res = await client.HttpGet<App>(client.ServerUrl.AppendSuffix(APPS_ENDPOINT));
             if (res.IsOK)
@@ -163,16 +164,16 @@ namespace PSModule
                 else
                 {
                     WriteObject(NO_APP_FOUND);
-                    return RunStatus.PASSED;
+                    status = RunStatus.PASSED;
                 }
             }
             else
             {
                 LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
-                return RunStatus.FAILED;
             }
 
             WriteObject(RESOURCES_BOTTOM);
+            return status;
         }
 
         private async Task SaveRunStatus(string resdir, RunStatus runStatus)

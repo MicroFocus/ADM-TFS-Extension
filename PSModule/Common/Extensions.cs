@@ -141,8 +141,8 @@ namespace PSModule
 			string result = null;
 			if (obj != null)
 			{
-				XmlSerializer serializer = new XmlSerializer(obj.GetType());
-                using MemoryStream ms = new MemoryStream();
+				XmlSerializer serializer = new (obj.GetType());
+                using MemoryStream ms = new ();
                 serializer.Serialize(ms, obj);
                 ms.Position = 0;
                 result = Encoding.UTF8.GetString(ms.ToArray());
@@ -155,6 +155,7 @@ namespace PSModule
 		{
 			return !string.IsNullOrEmpty(str) && chars.Any(c => c == str[0]);
 		}
+
 		public static bool StartsWithAny(this string str, params string[] strs)
 		{
 			return !string.IsNullOrEmpty(str) && strs.Any(str.StartsWith);

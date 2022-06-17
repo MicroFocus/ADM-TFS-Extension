@@ -28,5 +28,7 @@ namespace PSModule.Common
 
         public const string YES = "yes";
         public const string NO = "no";
+
+        public const string HTTPS = "https";
     }
 }

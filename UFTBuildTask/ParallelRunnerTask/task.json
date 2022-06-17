@@ -157,6 +157,15 @@
       "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
     },
     {
+      "name": "mcTenantId",
+      "type": "string",
+      "label": "Tenant Id",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "envType = mobile",
+      "helpMarkDown": "The tenant ID used to connect to the UFT Mobile server with multi-tenant mode enabled"
+    },
+    {
       "name": "useMcProxy",
       "type": "boolean",
       "label": "Use proxy settings",

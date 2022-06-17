@@ -13,7 +13,7 @@ namespace PSModule.UftMobile.SDK.UI
 
         public ServerConfig(string serverUrl, string username, string password)
         {
-            _serverUrl = serverUrl;
+            _serverUrl = serverUrl.Trim();
             _username = username;
             _password = password;
         }

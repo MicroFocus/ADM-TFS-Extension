@@ -209,6 +209,11 @@ namespace PSModule
             SetParamValue("MobileHostAddress", mobileConfig.ServerUrl);
             SetParamValue("MobileUserName", mobileConfig.Username);
             SetParamValue("MobilePassword", EncryptParameter(mobileConfig.Password));
+            if (mobileConfig.ServerUrl.StartsWith(C.HTTPS, StringComparison.OrdinalIgnoreCase))
+            {
+                SetParamValue("MobileUseSSL", C.ONE);
+            }
+            SetParamValue("MobileTenantId", mobileConfig.TenantId);
             if (mobileConfig.UseProxy)
             {
                 var proxy = mobileConfig.ProxyConfig;
@@ -223,19 +228,6 @@ namespace PSModule
                 }
             }
         }
-
-        #region mobile
-        public void SetMobileInfo(String mobileInfo)
-        {
-            SetParamValue("mobileinfo", mobileInfo);
-        }
-
-        public void setMobileUseSSL(int type)
-        {
-            SetParamValue("MobileUseSSL", type.ToString());
-        }
-
-        #endregion
 
         private void SetParamValue(string paramName, string paramValue)
         {
