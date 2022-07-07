@@ -110,7 +110,7 @@
       "label": "Username",
       "defaultValue": "",
       "required": false,
-      "visibleRule": "authType = basic",
+      "visibleRule": "mcAuthType = basic",
       "helpMarkDown": "The username that will access this Mobile Center server during the build step run"
     },
     {
@@ -120,7 +120,7 @@
       "label": "Password",
       "defaultValue": "",
       "required": false,
-      "visibleRule": "authType = basic",
+      "visibleRule": "mcAuthType = basic",
       "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
     },
     {
@@ -130,7 +130,7 @@
       "label": "Tenant Id",
       "defaultValue": "",
       "required": false,
-      "visibleRule": "authType = basic",
+      "visibleRule": "mcAuthType = basic",
       "helpMarkDown": "The tenant ID used to connect to the UFT Mobile server with multi-tenant mode enabled"
     },
     {
@@ -139,7 +139,7 @@
       "label": "Access Key",
       "defaultValue": "",
       "required": false,
-      "visibleRule": "authType = key",
+      "visibleRule": "mcAuthType = key",
       "helpMarkDown": "The Access Key will provide access to this Mobile Center server during the build step run"
     },
     {
