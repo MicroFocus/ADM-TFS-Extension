@@ -1,4 +1,6 @@
-﻿using PSModule.UftMobile.SDK.Util;
+﻿using PSModule.UftMobile.SDK.Entity;
+using PSModule.UftMobile.SDK.Enums;
+using PSModule.UftMobile.SDK.Util;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -12,12 +14,18 @@ namespace PSModule.UftMobile.SDK.Interface
                 string url,
                 WebHeaderCollection headers = null,
                 string query = "",
-                bool logError = true);
+                bool logError = true,
+                ResType resType = ResType.DataEntities) where T : class;
 
         Task<Response> HttpPost(
                 string url,
                 string body,
                 WebHeaderCollection headers = null);
+        Task<Response<T>> HttpPost<T>(
+                string url,
+                string body,
+                WebHeaderCollection headers = null,
+                ResType resType = ResType.Object) where T : class;
 
         Task<Response> HttpPut(
                 string url,
@@ -33,5 +41,8 @@ namespace PSModule.UftMobile.SDK.Interface
         string XsrfTokenValue { get; }
 
         ILogger Logger { get; }
+
+        bool IsLoggedIn { set; get; }
+        AccessToken AccessToken { get; set; }
     }
 }

@@ -50,6 +50,7 @@
     <Content Include="AlmLabEnvPrepareTask\icon.png" />
     <Content Include="AlmLabManagementTask\task.json" />
     <Content Include="AlmLabEnvPrepareTask\task.json" />
+    <Content Include="GetMobileResourcesTask\icon.png" />
     <Content Include="images\failed.png" />
     <Content Include="images\passed.png" />
     <Content Include="images\tfs.png" />
@@ -65,15 +66,14 @@
     <Content Include="RunFromFileSystemTask\icon.png" />
     <Content Include="RunFromALMTask\localTask.ps1" />
     <Content Include="RunFromALMTask\task.json" />
-    <Content Include="GetMobileDevicesTask\icon.png" />
-    <Content Include="GetMobileDevicesTask\localTask.ps1" />
-    <Content Include="GetMobileDevicesTask\task.json" />
     <Content Include="ParallelRunnerTask\localTask.ps1" />
     <Content Include="ParallelRunnerTask\task.json" />
     <Content Include="ParallelRunnerTask\icon.png" />
     <Content Include="LICENSE" />
     <Content Include="README.md" />
     <Content Include="overview.md" />
+    <Content Include="GetMobileResourcesTask\localTask.ps1" />
+    <Content Include="GetMobileResourcesTask\task.json" />
     <None Include="vss-extension.json" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="web.config">

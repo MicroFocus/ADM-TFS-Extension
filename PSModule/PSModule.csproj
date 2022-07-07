@@ -156,9 +156,15 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UftMobile\SDK\Client\RestClient.cs" />
+    <Compile Include="UftMobile\SDK\Entity\AccessToken.cs" />
     <Compile Include="UftMobile\SDK\Entity\App.cs" />
+    <Compile Include="UftMobile\SDK\Entity\CapableDeviceFilterDetails.cs" />
     <Compile Include="UftMobile\SDK\Entity\Device.cs" />
+    <Compile Include="UftMobile\SDK\Entity\Job.cs" />
     <Compile Include="UftMobile\SDK\Entity\Workspace.cs" />
+    <Compile Include="UftMobile\SDK\Enums\AuthType.cs" />
+    <Compile Include="UftMobile\SDK\Enums\ResType.cs" />
+    <Compile Include="UftMobile\SDK\Enums\Resx.cs" />
     <Compile Include="UftMobile\SDK\Interface\IAuthenticator.cs" />
     <Compile Include="UftMobile\SDK\Interface\IClient.cs" />
     <Compile Include="UftMobile\SDK\Interface\ILogger.cs" />

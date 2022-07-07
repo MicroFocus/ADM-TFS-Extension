@@ -117,4 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessTokenExpired" xml:space="preserve">
+    <value>Access Token has expired.</value>
+  </data>
+  <data name="AccessTokenIsNull" xml:space="preserve">
+    <value>Access Token is null.</value>
+  </data>
+  <data name="AuthTypeIsInvalid" xml:space="preserve">
+    <value>Authentication Type is invalid.</value>
+  </data>
+  <data name="McInvalidToken" xml:space="preserve">
+    <value>Invalid execution token for Mobile, should contain ClientID, SecretKey and TenantID.</value>
+  </data>
+  <data name="McMalformedTokenInvalidKey" xml:space="preserve">
+    <value>Malformed Acees Key, invalid key value: [{0}].</value>
+  </data>
+  <data name="McMalformedTokenMissingKeyValuePair" xml:space="preserve">
+    <value>Malformed Acees Key, token with invalid key-value pair: [{0}].</value>
+  </data>
+  <data name="McMissingOrInvalidAcessKey" xml:space="preserve">
+    <value>Missing or invalid Access Key</value>
+  </data>
+  <data name="MissingUsernameOrClientId" xml:space="preserve">
+    <value>Missing username or clientId.</value>
+  </data>
 </root>

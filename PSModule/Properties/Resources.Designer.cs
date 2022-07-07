@@ -19,7 +19,7 @@ namespace PSModule.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,78 @@ namespace PSModule.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Access Token has expired..
+        /// </summary>
+        internal static string AccessTokenExpired {
+            get {
+                return ResourceManager.GetString("AccessTokenExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Access Token is null..
+        /// </summary>
+        internal static string AccessTokenIsNull {
+            get {
+                return ResourceManager.GetString("AccessTokenIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication Type is invalid..
+        /// </summary>
+        internal static string AuthTypeIsInvalid {
+            get {
+                return ResourceManager.GetString("AuthTypeIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid execution token for Mobile, should contain ClientID, SecretKey and TenantID..
+        /// </summary>
+        internal static string McInvalidToken {
+            get {
+                return ResourceManager.GetString("McInvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Malformed Acees Key, invalid key value: [{0}]..
+        /// </summary>
+        internal static string McMalformedTokenInvalidKey {
+            get {
+                return ResourceManager.GetString("McMalformedTokenInvalidKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Malformed Acees Key, token with invalid key-value pair: [{0}]..
+        /// </summary>
+        internal static string McMalformedTokenMissingKeyValuePair {
+            get {
+                return ResourceManager.GetString("McMalformedTokenMissingKeyValuePair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing or invalid Access Key.
+        /// </summary>
+        internal static string McMissingOrInvalidAcessKey {
+            get {
+                return ResourceManager.GetString("McMissingOrInvalidAcessKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing username or clientId..
+        /// </summary>
+        internal static string MissingUsernameOrClientId {
+            get {
+                return ResourceManager.GetString("MissingUsernameOrClientId", resourceCulture);
             }
         }
     }

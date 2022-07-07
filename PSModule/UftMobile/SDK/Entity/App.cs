@@ -3,7 +3,7 @@ using PSModule.Common;
 
 namespace PSModule.UftMobile.SDK.Entity
 {
-    internal class App
+    public class App
     {
         public string Type { get; set; }
 

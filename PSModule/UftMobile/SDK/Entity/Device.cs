@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,6 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace PSModule.UftMobile.SDK.Entity
 {
+    using C = Common.Constants;
     public class Device
     {
         private const string ValidOsVersionFormat = @"^(\d+)(\.\d+){0,2}$";
@@ -15,7 +17,6 @@ namespace PSModule.UftMobile.SDK.Entity
         private const string GreaterOrEqual = ">=";
 
         private static readonly string[] _pipelineAttributes = new string[] { nameof(DeviceId), nameof(Model), nameof(Manufacturer), nameof(OSType), nameof(OSVersion)};
-        public static string[] PipelineAttributes => _pipelineAttributes;
 
         public string DeviceId { get; set; }
         public string Model { get; set; }
@@ -117,6 +118,65 @@ namespace PSModule.UftMobile.SDK.Entity
         public bool IsEmpty()
         {
             return (DeviceId.IsNullOrWhiteSpace() && Manufacturer.IsNullOrWhiteSpace() && Model.IsNullOrWhiteSpace() && OSVersion.IsNullOrWhiteSpace() && OSType.IsNullOrWhiteSpace());
+        }
+
+        public static void ParseLines(string strDevices, out List<Device> devices, out List<string> invalidLines)
+        {
+            devices = new();
+            invalidLines = new();
+            var lines = strDevices.Split(C.LF_).Where(line => !line.IsNullOrWhiteSpace());
+            if (lines.Any())
+            {
+                foreach (var line in lines)
+                {
+                    if (TryParse(line, out var device))
+                    { 
+                        devices.Add(device);
+                    }
+                    else
+                    {
+                        invalidLines.Add(line);
+                    }
+                }
+            }
+        }
+        public static bool TryParse(string strDevice, out Device device)
+        {
+            device = null;
+            bool ok = false;
+            if (IsValidLine(strDevice))
+            {
+                try
+                {
+                    device = JsonConvert.DeserializeObject<Device>($"{{{strDevice}}}");
+                    ok = !device.IsEmpty();
+                }
+                catch { }
+            }
+            return ok;
+        }
+        private static bool IsValidLine(string line)
+        {
+            var pairs = line.Split(C.COMMA_);
+            foreach (string pair in pairs)
+            {
+                var arr = pair.Split(C.COLON_);
+                if (arr.Length != 2 || !IsValidPropName(arr[0].Trim()) || !IsValidPropValue(arr[1].Trim()))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool IsValidPropValue(string val)
+        {
+            return val.StartsWith(C.DOUBLE_QUOTE) && val.EndsWith(C.DOUBLE_QUOTE);
+        }
+
+        private static bool IsValidPropName(string prop)
+        {
+            return !prop.IsNullOrWhiteSpace() && prop.In(true, _pipelineAttributes);
         }
     }
 }

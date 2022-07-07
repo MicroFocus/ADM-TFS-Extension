@@ -1,21 +1,26 @@
 ﻿
+using PSModule.UftMobile.SDK.Entity;
+
 namespace PSModule.UftMobile.SDK.UI
 {
     public class MobileConfig: ServerConfig
     {
         private readonly bool _useProxy;
         private readonly ProxyConfig _proxyConfig;
-        private readonly string _tenantId;
+        private readonly Device _device;
+        private readonly string _workDir;
 
         public bool UseProxy => _useProxy;
         public ProxyConfig ProxyConfig => _proxyConfig;
-        public string TenantId => _tenantId;
+        public Device Device => _device;
+        public string WorkDir => _workDir;
 
-        public MobileConfig(ServerConfig srvConfig, bool useProxy, ProxyConfig proxyConfig, string tenantId = ""): base(srvConfig.ServerUrl, srvConfig.Username, srvConfig.Password)
+        public MobileConfig(ServerConfig srvConfig, bool useProxy, ProxyConfig proxyConfig, Device device = null, string workDir = ""): base(srvConfig.ServerUrl, srvConfig.UsernameOrClientId, srvConfig.PasswordOrSecret)
         {
             _useProxy = useProxy;
             _proxyConfig = proxyConfig;
-            _tenantId = tenantId;
+            _device = device;
+            _workDir = workDir;
         }
     }
 }

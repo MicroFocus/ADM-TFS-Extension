@@ -1,6 +1,7 @@
 ﻿using PSModule.UftMobile.SDK;
 using PSModule.UftMobile.SDK.Auth;
 using PSModule.UftMobile.SDK.Entity;
+using PSModule.UftMobile.SDK.Enums;
 using PSModule.UftMobile.SDK.Interface;
 using PSModule.UftMobile.SDK.UI;
 using PSModule.UftMobile.SDK.Util;
@@ -52,7 +53,8 @@ namespace PSModule
         {
             try
             {
-                WriteDebug($"Username = {_config.Username}");
+                WriteDebug($"Username / ClientId = {_config.UsernameOrClientId}");
+                bool isDebug = (ActionPreference)GetVariableValue(DEBUG_PREFERENCE) != ActionPreference.SilentlyContinue;
                 string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
                 string resdir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{BuildNumber}"));
 
@@ -61,16 +63,15 @@ namespace PSModule
 
                 RunStatus runStatus = RunStatus.FAILED, runStatusDevices = RunStatus.PASSED, runStatusApps = RunStatus.PASSED;
 
-                IAuthenticator auth = new BasicAuthenticator();
-                Credentials cred = new (_config.Username, _config.Password);
-                bool isDebug = (ActionPreference)GetVariableValue(DEBUG_PREFERENCE) != ActionPreference.SilentlyContinue;
-                IClient client = new RestClient(_config.ServerUrl, cred, new ConsoleLogger(isDebug));
+                IAuthenticator auth = _config.AuthType == AuthType.Basic ? new BasicAuthenticator() : new OAuth2Authenticator();
+                Credentials cred = new(_config.UsernameOrClientId, _config.PasswordOrSecret, _config.TenantId);
+                IClient client = new RestClient(_config.ServerUrl, cred, new ConsoleLogger(isDebug), _config.AuthType);
                 bool ok = await auth.Login(client);
                 if (ok)
                 {
-                    if (_config.McResx == McResources.OnlyDevices || _config.McResx == McResources.BothDevicesAndApps)
+                    if (_config.Resx == Resx.OnlyDevices || _config.Resx == Resx.BothDevicesAndApps)
                         runStatusDevices = await CheckAndPrintDevices(client);
-                    if (_config.McResx == McResources.OnlyApps || _config.McResx == McResources.BothDevicesAndApps)
+                    if (_config.Resx == Resx.OnlyApps || _config.Resx == Resx.BothDevicesAndApps)
                         runStatusApps = await GetAndPrintApps(client);
                     await auth.Logout(client);
                 }

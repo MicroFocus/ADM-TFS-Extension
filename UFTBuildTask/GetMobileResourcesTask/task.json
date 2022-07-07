@@ -25,11 +25,24 @@
       "helpMarkDown": "The address of your Mobile Center server, in the format http[s]://(MC server name):(port)"
     },
     {
+      "name": "mcAuthType",
+      "type": "boolean",
+      "label": "Authentication type",
+      "defaultValue": "basic",
+      "required": true,
+      "options": {
+        "basic": "Basic authentication",
+        "key": "Access key authentication"
+      },
+      "helpMarkDown": "TODO"
+    },
+    {
       "name": "mcUsername",
       "type": "string",
       "label": "Username",
       "defaultValue": "",
       "required": true,
+      "visibleRule": "authType = basic",
       "helpMarkDown": "The username that will access this Mobile Center server during the build step run"
     },
     {
@@ -38,7 +51,27 @@
       "label": "Password",
       "defaultValue": "",
       "required": true,
+      "visibleRule": "authType = basic",
       "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
+    },
+    {
+      "name": "mcTenantId",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Tenant Id",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "authType = basic",
+      "helpMarkDown": "The tenant ID used to connect to the UFT Mobile server with multi-tenant mode enabled"
+    },
+    {
+      "name": "mcAccessKey",
+      "type": "string",
+      "label": "Access Key",
+      "defaultValue": "",
+      "required": true,
+      "visibleRule": "authType = key",
+      "helpMarkDown": "The Access Key will provide access to this Mobile Center server during the build step run"
     },
     {
       "name": "mcResources",

@@ -1,26 +1,27 @@
-﻿using System.Management.Automation;
+﻿using PSModule.Properties;
+using PSModule.UftMobile.SDK.Enums;
+using System.Management.Automation;
 
 namespace PSModule.UftMobile.SDK.Util
 {
     public class Credentials
     {
-        private readonly bool _isOAuth2;
         private readonly string _usernameOrClientId;
         private readonly string _passwordOrSecret;
-        public Credentials(string usernameOrClientId, string passwordOrSecret, bool isSSO = false)
-        {
-            if (usernameOrClientId.IsNullOrWhiteSpace())
-                throw new UftMobileException("Missing username / clientId.", ErrorCategory.InvalidArgument);
-            if (isSSO && passwordOrSecret.IsNullOrWhiteSpace())
-                throw new UftMobileException("Missing Api Key Secret.", ErrorCategory.InvalidArgument);
+        private readonly string _tenantId;
 
-            _isOAuth2 = isSSO;
-            _usernameOrClientId = usernameOrClientId;
-            _passwordOrSecret = passwordOrSecret;
-        }
-        public bool IsOAuth2 => _isOAuth2;
-        public string UsernameOrClient => _usernameOrClientId;
+        public string UsernameOrClientId => _usernameOrClientId;
         public string PasswordOrSecret => _passwordOrSecret;
+        public string TenantId => _tenantId;
 
+        public Credentials(string usernameorClientId, string passwordOrSecret, string tenantId = "")
+        {
+            if (usernameorClientId.IsNullOrWhiteSpace())
+                throw new UftMobileException(Resources.MissingUsernameOrClientId, ErrorCategory.InvalidArgument);
+
+            _usernameOrClientId = usernameorClientId;
+            _passwordOrSecret = passwordOrSecret;
+            _tenantId = tenantId;
+        }
     }
 }

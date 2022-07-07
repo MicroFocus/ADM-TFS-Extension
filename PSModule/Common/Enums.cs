@@ -55,12 +55,4 @@ namespace PSModule
         Mobile,
         Web
     }
-
-    public enum McResources
-    {
-        OnlyDevices,
-        OnlyApps,
-        BothDevicesAndApps
-    }
-
 }

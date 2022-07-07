@@ -1,18 +1,19 @@
-﻿using System;
+﻿using PSModule.UftMobile.SDK.Enums;
+using System;
 
 namespace PSModule.UftMobile.SDK.UI
 {
     public class MobileResxConfig: MobileConfig
     {
-        private readonly McResources _mcResx;
+        private readonly Resx _resx;
         private readonly bool _includeOfflineDevices;
 
         public bool IncludeOfflineDevices => _includeOfflineDevices;
-        public McResources McResx => _mcResx;
+        public Resx Resx => _resx;
 
-        public MobileResxConfig(ServerConfig srvConfig, string mcResources, bool includeOfflineDevices, bool useProxy, ProxyConfig proxyConfig = null): base(srvConfig, useProxy, proxyConfig)
+        public MobileResxConfig(ServerConfig srvConfig, string resx, bool includeOfflineDevices, bool useProxy, ProxyConfig proxyConfig = null): base(srvConfig, useProxy, proxyConfig)
         {
-            Enum.TryParse(mcResources, true, out _mcResx);
+            Enum.TryParse(resx, true, out _resx);
             _includeOfflineDevices = includeOfflineDevices;
         }
     }

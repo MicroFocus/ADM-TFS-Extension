@@ -207,8 +207,16 @@ namespace PSModule
         public void SetMobileConfig(MobileConfig mobileConfig)
         {
             SetParamValue("MobileHostAddress", mobileConfig.ServerUrl);
-            SetParamValue("MobileUserName", mobileConfig.Username);
-            SetParamValue("MobilePassword", EncryptParameter(mobileConfig.Password));
+            if (mobileConfig.AuthType == UftMobile.SDK.Enums.AuthType.Basic)
+            {
+                SetParamValue("MobileUserName", mobileConfig.UsernameOrClientId);
+                SetParamValue("MobilePassword", EncryptParameter(mobileConfig.PasswordOrSecret));
+            }
+            else
+            {
+                SetParamValue("MobileClientId", mobileConfig.UsernameOrClientId);
+                SetParamValue("MobileSecretKey", EncryptParameter(mobileConfig.PasswordOrSecret));
+            }
             if (mobileConfig.ServerUrl.StartsWith(C.HTTPS, StringComparison.OrdinalIgnoreCase))
             {
                 SetParamValue("MobileUseSSL", C.ONE);
@@ -223,8 +231,8 @@ namespace PSModule
                 if (proxy.UseCredentials)
                 {
                     SetParamValue("MobileProxySetting_Authentication", C.ONE);
-                    SetParamValue("MobileProxySetting_UserName", proxy.Username);
-                    SetParamValue("MobileProxySetting_Password", EncryptParameter(proxy.Password));
+                    SetParamValue("MobileProxySetting_UserName", proxy.UsernameOrClientId);
+                    SetParamValue("MobileProxySetting_Password", EncryptParameter(proxy.PasswordOrSecret));
                 }
             }
         }

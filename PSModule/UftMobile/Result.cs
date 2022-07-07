@@ -1,4 +1,6 @@
-﻿namespace PSModule.UftMobile
+﻿using Newtonsoft.Json;
+
+namespace PSModule.UftMobile
 {
     public class Result
     {
@@ -6,8 +8,14 @@
         public string Message { get; set; }
         public bool Error { get; set; }
     }
-    public class Result<T> : Result
+    public class MultiResult<T> : Result
     {
-        public T[] Data { get; set; }
+        [JsonProperty("data")]
+        public T[] Entries { get; set; }
+    }
+    public class SingleResult<T> : Result
+    {
+        [JsonProperty("data")]
+        public T Entry { get; set; }
     }
 }

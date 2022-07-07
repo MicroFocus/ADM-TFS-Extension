@@ -16,6 +16,9 @@ $rptFileName = Get-VstsInput -Name 'reportFileName'
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
+$mcTenantId = Get-VstsInput -Name 'mcTenantId'
+$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
+$mcDevice = Get-VstsInput -Name 'mcDevice'
 [bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 $mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
 [bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
@@ -28,16 +31,54 @@ Import-Module $uftworkdir\bin\PSModule.dll
 $parallelRunnerConfig = $null
 $mobileConfig = $null
 $proxyConfig = $null
+[Device]$device = $null
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:BUILD_BUILDNUMBER
 	[int]$rerunIdx = [convert]::ToInt32($env:SYSTEM_STAGEATTEMPT, 10) - 1
 	$rerunType = "rerun"
+	$workDir = $env:PIPELINE_WORKSPACE
 } else {
 	$buildNumber = $env:RELEASE_RELEASEID
 	[int]$rerunIdx = $env:RELEASE_ATTEMPTNUMBER
 	$rerunType = "attempt"
+}
+
+if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
+	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
+	if ($isBasicAuth -and [string]::IsNullOrWhiteSpace($mcUsername)) {
+		throw "Mobile Center Username is empty."
+	} elseif (!$isBasicAuth -and [string]::IsNullOrWhiteSpace($mcAccessKey)) {
+		throw "Mobile Center AccessKey is empty."
+	} elseif ([string]::IsNullOrWhiteSpace($mcDevices)) {
+		throw "The Device field is required."
+	}
+
+	if ($isBasicAuth) {
+		$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
+	} else {
+		$mcClientId = $mcSecret = $mcTenantId = $null
+		$err = [ServerConfig]::ParseAccessKey($mcAccessKey, [ref]$mcClientId, [ref]$mcSecret, [ref]$mcTenantId)
+		if ($err) {
+			throw $err
+		}
+		$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
+	}
+
+	if ($useMcProxy) {
+		if ([string]::IsNullOrWhiteSpace($mcProxyUrl)) {
+			throw "Proxy Server is empty."
+		} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
+			throw "Proxy Username is empty."
+		} elseif ($false -eq [Device]::TryParse($mcDevice, [ref]$device)) {
+			throw "Invalid device -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
+		}
+		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
+		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
+	}
+	
+	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig, $device, $workDir)
 }
 
 $resDir = Join-Path $uftworkdir -ChildPath "res\Report_$buildNumber"

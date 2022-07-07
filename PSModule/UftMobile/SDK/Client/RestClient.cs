@@ -1,4 +1,7 @@
 ﻿using PSModule.Common;
+using PSModule.Properties;
+using PSModule.UftMobile.SDK.Entity;
+using PSModule.UftMobile.SDK.Enums;
 using PSModule.UftMobile.SDK.Interface;
 using PSModule.UftMobile.SDK.Util;
 using System;
@@ -25,18 +28,22 @@ namespace PSModule.UftMobile.SDK
         private readonly ILogger _logger;
         private string _rawCookies => GetCookiesAsString();
         private string _hp4msecret;
+        private readonly AuthType _authType;
+        private AccessToken _accessToken;
+        private bool _isLoggedIn;
 
         static RestClient()
         {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RestClient(string serverUrl, Credentials credentials, ILogger logger)
+        public RestClient(string serverUrl, Credentials credentials, ILogger logger, AuthType authType)
         {
             _serverUrl = new Uri(serverUrl);
             _credentials = credentials;
             _logger = logger;
             _xsrfTokenValue = Guid.NewGuid().ToString();
+            _authType = authType;
             //_cookies.Add(XSRF_TOKEN, _xsrfTokenValue);
         }
 
@@ -49,16 +56,19 @@ namespace PSModule.UftMobile.SDK
         public string XsrfTokenValue => _xsrfTokenValue;
 
         public ILogger Logger => _logger;
+        public AuthType AuthType => _authType;
+        public bool IsLoggedIn { get { return _isLoggedIn; } set { _isLoggedIn = value; } }
+        public AccessToken AccessToken { get { return _accessToken; } set { _accessToken = value; } }
 
-        public async Task<Response<T>> HttpGet<T>(string url, WebHeaderCollection headers = null, string query = "", bool logError = true)
+        public async Task<Response<T>> HttpGet<T>(string url, WebHeaderCollection headers = null, string query = "", bool logError = true, ResType resType = ResType.DataEntities) where T : class
         {
             Response<T> res = null;
-            if (headers == null && _cookies.Any() && !_hp4msecret.IsNullOrWhiteSpace())
-                headers = new WebHeaderCollection
-                {
-                    { HttpRequestHeader.Cookie, $"{JSESSIONID}={_cookies[JSESSIONID]}" },
-                    { X_HP4MSECRET, _hp4msecret }
-                };
+            if (!TryBuildHeaders(ref headers, out string err))
+            {
+                if (logError || _logger.IsDebug)
+                    await _logger.LogError(err);
+                return new Response<T>(err);
+            }
 
             using (var client = new WebClient { Headers = headers })
             {
@@ -75,7 +85,7 @@ namespace PSModule.UftMobile.SDK
                     if (_logger.IsDebug)
                         PrintHeaders(client);
 
-                    res = new Response<T>(data, client.ResponseHeaders, HttpStatusCode.OK);
+                    res = new Response<T>(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
                     UpdateCookies(client);
                 }
                 catch (ThreadInterruptedException)
@@ -108,17 +118,11 @@ namespace PSModule.UftMobile.SDK
         public async Task<Response> HttpPost(string url, string body, WebHeaderCollection headers = null)
         {
             Response res;
-            if (headers == null)
+            if (!TryBuildHeaders(ref headers, out string err))
             {
-                headers = new WebHeaderCollection
-                {
-                    { HttpRequestHeader.Accept, C.APP_JSON },
-                    { HttpRequestHeader.ContentType, C.APP_JSON_UTF8 }
-                };
-                if (_cookies.Any() && !_hp4msecret.IsNullOrWhiteSpace())
-                {
-                    headers.Add(X_HP4MSECRET, _hp4msecret);
-                }
+                if (_logger.IsDebug)
+                    await _logger.LogError(err);
+                return new Response(err);
             }
             using var client = new WebClient { Headers = headers };
             try
@@ -160,21 +164,14 @@ namespace PSModule.UftMobile.SDK
             return res;
         }
 
-        public async Task<Response<T>> HttpPost<T>(string url, string body, WebHeaderCollection headers = null)
+        public async Task<Response<T>> HttpPost<T>(string url, string body, WebHeaderCollection headers = null, ResType resType = ResType.Object) where T : class
         {
             Response<T> res;
-            if (headers == null)
+            if (!TryBuildHeaders(ref headers, out string err))
             {
-                headers = new WebHeaderCollection
-                {
-                    { HttpRequestHeader.Accept, C.APP_JSON },
-                    { HttpRequestHeader.ContentType, C.APP_JSON_UTF8 }
-                };
-                if (_cookies.Any() && !_hp4msecret.IsNullOrWhiteSpace())
-                {
-                    //headers.Add(JSESSIONID, _cookies[JSESSIONID]);
-                    headers.Add(X_HP4MSECRET, _hp4msecret);
-                }
+                if (_logger.IsDebug)
+                    await _logger.LogError(err);
+                return new Response<T>(err);
             }
 
             using var client = new WebClient { Headers = headers };
@@ -187,7 +184,7 @@ namespace PSModule.UftMobile.SDK
                 if (_logger.IsDebug)
                     PrintHeaders(client);
 
-                res = new Response<T>(data, client.ResponseHeaders, HttpStatusCode.OK);
+                res = new Response<T>(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
                 UpdateCookies(client);
             }
             catch (WebException we)
@@ -273,6 +270,56 @@ namespace PSModule.UftMobile.SDK
                     _logger.LogDebug($"{key} = {headers[key]}");
                 }
             }
+        }
+
+        private bool TryBuildHeaders(ref WebHeaderCollection headers, out string err)
+        {
+            err = string.Empty;
+            bool ok = false;
+            if (headers == null)
+            {
+                headers = new WebHeaderCollection
+                {
+                    { HttpRequestHeader.Accept, C.APP_JSON },
+                    { HttpRequestHeader.ContentType, C.APP_JSON_UTF8 }
+                };
+            }
+            headers.Add(X_HP4MSECRET, _hp4msecret);
+
+            if (_isLoggedIn)
+            {
+                if (_authType == AuthType.Basic)
+                {
+                    headers.Add(HttpRequestHeader.Cookie, $"{JSESSIONID}={_cookies[JSESSIONID]}");
+                    ok = true;
+                }
+                else if (_authType == AuthType.AccessKey)
+                {
+                    if (_accessToken == null)
+                    {
+                        err = Resources.AccessTokenIsNull;
+                    }
+                    else if (_accessToken.IsExpired())
+                    {
+                        err = Resources.AccessTokenExpired;
+                    }
+                    else
+                    {
+                        headers.Add(HttpRequestHeader.Authorization, $"Bearer {_accessToken.Value}");
+                        //TODO add tenant-id header, required when using shared spaces (multitenancy) with UFT Mobile
+                        ok = true;
+                    }
+                }
+                else
+                {
+                    err = Resources.AuthTypeIsInvalid;
+                }
+            }
+            else
+            {
+                ok = true;
+            }
+            return ok;
         }
     }
 }

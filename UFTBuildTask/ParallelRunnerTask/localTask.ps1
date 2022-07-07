@@ -65,7 +65,7 @@ if ($envType -eq "") {
 	$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
 	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig, $mcTenantId)
 	[List[string]]$invalidDeviceLines = $null
-	[ParallelRunnerConfig]::ParseDeviceLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
+	[Device]::ParseLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
 	if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {
 		foreach ($line in $invalidDeviceLines) {
 			Write-Warning "Invalid device line -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";

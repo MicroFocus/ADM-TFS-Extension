@@ -1,7 +1,7 @@
 ﻿
 namespace PSModule.UftMobile.SDK.Entity
 {
-    internal class Workspace
+    public class Workspace
     {
         public string Uuid { get; set; }
         public string Name { get; set; }

@@ -1,4 +1,7 @@
 ﻿
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
 namespace PSModule.Common
 {
     public static class Constants
@@ -16,7 +19,12 @@ namespace PSModule.Common
         public const string ONE = "1";
         public const string TWO = "2";
         public const string COMMA = ",";
+        public const string SEMI_COLON = ";";
+        public const string CLIENT = "client";
+        public const string SECRET = "secret";
+        public const string TENANT = "tenant";
         public const char EQUAL = '=';
+        public const char COLON = ':';
         public const char SEMICOLON = ';';
         public const char LINE_FEED = '\n';
 
@@ -30,5 +38,23 @@ namespace PSModule.Common
         public const string NO = "no";
 
         public const string HTTPS = "https";
+
+        public const string DOUBLE_QUOTE = @"""";
+        public const char DOUBLE_QUOTE_ = '"';
+        public static readonly char[] LF_ = new char[] { '\n' };
+        public static readonly char[] COMMA_ = COMMA.ToCharArray();
+        public static readonly char[] COLON_ = new char[] { ':' };
+        public static readonly char[] SEMI_COLON_ = SEMI_COLON.ToCharArray();
+
+        private static readonly DefaultContractResolver _contractResolver = new()
+        {
+            NamingStrategy = new CamelCaseNamingStrategy()
+        };
+        public static readonly JsonSerializerSettings JsonSerializerSettings = new()
+        {
+            ContractResolver = _contractResolver,
+            Formatting = Formatting.Indented
+        };
+
     }
 }

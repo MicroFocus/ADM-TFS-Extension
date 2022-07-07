@@ -5,8 +5,11 @@ using namespace PSModule.UftMobile.SDK.UI
 
 param()
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl' -Require
-$mcUsername = Get-VstsInput -Name 'mcUsername' -Require
-$mcPassword = Get-VstsInput -Name 'mcPassword' -Require
+$mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
+$mcUsername = Get-VstsInput -Name 'mcUsername'
+$mcPassword = Get-VstsInput -Name 'mcPassword'
+$mcTenantId = Get-VstsInput -Name 'mcTenantId'
+$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
 $mcResources = Get-VstsInput -Name 'mcResources' -Require
 [bool]$includeOfflineDevices = Get-VstsInput -Name 'includeOfflineDevices' -AsBool
 
@@ -27,7 +30,16 @@ $runStatusCodeFile = "$resDir\RunStatusCode.txt"
 
 Import-Module $uftworkdir\bin\PSModule.dll
 
-$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
+if (mcAuthType -eq "basic") {
+	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
+} else {
+	$mcClientId = $mcSecret = $mcTenantId = $null
+	$err = [ServerConfig]::ParseAccessKey($mcAccessKey, [ref]$mcClientId, [ref]$mcSecret, [ref]$mcTenantId)
+	if ($err) {
+		throw $err
+	}
+	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
+}
 $config = [MobileResxConfig]::new($srvConfig, $mcResources, $includeOfflineDevices, $false)
 
 #---------------------------------------------------------------------------------------------------

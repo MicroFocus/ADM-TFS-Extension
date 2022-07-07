@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PSModule.UftMobile.SDK.Enums;
 using System;
 using System.Net;
 
@@ -6,7 +7,7 @@ namespace PSModule.UftMobile.SDK
 {
     public class Response
     {
-        private readonly string _error;
+        protected string _error;
         protected readonly WebHeaderCollection _headers;
         protected readonly HttpStatusCode? _statusCode;
 
@@ -37,23 +38,45 @@ namespace PSModule.UftMobile.SDK
             _headers = headers;
             _statusCode = statusCode;
         }
-        public bool IsOK => _error == null && _statusCode.In(HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted);
+        public bool IsOK => _error.IsNullOrWhiteSpace() && _statusCode.In(HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted);
 
     }
 
-    public class Response<T> : Response
+    public class Response<T> : Response where T : class
     {
-        private readonly string _error;
         private readonly T[] _entries;
         public T[] Entities => _entries ?? new T[0];
-        public new string Error => _error;
-        public Response(string body, WebHeaderCollection headers, HttpStatusCode statusCode) : base(headers, statusCode)
+        public T FirstEntity => _entries?[0];
+        public Response(string body, WebHeaderCollection headers, HttpStatusCode statusCode, ResType resType) : base(headers, statusCode)
         {
-            Result<T> res = JsonConvert.DeserializeObject<Result<T>>(body);
-            _entries = res.Data;
-            if (res.Error)
+            switch (resType)
             {
-                _error = res.Message;
+                case ResType.DataEntities:
+                    {
+                        var res = JsonConvert.DeserializeObject<MultiResult<T>>(body);
+                        _entries = res.Entries;
+                        if (res.Error)
+                        {
+                            _error = res.Message;
+                        }
+                        break;
+                    }
+                case ResType.DataEntity:
+                    {
+                        var res = JsonConvert.DeserializeObject<SingleResult<T>>(body);
+                        _entries = new T[] { res.Entry };
+                        if (res.Error)
+                        {
+                            _error = res.Message;
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        var res = JsonConvert.DeserializeObject<T>(body);
+                        _entries = new T[] { res };
+                        break;
+                    }
             }
         }
         public Response(string err, HttpStatusCode? statusCode = null) : base(err, statusCode)
