@@ -51,8 +51,10 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		throw "Mobile Center Username is empty."
 	} elseif (!$isBasicAuth -and [string]::IsNullOrWhiteSpace($mcAccessKey)) {
 		throw "Mobile Center AccessKey is empty."
-	} elseif ([string]::IsNullOrWhiteSpace($mcDevices)) {
+	} elseif ([string]::IsNullOrWhiteSpace($mcDevice)) {
 		throw "The Device field is required."
+	} elseif ($false -eq [Device]::TryParse($mcDevice, [ref]$device)) {
+		throw "Invalid device -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
 	}
 
 	if ($isBasicAuth) {
@@ -71,8 +73,6 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 			throw "Proxy Server is empty."
 		} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
 			throw "Proxy Username is empty."
-		} elseif ($false -eq [Device]::TryParse($mcDevice, [ref]$device)) {
-			throw "Invalid device -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
 		}
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)

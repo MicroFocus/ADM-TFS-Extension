@@ -136,6 +136,7 @@
     },
     {
       "name": "mcAccessKey",
+      "groupName": "mobileCenter",
       "type": "string",
       "label": "Access Key",
       "defaultValue": "",
@@ -145,6 +146,7 @@
     },
     {
       "name": "mcDevice",
+      "groupName": "mobileCenter",
       "type": "string",
       "label": "Device",
       "defaultValue": "",
