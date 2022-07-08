@@ -93,6 +93,7 @@
     },
     {
       "name": "mcAuthType",
+      "groupName": "mobileCenter",
       "type": "radio",
       "label": "Authentication type",
       "defaultValue": "basic",
