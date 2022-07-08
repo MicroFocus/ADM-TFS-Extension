@@ -19,7 +19,7 @@ namespace PSModule.UftMobile.SDK.Auth
             try
             {
                 string body = @$"{{""name"":""{username}"", ""password"":""{pass}"", ""accountName"": ""default""}}";
-                var res = await client.HttpPost(client.ServerUrl.AppendSuffix(LOGIN_ENDPOINT), body: body);
+                var res = await client.HttpPost(LOGIN_ENDPOINT, body: body);
                 if (!res.IsOK)
                 {
                     await client.Logger.LogDebug($"StatusCode=[{res.StatusCode}]");

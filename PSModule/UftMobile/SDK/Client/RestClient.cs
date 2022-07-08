@@ -60,7 +60,7 @@ namespace PSModule.UftMobile.SDK
         public bool IsLoggedIn { get { return _isLoggedIn; } set { _isLoggedIn = value; } }
         public AccessToken AccessToken { get { return _accessToken; } set { _accessToken = value; } }
 
-        public async Task<Response<T>> HttpGet<T>(string url, WebHeaderCollection headers = null, string query = "", bool logError = true, ResType resType = ResType.DataEntities) where T : class
+        public async Task<Response<T>> HttpGet<T>(string endpoint, WebHeaderCollection headers = null, string query = "", bool logError = true, ResType resType = ResType.DataEntities) where T : class
         {
             Response<T> res = null;
             if (!TryBuildHeaders(ref headers, out string err))
@@ -75,12 +75,12 @@ namespace PSModule.UftMobile.SDK
                 try
                 {
                     if (!query.IsNullOrWhiteSpace())
-                        url += $"?{query}";
+                        endpoint += $"?{query}";
 
-                    await _logger.LogDebug($"GET {url}");
+                    await _logger.LogDebug($"GET {endpoint}");
 
                     DecorateRequestHeaders(client);
-                    string data = await client.DownloadStringTaskAsync(url);
+                    string data = await client.DownloadStringTaskAsync(ServerUrl.AppendSuffix(endpoint));
                     await _logger.LogDebug($"{data}");
                     if (_logger.IsDebug)
                         PrintHeaders(client);
@@ -115,7 +115,7 @@ namespace PSModule.UftMobile.SDK
             return res;
         }
 
-        public async Task<Response> HttpPost(string url, string body, WebHeaderCollection headers = null)
+        public async Task<Response> HttpPost(string endpoint, string body, WebHeaderCollection headers = null)
         {
             Response res;
             if (!TryBuildHeaders(ref headers, out string err))
@@ -127,9 +127,9 @@ namespace PSModule.UftMobile.SDK
             using var client = new WebClient { Headers = headers };
             try
             {
-                await _logger.LogDebug($"POST {url}");
+                await _logger.LogDebug($"POST {endpoint}");
                 DecorateRequestHeaders(client);
-                string data = await client.UploadStringTaskAsync(url, body);
+                string data = await client.UploadStringTaskAsync(ServerUrl.AppendSuffix(endpoint), body);
                 if (_logger.IsDebug)
                     PrintHeaders(client);
 
@@ -164,7 +164,7 @@ namespace PSModule.UftMobile.SDK
             return res;
         }
 
-        public async Task<Response<T>> HttpPost<T>(string url, string body, WebHeaderCollection headers = null, ResType resType = ResType.Object) where T : class
+        public async Task<Response<T>> HttpPost<T>(string endpoint, string body, WebHeaderCollection headers = null, ResType resType = ResType.Object) where T : class
         {
             Response<T> res;
             if (!TryBuildHeaders(ref headers, out string err))
@@ -177,10 +177,10 @@ namespace PSModule.UftMobile.SDK
             using var client = new WebClient { Headers = headers };
             try
             {
-                await _logger.LogDebug($"POST {url}");
+                await _logger.LogDebug($"POST {endpoint}");
 
                 DecorateRequestHeaders(client);
-                string data = await client.UploadStringTaskAsync(url, body);
+                string data = await client.UploadStringTaskAsync(ServerUrl.AppendSuffix(endpoint), body);
                 if (_logger.IsDebug)
                     PrintHeaders(client);
 
@@ -206,7 +206,7 @@ namespace PSModule.UftMobile.SDK
             return res;
         }
 
-        public Task<Response> HttpPut(string url, WebHeaderCollection headers = null, string body = null)
+        public Task<Response> HttpPut(string endpoint, WebHeaderCollection headers = null, string body = null)
         {
             throw new NotImplementedException();
         }

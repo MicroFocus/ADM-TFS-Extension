@@ -11,24 +11,24 @@ namespace PSModule.UftMobile.SDK.Interface
     public interface IClient
     {
         Task<Response<T>> HttpGet<T>(
-                string url,
+                string endpoint,
                 WebHeaderCollection headers = null,
                 string query = "",
                 bool logError = true,
                 ResType resType = ResType.DataEntities) where T : class;
 
         Task<Response> HttpPost(
-                string url,
+                string endpoint,
                 string body,
                 WebHeaderCollection headers = null);
         Task<Response<T>> HttpPost<T>(
-                string url,
+                string endpoint,
                 string body,
                 WebHeaderCollection headers = null,
                 ResType resType = ResType.Object) where T : class;
 
         Task<Response> HttpPut(
-                string url,
+                string endpoint,
                 WebHeaderCollection headers = null,
                 string body = null);
 

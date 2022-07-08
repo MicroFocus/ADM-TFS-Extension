@@ -454,7 +454,7 @@ namespace PSModule
 
         private async Task<IList<Device>> GetAllDevices()
         {
-            var res = await _client.HttpGet<Device>(_client.ServerUrl.AppendSuffix(DEVICES_ENDPOINT));
+            var res = await _client.HttpGet<Device>(DEVICES_ENDPOINT);
             if (res.IsOK)
             {
                 return res.Entities;
@@ -468,7 +468,7 @@ namespace PSModule
         private async Task<Job> CreateTempJob()
         {
             Job job = null;
-            var res = await _client.HttpGet<Job>(_client.ServerUrl.AppendSuffix(CREATE_TEMP_JOB_ENDPOINT), resType: ResType.DataEntity);
+            var res = await _client.HttpGet<Job>(CREATE_TEMP_JOB_ENDPOINT, resType: ResType.DataEntity);
             if (res.IsOK)
             {
                 if (res.Entities.Any() && res.Entities[0] != null)
@@ -486,7 +486,7 @@ namespace PSModule
         private async Task<Job> GetJob(string jobId)
         {
             WriteDebug($"GetJob: {jobId}");
-            var res = await _client.HttpGet<Job>(_client.ServerUrl.AppendSuffix($"{GET_JOB_ENDPOINT}/{jobId}"), resType: ResType.DataEntity);
+            var res = await _client.HttpGet<Job>($"{GET_JOB_ENDPOINT}/{jobId}", resType: ResType.DataEntity);
             if (res.IsOK && res.Entities.Any())
             {
                 var job = res.Entities[0];

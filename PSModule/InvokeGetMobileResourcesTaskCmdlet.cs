@@ -97,7 +97,7 @@ namespace PSModule
         {
             RunStatus status = RunStatus.FAILED;
             WriteObject(DEVICES_HEAD);
-            var res = await client.HttpGet<Device>(client.ServerUrl.AppendSuffix(DEVICES_ENDPOINT));
+            var res = await client.HttpGet<Device>(DEVICES_ENDPOINT);
             if (res.IsOK)
             {
                 if (res.Entities.Any())
@@ -150,7 +150,7 @@ namespace PSModule
         {
             RunStatus status = RunStatus.FAILED;
             WriteObject(APPS_HEAD);
-            var res = await client.HttpGet<App>(client.ServerUrl.AppendSuffix(APPS_ENDPOINT));
+            var res = await client.HttpGet<App>(APPS_ENDPOINT);
             if (res.IsOK)
             {
                 var apps = res.Entities;

@@ -2,7 +2,6 @@
 using PSModule.Properties;
 using PSModule.UftMobile.SDK.Enums;
 using System;
-using System.Linq;
 using C = PSModule.Common.Constants;
 
 namespace PSModule.UftMobile.SDK.UI
@@ -21,13 +20,18 @@ namespace PSModule.UftMobile.SDK.UI
         public string PasswordOrSecret => _passwordOrSecret;
         public string TenantId => _tenantId;
 
-        public ServerConfig(string serverUrl, string usernameOrClientId, string passwordOrSecret, string tenantId = "", bool isBasicAuth = true)
+        public ServerConfig(string serverUrl, string usernameOrClientId, string passwordOrSecret, string tenantId, AuthType authType)
         {
             _serverUrl = serverUrl.Trim();
             _usernameOrClientId = usernameOrClientId;
             _passwordOrSecret = passwordOrSecret;
             _tenantId = tenantId;
-            _authType = isBasicAuth ? AuthType.Basic : AuthType.AccessKey;
+            _authType = authType;
+        }
+
+        public ServerConfig(string serverUrl, string usernameOrClientId, string passwordOrSecret, string tenantId = "", bool isBasicAuth = true) : 
+            this(serverUrl, usernameOrClientId, passwordOrSecret, tenantId, isBasicAuth ? AuthType.Basic : AuthType.AccessKey)
+        {
         }
         /// <summary>
         /// Parses the execution token and separates into three parts: clientId, secretKey and tenantId
@@ -49,6 +53,7 @@ namespace PSModule.UftMobile.SDK.UI
             // "client=oauth2-OuV8k3snnGp9vJugC1Zn@microfocus.com; secret=6XSquF1FUD4CyQM7fb0B; tenant=999999999;"
             // "client=oauth2-OuV8k3snnGp9vJugC1Zn@microfocus.com; secret=6XSquF1FUD7CyQM7fb0B; tenant=999999999;"
 
+            accessKey = accessKey.Trim().Trim(C.DOUBLE_QUOTE_);
             if (accessKey.IsNullOrEmpty()) return Resources.McMissingOrInvalidAcessKey;
 
             var tokens = accessKey.Split(C.SEMI_COLON_, StringSplitOptions.RemoveEmptyEntries);

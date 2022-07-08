@@ -30,7 +30,7 @@ $runStatusCodeFile = "$resDir\RunStatusCode.txt"
 
 Import-Module $uftworkdir\bin\PSModule.dll
 
-if (mcAuthType -eq "basic") {
+if ($mcAuthType -eq "basic") {
 	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
 } else {
 	$mcClientId = $mcSecret = $mcTenantId = $null

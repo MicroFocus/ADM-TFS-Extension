@@ -93,7 +93,7 @@
     },
     {
       "name": "mcAuthType",
-      "type": "boolean",
+      "type": "radio",
       "label": "Authentication type",
       "defaultValue": "basic",
       "required": true,
