@@ -14,6 +14,7 @@ $rptFileName = Get-VstsInput -Name 'reportFileName'
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
+$mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
 $mcTenantId = Get-VstsInput -Name 'mcTenantId'
