@@ -1,9 +1,9 @@
 {
 	"manifestVersion": 1,
-	"id": "UFT-Azure-extension",
+	"id": "UFT-Azure-extension-QA",
 	"name": "UFT One Azure DevOps extension",
-	"version": "3.0.0",
-	"publisher": "uftpublisher",
+	"version": "3.7.5",
+	"publisher": "DorinBogdan",
 	"targets": [{
 		"id": "Microsoft.VisualStudio.Services",
 		"version": "[15.0,)"
@@ -164,6 +164,6 @@
 		}
 	],
 	"galleryFlags": [
-		"Public"
+		"Private"
 	]
 }

@@ -164,8 +164,8 @@
       "required": false,
       "visibleRule": "envType = mobile",
       "validation": {
-        "expression": "and(isMatch(value, '^\\d*$', 'IgnoreCase'), isInRange(value, 1, 2147483647))",
-        "message": "This value must be a valid and positive number (maximum 2147483647)"
+        "expression": "or(eq(value, ''), and(isMatch(value, '^\\d*$', 'IgnoreCase'), isInRange(value, 1, 2147483647)))",
+        "message": "This field must be a valid and positive number (maximum 2147483647)"
       },
       "helpMarkDown": "The tenant ID used to connect to the UFT Mobile server with multi-tenant mode enabled"
     },
