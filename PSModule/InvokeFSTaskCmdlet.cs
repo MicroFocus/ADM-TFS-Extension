@@ -221,14 +221,14 @@ namespace PSModule
                     }
                     catch (WebException wex)
                     {
-                        ThrowTerminatingError(new(new(GetErrorFromWebException(wex)), nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy)));
+                        ThrowTerminatingError(GetErrorFromWebException(wex), nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy));
                     }
                     catch (Exception ex)
                     {
                         ex = ex.InnerException ?? ex;
                         string err = ex is WebException wex ? GetErrorFromWebException(wex) : $"Proxy Error: {ex.Message}";
                         WriteDebug($"{ex.GetType().Name}: {ex.Message}");
-                        ThrowTerminatingError(new(new(err), nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy)));
+                        ThrowTerminatingError(err, nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy));
                     }
                 }
                 if (_isParallelRunnerMode && ParallelRunnerConfig.EnvType == EnvType.Mobile && ParallelRunnerConfig.Devices.Any())
@@ -363,7 +363,7 @@ namespace PSModule
                 }
                 else
                 {
-                    ThrowTerminatingError(new(new($"No available devices found."), nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices)));
+                    ThrowTerminatingError($"No available devices found.", nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices));
                 }
             }
             if (noIdDevices.Any())
@@ -386,7 +386,7 @@ namespace PSModule
             Device dev = MobileConfig.Device;
             if (dev == null)
             {
-                ThrowTerminatingError(new(new(MISSING_OR_INVALID_DEVICE), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                ThrowTerminatingError(MISSING_OR_INVALID_DEVICE, nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices));
             }
             if (!dev.DeviceId.IsNullOrWhiteSpace() && dev.HasSecondaryProperties())
             {
@@ -399,23 +399,23 @@ namespace PSModule
             {
                 if (!dev.IsAvailable(onlineDevices.AsQueryable(), out string msg))
                 {
-                    ThrowTerminatingError(new(new($"No available device matches the criteria -> {msg}"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                    ThrowTerminatingError($"No available device matches the criteria -> {msg}", nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices));
                 }
             }
             else
             {
                 if (offlineDevices.Any() && offlineDevices.Where(d => d.DeviceId == dev.DeviceId).Any())
                 {
-                    ThrowTerminatingError(new(new($@"The device with ID ""{dev.DeviceId}"" is disconnected"), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                    ThrowTerminatingError($@"The device with ID ""{dev.DeviceId}"" is disconnected", nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices));
                 }
                 if (onlineDevices.Any())
                 {
                     if (!onlineDevices.Where(d => d.DeviceId == dev.DeviceId).Any())
-                        ThrowTerminatingError(new(new(@$"No available device found by ID ""{dev.DeviceId}"""), nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices)));
+                        ThrowTerminatingError(@$"No available device found by ID ""{dev.DeviceId}""", nameof(ValidateDevices), ErrorCategory.InvalidData, nameof(ValidateDevices));
                 }
                 else
                 {
-                    ThrowTerminatingError(new(new($"No available devices found."), nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices)));
+                    ThrowTerminatingError($"No available devices found.", nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices));
                 }
             }
         }
@@ -447,7 +447,7 @@ namespace PSModule
             }
             else
             {
-                ThrowTerminatingError(new(new(LOGIN_FAILED), nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices)));
+                ThrowTerminatingError(LOGIN_FAILED, nameof(ValidateDevices), ErrorCategory.DeviceError, nameof(ValidateDevices));
             }
         }
 
@@ -455,9 +455,9 @@ namespace PSModule
         {
             if (_auth != null && _isLoggedIn)
             {
-                _auth.Logout(_client);
+                _auth.Logout(_client).Wait();
             }
-            ThrowTerminatingError(err, errorId, errorCategory, targetObject);
+            ThrowTerminatingError(new(new(err), errorId, errorCategory, targetObject));
         }
 
         private async Task<IList<Device>> GetAllDevices()

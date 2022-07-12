@@ -45,7 +45,7 @@ namespace PSModule.UftMobile.SDK.Auth
             if (client != null)
             {
                 string body = @"{{ ""data"": {{ }}, ""error"": false, ""message"": ""string"", ""messageCode"": 0 }}";
-                Response response = await client.HttpPost(client.ServerUrl.AppendSuffix(LOGOUT_ENDPOINT), body: body);
+                Response response = await client.HttpPost(LOGOUT_ENDPOINT, body: body);
                 isLoggedOut = response.IsOK;
             }
             return isLoggedOut;
