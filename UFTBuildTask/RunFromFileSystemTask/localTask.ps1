@@ -17,7 +17,7 @@ $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
 $mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
-$mcTenantId = Get-VstsInput -Name 'mcTenantId'
+[int]$mcTenantId = Get-VstsInput -Name 'mcTenantId' -AsInt
 $mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
 $mcDevice = Get-VstsInput -Name 'mcDevice'
 [bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
@@ -61,7 +61,7 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	if ($isBasicAuth) {
 		$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
 	} else {
-		$mcClientId = $mcSecret = $mcTenantId = $null
+		$mcClientId = $mcSecret = $null
 		$err = [ServerConfig]::ParseAccessKey($mcAccessKey, [ref]$mcClientId, [ref]$mcSecret, [ref]$mcTenantId)
 		if ($err) {
 			throw $err

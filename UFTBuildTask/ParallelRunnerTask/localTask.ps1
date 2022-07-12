@@ -29,7 +29,7 @@ $mcDevices = Get-VstsInput -Name 'mcDevices'
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
-$mcTenantId = Get-VstsInput -Name 'mcTenantId'
+[int]$mcTenantId = Get-VstsInput -Name 'mcTenantId' -AsInt
 [bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 $mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
 [bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
@@ -62,8 +62,8 @@ if ($envType -eq "") {
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
 	}
-	$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
-	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig, $mcTenantId)
+	$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
+	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig)
 	[List[string]]$invalidDeviceLines = $null
 	[Device]::ParseLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
 	if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {

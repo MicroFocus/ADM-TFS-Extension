@@ -56,7 +56,7 @@
     },
     {
       "name": "mcTenantId",
-      "type": "string",
+      "type": "int",
       "label": "Tenant Id",
       "defaultValue": "",
       "required": false,

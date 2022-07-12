@@ -8,13 +8,13 @@ namespace PSModule.UftMobile.SDK.Util
     {
         private readonly string _usernameOrClientId;
         private readonly string _passwordOrSecret;
-        private readonly string _tenantId;
+        private readonly int _tenantId;
 
         public string UsernameOrClientId => _usernameOrClientId;
         public string PasswordOrSecret => _passwordOrSecret;
-        public string TenantId => _tenantId;
+        public int TenantId => _tenantId;
 
-        public Credentials(string usernameorClientId, string passwordOrSecret, string tenantId = "")
+        public Credentials(string usernameorClientId, string passwordOrSecret, int tenantId = 0)
         {
             if (usernameorClientId.IsNullOrWhiteSpace())
                 throw new UftMobileException(Resources.MissingUsernameOrClientId, ErrorCategory.InvalidArgument);

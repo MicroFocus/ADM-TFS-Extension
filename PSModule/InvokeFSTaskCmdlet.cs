@@ -27,10 +27,12 @@ namespace PSModule
         private const string MISSING_OR_INVALID_DEVICE = "Missing or invalid device";
         private const string FAILED_TO_CREATE_TEMP_JOB = "UFT Mobile server failed to create a temp job";
         private const string NO_JOB_FOUND_BY_GIVEN_ID = "No job found by given ID";
+        private const string NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID = "No active tenant (project) found by given ID";
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string GET_JOB_ENDPOINT = "rest/job";
         private const string CREATE_TEMP_JOB_ENDPOINT = "rest/job/createTempJob";
         private const string UPDATE_JOB_ENDPOINT = "rest/job/updateJob/";
+        private const string GET_PROJECTS_ENPOINT = "rest/v1/project?includeManagement=false";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
         private const string HEAD = "HEAD";
@@ -205,6 +207,12 @@ namespace PSModule
             if (MobileConfig != null)
             {
                 InitRestClientAndLogin().Wait();
+
+                if (!IsValidTenantId().Result)
+                {
+                    ThrowTerminatingError($"{NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID}: {MobileConfig.TenantId}", nameof(IsValidTenantId), ErrorCategory.InvalidData, nameof(IsValidTenantId));
+                }
+
                 if (MobileConfig.UseProxy)
                 {
                     try
@@ -525,6 +533,45 @@ namespace PSModule
         {
             //TODO
             throw new NotImplementedException();
+        }
+
+        private async Task<Project[]> GetProjects()
+        {
+            WriteDebug($"GetProjects");
+            var res = await _client.HttpGet<Project>($"{GET_PROJECTS_ENPOINT}", resType: ResType.Array);
+            if (res.IsOK)
+            {
+                return res.Entities;
+            }
+            else
+            {
+                WriteDebug(res.Error);
+                return new Project[0];
+            }
+        }
+        private async Task<Project> GetProject(int tenantId)
+        {
+            var projects = await GetProjects();
+            if (projects.Any())
+            {
+                var project = projects.FirstOrDefault(p => p.Id == tenantId);
+                if (project != null)
+                    WriteDebug($"Found tentant (project) with ID: {project.Id}");
+                return project;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private async Task<bool> IsValidTenantId()
+        {
+            int tenantId = MobileConfig.TenantId;
+            if (tenantId == 0)
+                return true;
+            var project = await GetProject(tenantId);
+            return project?.IsActive == true;
         }
     }
 }

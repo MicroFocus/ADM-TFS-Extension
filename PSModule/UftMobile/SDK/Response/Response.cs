@@ -71,6 +71,11 @@ namespace PSModule.UftMobile.SDK
                         }
                         break;
                     }
+                case ResType.Array:
+                    {
+                        _entries = JsonConvert.DeserializeObject<T[]>(body);
+                        break;
+                    }
                 default:
                     {
                         var res = JsonConvert.DeserializeObject<T>(body);

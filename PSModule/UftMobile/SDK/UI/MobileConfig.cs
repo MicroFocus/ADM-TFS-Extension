@@ -15,7 +15,7 @@ namespace PSModule.UftMobile.SDK.UI
         public Device Device => _device;
         public string WorkDir => _workDir;
 
-        public MobileConfig(ServerConfig srvConfig, bool useProxy, ProxyConfig proxyConfig, Device device = null, string workDir = ""): base(srvConfig.ServerUrl, srvConfig.UsernameOrClientId, srvConfig.PasswordOrSecret, srvConfig.TenantId, srvConfig.AuthType)
+        public MobileConfig(ServerConfig srvConfig, bool useProxy, ProxyConfig proxyConfig, Device device = null, string workDir = ""): base(srvConfig)
         {
             _useProxy = useProxy;
             _proxyConfig = proxyConfig;

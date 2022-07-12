@@ -11,36 +11,40 @@ namespace PSModule.UftMobile.SDK.UI
         private readonly string _serverUrl;
         private readonly string _usernameOrClientId;
         private readonly string _passwordOrSecret;
-        private readonly string _tenantId;
+        private readonly int _tenantId;
         private readonly AuthType _authType;
 
         public AuthType AuthType => _authType;
         public string ServerUrl => _serverUrl;
         public string UsernameOrClientId => _usernameOrClientId;
         public string PasswordOrSecret => _passwordOrSecret;
-        public string TenantId => _tenantId;
+        public int TenantId => _tenantId;
 
-        public ServerConfig(string serverUrl, string usernameOrClientId, string passwordOrSecret, string tenantId, AuthType authType)
+        public ServerConfig(ServerConfig config)
+        {
+            _serverUrl = config.ServerUrl;
+            _usernameOrClientId = config.UsernameOrClientId;
+            _passwordOrSecret = config.PasswordOrSecret;
+            _tenantId = config.TenantId;
+            _authType = config.AuthType;
+        }
+        public ServerConfig(string serverUrl, string usernameOrClientId, string passwordOrSecret, int tenantId = 0, bool isBasicAuth = true)
         {
             _serverUrl = serverUrl.Trim();
             _usernameOrClientId = usernameOrClientId;
             _passwordOrSecret = passwordOrSecret;
             _tenantId = tenantId;
-            _authType = authType;
-        }
-
-        public ServerConfig(string serverUrl, string usernameOrClientId, string passwordOrSecret, string tenantId = "", bool isBasicAuth = true) : 
-            this(serverUrl, usernameOrClientId, passwordOrSecret, tenantId, isBasicAuth ? AuthType.Basic : AuthType.AccessKey)
-        {
+            _authType = isBasicAuth ? AuthType.Basic : AuthType.AccessKey;
         }
         /// <summary>
         /// Parses the execution token and separates into three parts: clientId, secretKey and tenantId
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static string ParseAccessKey(string accessKey, out string clientId, out string secret, out string tenantId)
+        public static string ParseAccessKey(string accessKey, out string clientId, out string secret, out int tenantId)
         {
-            clientId = secret = tenantId = string.Empty;
+            clientId = secret = string.Empty;
+            tenantId = 0;
 
             // exec token consists of three parts:
             // 1. client id
@@ -73,15 +77,26 @@ namespace PSModule.UftMobile.SDK.UI
 
                 if (key.EqualsIgnoreCase(C.CLIENT))
                 {
+                    if (value.IsNullOrEmpty())
+                    {
+                        return Resources.McMissingClientId;
+                    }
                     clientId = value;
                 }
                 else if (key.EqualsIgnoreCase(C.SECRET))
                 {
+                    if (value.IsNullOrEmpty())
+                    {
+                        return Resources.McMissingSecretKey;
+                    }
                     secret = value;
                 }
                 else if (key.EqualsIgnoreCase(C.TENANT))
                 {
-                    tenantId = value;
+                    if (!int.TryParse(value, out tenantId))
+                    {
+                        return Resources.McMissingOrInvalidTenant;
+                    }
                 }
                 else
                 {

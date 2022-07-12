@@ -130,13 +130,22 @@
     <value>Invalid execution token for Mobile, should contain ClientID, SecretKey and TenantID.</value>
   </data>
   <data name="McMalformedTokenInvalidKey" xml:space="preserve">
-    <value>Malformed Acees Key, invalid key value: [{0}].</value>
+    <value>Malformed Acees Key, invalid key: [{0}].</value>
   </data>
   <data name="McMalformedTokenMissingKeyValuePair" xml:space="preserve">
     <value>Malformed Acees Key, token with invalid key-value pair: [{0}].</value>
   </data>
+  <data name="McMissingClientId" xml:space="preserve">
+    <value>Invalid Access Key. The client ID is empty.</value>
+  </data>
   <data name="McMissingOrInvalidAcessKey" xml:space="preserve">
     <value>Missing or invalid Access Key</value>
+  </data>
+  <data name="McMissingOrInvalidTenant" xml:space="preserve">
+    <value>Invalid Access Key. The tenant ID is empty or not a number.</value>
+  </data>
+  <data name="McMissingSecretKey" xml:space="preserve">
+    <value>Invalid Access Key. The Secret Key is empty.</value>
   </data>
   <data name="MissingUsernameOrClientId" xml:space="preserve">
     <value>Missing username or clientId.</value>

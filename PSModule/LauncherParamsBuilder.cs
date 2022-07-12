@@ -221,7 +221,7 @@ namespace PSModule
             {
                 SetParamValue("MobileUseSSL", C.ONE);
             }
-            SetParamValue("MobileTenantId", mobileConfig.TenantId);
+            SetParamValue("MobileTenantId", mobileConfig.TenantId != 0 ? $"{mobileConfig.TenantId}" : string.Empty);
             if (mobileConfig.UseProxy)
             {
                 var proxy = mobileConfig.ProxyConfig;

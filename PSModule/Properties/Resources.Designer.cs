@@ -97,7 +97,7 @@ namespace PSModule.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Malformed Acees Key, invalid key value: [{0}]..
+        ///   Looks up a localized string similar to Malformed Acees Key, invalid key: [{0}]..
         /// </summary>
         internal static string McMalformedTokenInvalidKey {
             get {
@@ -115,11 +115,38 @@ namespace PSModule.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid Access Key. The client ID is empty..
+        /// </summary>
+        internal static string McMissingClientId {
+            get {
+                return ResourceManager.GetString("McMissingClientId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing or invalid Access Key.
         /// </summary>
         internal static string McMissingOrInvalidAcessKey {
             get {
                 return ResourceManager.GetString("McMissingOrInvalidAcessKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Access Key. The tenant ID is empty or not a number..
+        /// </summary>
+        internal static string McMissingOrInvalidTenant {
+            get {
+                return ResourceManager.GetString("McMissingOrInvalidTenant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Access Key. The Secret Key is empty..
+        /// </summary>
+        internal static string McMissingSecretKey {
+            get {
+                return ResourceManager.GetString("McMissingSecretKey", resourceCulture);
             }
         }
         
