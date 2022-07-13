@@ -537,7 +537,6 @@ namespace PSModule
 
         private async Task<Project[]> GetProjects()
         {
-            WriteDebug($"GetProjects");
             var res = await _client.HttpGet<Project>($"{GET_PROJECTS_ENPOINT}", resType: ResType.Array);
             if (res.IsOK)
             {
@@ -545,7 +544,6 @@ namespace PSModule
             }
             else
             {
-                WriteDebug(res.Error);
                 return new Project[0];
             }
         }
@@ -555,8 +553,6 @@ namespace PSModule
             if (projects.Any())
             {
                 var project = projects.FirstOrDefault(p => p.Id == tenantId);
-                if (project != null)
-                    WriteDebug($"Found tentant (project) with ID: {project.Id}");
                 return project;
             }
             else
