@@ -26,9 +26,7 @@
       "helpMarkDown": "Choose the test type to be run in parallel",
       "options": {
         "web": "GUI Web",
-        "mobile": "GUI Mobile",
-        "api": "API",
-        "java": "GUI Java"
+        "mobile": "GUI Mobile"
       }
     },
     {
