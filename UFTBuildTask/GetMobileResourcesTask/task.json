@@ -34,7 +34,7 @@
         "basic": "Basic authentication",
         "key": "Access key authentication"
       },
-      "helpMarkDown": "TODO"
+      "helpMarkDown": "Select the authentication mode to use for connecting to UFT Mobile"
     },
     {
       "name": "mcUsername",
