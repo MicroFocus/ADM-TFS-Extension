@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PSModule.ParallelRunner.SDK.Entity;
+using System.Collections.Generic;
 
 namespace PSModule.Models
 {
@@ -17,5 +18,7 @@ namespace PSModule.Models
         public string Duration { get; set; }
 
         public string ErrorMessage { get; set; }
+
+        public List<TestRun> TestRuns { get; set; } = new(); // used for Parallel Runner
     }
 }

@@ -12,7 +12,8 @@ using PSModule.Models;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
 using PSModule.UftMobile.SDK.UI;
-
+using PSModule.ParallelRunner.SDK.Entity;
+using PRHelper = PSModule.ParallelRunner.SDK.Util.Helper;
 namespace PSModule
 {
     using H = Helper;
@@ -41,18 +42,23 @@ namespace PSModule
 
         #endregion
 
-        private readonly StringBuilder _launcherConsole = new StringBuilder();
-        private readonly ConcurrentQueue<string> outputToProcess = new ConcurrentQueue<string>();
-        private readonly ConcurrentQueue<string> errorToProcess = new ConcurrentQueue<string>();
+        private readonly StringBuilder _launcherConsole = new();
+        private readonly ConcurrentQueue<string> outputToProcess = new();
+        private readonly ConcurrentQueue<string> errorToProcess = new();
 
         protected bool _enableFailedTestsReport;
         protected bool _isParallelRunnerMode;
-        protected List<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 and passed to InvokeFSTaskCmdlet
+        protected List<TestRun> _parallelTestRuns = new();
+        protected List<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 or ParallelRunnerTask\localTask.ps1 and passed to / filled in InvokeFSTaskCmdlet, then read in localTask.ps1
         protected MobileConfig _mobileConfig;
 
         protected AbstractLauncherTaskCmdlet() { }
 
         public abstract Dictionary<string, string> GetTaskProperties();
+
+        private delegate void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
+                                               bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
+                                               string storageAccount = "", string container = "", string reportName = "", string archiveName = "");
 
         protected override void ProcessRecord()
         {
@@ -122,21 +128,22 @@ namespace PSModule
                 }
                 else
                 {
+                    CreateSummaryReport createSummaryReportHandler = _isParallelRunnerMode ? H.CreateParallelSummaryReport : H.CreateSummaryReport;
                     RunStatus runStatus = RunStatus.FAILED;
                     if (CollateResults(xmlResults, resdir))
                     {
-                        var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
+                        var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _, _isParallelRunnerMode);
                         //create html report
                         if (runType == RunType.FileSystem && properties[UPLOAD_ARTIFACT] == YES)
                         {
                             string storageAccount = properties.GetValueOrDefault(STORAGE_ACCOUNT, string.Empty);
                             string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
                             var artifactType = (ArtifactType)Enum.Parse(typeof(ArtifactType), properties[ARTIFACT_TYPE]);
-                            H.CreateSummaryReport(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
+                            createSummaryReportHandler(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
                         }
                         else
                         {
-                            H.CreateSummaryReport(resdir, runType, listReport);
+                            createSummaryReportHandler(resdir, runType, listReport);
                         }
                         //get task return code
                         runStatus = H.GetRunStatus(listReport);
@@ -419,7 +426,7 @@ namespace PSModule
             try
             {
                 string reportPath = Path.Combine(resdir, reportFileName);
-                using StreamWriter file = new StreamWriter(reportPath, true);
+                using StreamWriter file = new(reportPath, true);
                 foreach (var link in links)
                 {
                     file.WriteLine($"[Report {link.Item2}]({link.Item1})  ");

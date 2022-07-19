@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace PSModule.UftMobile.SDK.Entity
@@ -15,6 +16,9 @@ namespace PSModule.UftMobile.SDK.Entity
         private const string LowerOrEqual = "<=";
         private const string Greater = ">";
         private const string GreaterOrEqual = ">=";
+        private const string DEVICE_ID = "Device ID";
+        private const string OS_TYPE = "OS Type";
+        private const string OS_VERSION = "OS Version";
 
         private static readonly string[] _pipelineAttributes = new string[] { nameof(DeviceId), nameof(Model), nameof(Manufacturer), nameof(OSType), nameof(OSVersion)};
 
@@ -34,6 +38,23 @@ namespace PSModule.UftMobile.SDK.Entity
             return $@"deviceId: {DeviceId}, manufacturerAndModel: {Manufacturer} {Model}, osType: {OSType}, osVersion: {OSVersion}";
         }
 
+        public string ToHtmlString()
+        {
+            const string DEVICE_PROP_FORMAT = @"<div>{0}: <span style=""font-weight:bold"">{1}</span></div>";
+            StringBuilder props = new();
+            void Append (string name, string value) => props.AppendFormat(DEVICE_PROP_FORMAT, name, value);
+            if (!DeviceId.IsNullOrWhiteSpace())
+                Append(DEVICE_ID, DeviceId);
+            if (!Manufacturer.IsNullOrWhiteSpace())
+                Append(nameof(Manufacturer), Manufacturer);
+            if (!Model.IsNullOrWhiteSpace())
+                Append(nameof(Model), Model);
+            if (!OSType.IsNullOrWhiteSpace())
+                Append(OS_TYPE, OSType);
+            if (!OSVersion.IsNullOrWhiteSpace())
+                Append(OS_VERSION, OSVersion);
+            return props.ToString();
+        }
         public bool IsAvailable(IQueryable<Device> devices, out string msg)
         {
             IList<string> props = new List<string>();

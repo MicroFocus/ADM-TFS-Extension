@@ -1,4 +1,5 @@
 ﻿using PSModule.Models;
+using PSModule.ParallelRunner.SDK.Entity;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Xml;
+using PRHelper = PSModule.ParallelRunner.SDK.Util.Helper;
 
 namespace PSModule
 {
@@ -33,6 +35,8 @@ namespace PSModule
         private const string MESSAGE = "message";
         private const string SYSTEM_OUT = "system-out";
         private const string TEST_NAME = "Test name";
+        private const string TEST_TYPE = "Test type";
+        private const string RULES = "Rules";
         private const string TIMESTAMP = "Timestamp";
         private const string FAILED_STEPS = "Failed steps";
         private const string DURATIONS = "Duration(s)";
@@ -64,11 +68,11 @@ namespace PSModule
         private const string FAILED_TESTS = "Failed Tests";
         #endregion
 
-        public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out IDictionary<string, IList<ReportMetaData>> failedSteps)
+        public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out IDictionary<string, IList<ReportMetaData>> failedSteps, bool addParallelTestRuns = false)
         {
             failedSteps = new Dictionary<string, IList<ReportMetaData>>();
             var listReport = new List<ReportMetaData>();
-            XmlDocument xmlDoc = new XmlDocument();
+            XmlDocument xmlDoc = new();
             xmlDoc.Load(reportPath);
 
             foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes) //inside <testsuite> node 
@@ -135,6 +139,10 @@ namespace PSModule
                     {
                         failedTestSteps.Add(reportmetadata);
                     }
+                    if (addParallelTestRuns)
+                    {
+                        reportmetadata.TestRuns = PRHelper.GetTestRuns(reportmetadata.ReportPath);
+                    }
                     listReport.Add(reportmetadata);
                 }
                 if (isJUnitReport && failedTestSteps.Any())
@@ -187,7 +195,15 @@ namespace PSModule
 
             foreach (ReportMetaData item in listReport)
             {
-                nrOfTests[item.Status]++;
+                if (item.TestRuns.Any())
+                {
+                    foreach(var testRun in item.TestRuns)
+                        nrOfTests[testRun.GetAzureStatus()]++;
+                }
+                else
+                {
+                    nrOfTests[item.Status]++;
+                }
             }
 
             return listReport.Count;
@@ -282,6 +298,119 @@ namespace PSModule
                     index++;
                 }
                 table.Rows.Add(row);
+            }
+
+            //add table to file
+            string html;
+            using (var sw = new StringWriter())
+            {
+                table.RenderControl(new HtmlTextWriter(sw));
+                html = sw.ToString();
+            }
+            File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
+        }
+
+        public static void CreateParallelSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
+                                               bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
+                                               string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
+        {
+            HtmlTable table = new();
+            HtmlTableRow header = new();
+            HtmlTableCell cell;
+            cell = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
+
+            cell = new HtmlTableCell { InnerText = TEST_TYPE, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
+
+            cell = new HtmlTableCell { InnerText = RULES, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
+
+            cell = new HtmlTableCell { InnerText = TIMESTAMP, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
+
+            cell = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
+
+            if (uploadArtifact)
+            {
+                if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
+                {
+                    cell = new HtmlTableCell { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
+                    cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                    header.Cells.Add(cell);
+
+                    if (artifactType == ArtifactType.bothReportArchive)
+                    {
+                        cell= new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
+                        cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                        header.Cells.Add(cell);
+                    }
+                }
+                else if (artifactType == ArtifactType.onlyArchive)
+                {
+                    cell = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
+                    cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                    header.Cells.Add(cell);
+                }
+            }
+
+            header.BgColor = KnownColor.Azure.ToString();
+            table.Rows.Add(header);
+
+            //create table content
+            int index = 1;
+            var linkPrefix = $"https://{storageAccount}.blob.core.windows.net/{container}";
+            var zipLinkPrefix = $"{linkPrefix}/{archiveName}";
+            var htmlLinkPrefix = $"{linkPrefix}/{reportName}";
+            foreach (ReportMetaData report in reportList)
+            {
+                int x = 1;
+                foreach (TestRun testRun in report.TestRuns)
+                {
+                    var row = new HtmlTableRow();
+                    row.Cells.Add(new() { InnerText = $"{testRun.TestName} [{x}]", Align = LEFT });
+                    row.Cells.Add(new() { InnerText = $"{testRun.GetEnvType()}", Align = LEFT });
+                    row.Cells.Add(new() { InnerText = testRun.GetDetails(), Align = LEFT });
+                    row.Cells.Add(new() { InnerText = report.DateTime, Align = LEFT }); // currently no timestamp is included in parallelrun_results.html
+
+                    cell = new() { Align = LEFT };
+                    cell.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{testRun.GetAzureStatus()}.svg" });
+                    row.Cells.Add(cell);
+
+                    if (runType == RunType.FileSystem && uploadArtifact && !testRun.ReportPath.IsNullOrWhiteSpace())
+                    {
+                        string htmlLink = $"{htmlLinkPrefix}_{index}.html";
+                        string zipLink = $"{zipLinkPrefix}_{index}.zip";
+                        if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
+                        {
+                            cell = new() { Align = LEFT };
+                            cell.Controls.Add(new HtmlAnchor { HRef = htmlLink, InnerText = VIEW_REPORT });
+                            row.Cells.Add(cell);
+
+                            if (artifactType == ArtifactType.bothReportArchive)
+                            {
+                                cell = new() { Align = LEFT };
+                                cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
+                                row.Cells.Add(cell);
+                            }
+                        }
+                        else if (artifactType == ArtifactType.onlyArchive)
+                        {
+                            cell = new() { Align = LEFT };
+                            cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
+                            row.Cells.Add(cell);
+                        }
+                        index++;
+                    }
+                    x++;
+                    table.Rows.Add(row);
+                }
             }
 
             //add table to file
