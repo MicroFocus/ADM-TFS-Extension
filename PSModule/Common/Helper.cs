@@ -193,20 +193,25 @@ namespace PSModule
                 { WARNING, 0 }
             };
 
+            int nrOfTestsCount = 0;
             foreach (ReportMetaData item in listReport)
             {
                 if (item.TestRuns.Any())
                 {
                     foreach(var testRun in item.TestRuns)
+                    {
                         nrOfTests[testRun.GetAzureStatus()]++;
+                    }
+                    nrOfTestsCount += item.TestRuns.Count;
                 }
                 else
                 {
                     nrOfTests[item.Status]++;
+                    nrOfTestsCount++;
                 }
             }
 
-            return listReport.Count;
+            return nrOfTestsCount;
         }
 
         public static void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
@@ -376,7 +381,7 @@ namespace PSModule
                     var row = new HtmlTableRow();
                     row.Cells.Add(new() { InnerText = $"{testRun.TestName} [{x}]", Align = LEFT });
                     row.Cells.Add(new() { InnerText = $"{testRun.GetEnvType()}", Align = LEFT });
-                    row.Cells.Add(new() { InnerText = testRun.GetDetails(), Align = LEFT });
+                    row.Cells.Add(new() { InnerHtml = testRun.GetDetails(), Align = LEFT });
                     row.Cells.Add(new() { InnerText = report.DateTime, Align = LEFT }); // currently no timestamp is included in parallelrun_results.html
 
                     cell = new() { Align = LEFT };

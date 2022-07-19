@@ -40,7 +40,7 @@ namespace PSModule.UftMobile.SDK.Entity
 
         public string ToHtmlString()
         {
-            const string DEVICE_PROP_FORMAT = @"<div>{0}: <span style=""font-weight:bold"">{1}</span></div>";
+            const string DEVICE_PROP_FORMAT = @"<tr><td style=""white-space:nowrap"">{0}:&nbsp;</td><td style=""font-weight:bold;overflow:visible;white-space:nowrap"">{1}</td></tr>";
             StringBuilder props = new();
             void Append (string name, string value) => props.AppendFormat(DEVICE_PROP_FORMAT, name, value);
             if (!DeviceId.IsNullOrWhiteSpace())
@@ -53,7 +53,7 @@ namespace PSModule.UftMobile.SDK.Entity
                 Append(OS_TYPE, OSType);
             if (!OSVersion.IsNullOrWhiteSpace())
                 Append(OS_VERSION, OSVersion);
-            return props.ToString();
+            return @$"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""border-collapse:collapse;"">{props}</table>";
         }
         public bool IsAvailable(IQueryable<Device> devices, out string msg)
         {
