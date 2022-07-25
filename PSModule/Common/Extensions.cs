@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using PSModule.AlmLabMgmtClient.SDK.Util;
 using System;
 using System.Collections.Generic;
@@ -8,12 +10,24 @@ using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Serialization;
+using C = PSModule.Common.Constants;
 
 namespace PSModule
 {
 	public static class Extensions
 	{
-		private const char SLASH = '/';
+		private const string ESCAPE_FORMAT = "{0}{1}";
+
+		private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
+		{
+			ContractResolver = new CamelCasePropertyNamesContractResolver { },
+			NullValueHandling = NullValueHandling.Include
+		};
+		private static readonly JsonSerializerSettings _jsonSerializerSettings2 = new()
+		{
+			ContractResolver = new CamelCasePropertyNamesContractResolver { },
+			NullValueHandling = NullValueHandling.Ignore,
+		};
 		public static V GetValueOrDefault<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default)
 		{
 			if (dictionary.TryGetValue(key, out var value))
@@ -114,15 +128,15 @@ namespace PSModule
 			}
 			catch
 			{
-				string prefix = uri.ToString().TrimEnd(SLASH);
-				suffix = suffix.TrimStart(SLASH);
+				string prefix = uri.ToString().TrimEnd(C.SLASH);
+				suffix = suffix.TrimStart(C.SLASH);
 				return $"{prefix}/{suffix}";
 			}
 		}
 		public static T DeserializeXML<T>(this string xml) where T : class
 		{
 			var ser = new XmlSerializer(typeof(T));
-			using StringReader sr = new StringReader(xml);
+			using StringReader sr = new(xml);
 			return (T)ser.Deserialize(sr);
 		}
 		public static string GetStringValue(this Enum value)
@@ -151,6 +165,18 @@ namespace PSModule
 			return result;
 		}
 
+		public static string ToJson<T>(this T obj, bool indented = true, bool ignoreNullValues = false) where T : class
+        {
+			return JsonConvert.SerializeObject(obj, 
+				indented ? Formatting.Indented : Formatting.None, 
+				ignoreNullValues ? _jsonSerializerSettings2 : _jsonSerializerSettings);
+		}
+
+		public static T FromJson<T>(this string json) where T : class
+        {
+			return JsonConvert.DeserializeObject<T>(json, _jsonSerializerSettings);
+		}
+
 		public static bool StartsWithAny(this string str, params char[] chars)
 		{
 			return !string.IsNullOrEmpty(str) && chars.Any(c => c == str[0]);
@@ -165,5 +191,24 @@ namespace PSModule
 		{
 			return source.Select((item, index) => (item, index));
 		}
+
+		public static string Escape(this string json, char[] chars)
+		{
+			var output = new StringBuilder(json.Length);
+			foreach (char c in json)
+			{
+				if (chars.Contains(c))
+                {
+					output.AppendFormat(ESCAPE_FORMAT, C.BACK_SLASH, c);
+				}
+				else
+                {
+					output.Append(c);
+				}
+			}
+
+			return output.ToString();
+		}
+
 	}
 }

@@ -46,11 +46,7 @@ namespace PSModule.Common
         public static readonly char[] COLON_ = new char[] { ':' };
         public static readonly char[] SEMI_COLON_ = SEMI_COLON.ToCharArray();
 
-        public static readonly JsonSerializerSettings JsonSerializerSettings = new()
-        {
-            ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy()},
-            Formatting = Formatting.Indented
-        };
-
+        public const char SLASH = '/';
+        public const char BACK_SLASH = '\\';
     }
 }

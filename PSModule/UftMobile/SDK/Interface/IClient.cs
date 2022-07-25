@@ -38,8 +38,6 @@ namespace PSModule.UftMobile.SDK.Interface
 
         IDictionary<string, string> Cookies { get; }
 
-        string XsrfTokenValue { get; }
-
         ILogger Logger { get; }
 
         bool IsLoggedIn { set; get; }

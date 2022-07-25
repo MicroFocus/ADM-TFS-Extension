@@ -24,7 +24,6 @@ namespace PSModule.UftMobile.SDK
         protected readonly Uri _serverUrl; // Example : http://myd-vm21045.swinfra.net:8080/qcbin
         protected IDictionary<string, string> _cookies = new Dictionary<string, string>();
         private readonly Credentials _credentials;
-        private readonly string _xsrfTokenValue;
         private readonly ILogger _logger;
         private string _rawCookies => GetCookiesAsString();
         private string _hp4msecret;
@@ -42,7 +41,7 @@ namespace PSModule.UftMobile.SDK
             _serverUrl = new Uri(serverUrl);
             _credentials = credentials;
             _logger = logger;
-            _xsrfTokenValue = Guid.NewGuid().ToString();
+            //_xsrfTokenValue = Guid.NewGuid().ToString();
             _authType = authType;
             //_cookies.Add(XSRF_TOKEN, _xsrfTokenValue);
         }
@@ -52,8 +51,6 @@ namespace PSModule.UftMobile.SDK
         public Credentials Credentials => _credentials;
 
         public IDictionary<string, string> Cookies => _cookies;
-
-        public string XsrfTokenValue => _xsrfTokenValue;
 
         public ILogger Logger => _logger;
         public AuthType AuthType => _authType;
@@ -284,10 +281,10 @@ namespace PSModule.UftMobile.SDK
                     { HttpRequestHeader.ContentType, C.APP_JSON_UTF8 }
                 };
             }
-            headers.Add(X_HP4MSECRET, _hp4msecret);
 
             if (_isLoggedIn)
             {
+                headers.Add(X_HP4MSECRET, _hp4msecret);
                 if (_authType == AuthType.Basic)
                 {
                     headers.Add(HttpRequestHeader.Cookie, $"{JSESSIONID}={_cookies[JSESSIONID]}");

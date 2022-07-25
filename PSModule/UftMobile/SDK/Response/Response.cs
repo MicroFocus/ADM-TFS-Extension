@@ -46,7 +46,7 @@ namespace PSModule.UftMobile.SDK
     {
         private readonly T[] _entries;
         public T[] Entities => _entries ?? new T[0];
-        public T FirstEntity => _entries?[0];
+        public T Entity => _entries?[0];
         public Response(string body, WebHeaderCollection headers, HttpStatusCode statusCode, ResType resType) : base(headers, statusCode)
         {
             switch (resType)
@@ -73,13 +73,35 @@ namespace PSModule.UftMobile.SDK
                     }
                 case ResType.Array:
                     {
-                        _entries = JsonConvert.DeserializeObject<T[]>(body);
+                        try
+                        {
+                            Result res = JsonConvert.DeserializeObject<Result>(body);
+                            if (res.Error)
+                            {
+                                _error = res.Message;
+                            }
+                        }
+                        catch
+                        {
+                            _entries = JsonConvert.DeserializeObject<T[]>(body);
+                        }
                         break;
                     }
                 default:
                     {
-                        var res = JsonConvert.DeserializeObject<T>(body);
-                        _entries = new T[] { res };
+                        try
+                        {
+                            Result res = JsonConvert.DeserializeObject<Result>(body);
+                            if (res.Error)
+                            {
+                                _error = res.Message;
+                            }
+                        }
+                        catch
+                        {
+                            var res2 = JsonConvert.DeserializeObject<T>(body);
+                            _entries = new T[] { res2 };
+                        }
                         break;
                     }
             }

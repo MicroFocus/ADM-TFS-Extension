@@ -235,11 +235,11 @@ namespace PSModule
                     SetParamValue("MobileProxySetting_Password", EncryptParameter(proxy.PasswordOrSecret));
                 }
             }
+            SetParamValue("mobileinfo", mobileConfig.MobileInfo);
         }
 
         private void SetParamValue(string paramName, string paramValue)
         {
-
             if (string.IsNullOrEmpty(paramValue))
             {
                 if (!requiredParameters.Contains(paramName))

@@ -5,17 +5,20 @@ namespace PSModule.UftMobile.SDK.Entity
 {
     public class App
     {
-        public string Type { get; set; }
+        private const string ANY = "ANY";
+        private const string MC_HOME = "MC.Home";
+        private const string HOME = "Home";
+        public string Type { get; set; } = ANY;
 
-        public string Id { get; set; }
+        public string Id { get; set; } = MC_HOME;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = HOME;
 
         public string Version { get; set; }
 
         public string FileName { get; set; }
 
-        public string Identifier { get; set; }
+        public string Identifier { get; set; } = MC_HOME;
 
         public bool Instrumented { get; set; }
 
@@ -45,7 +48,7 @@ namespace PSModule.UftMobile.SDK.Entity
             return @$"Name: ""{Name}"", Identifier: ""{Identifier}"", Version: ""{Version}"", Type: ""{Type}"", Source: ""{Source}""";
         }
 
-        public App() { Instrumented = true; }
+        public App() { }
 
         /*public App(IMobileCenterApplication iApp)
         {

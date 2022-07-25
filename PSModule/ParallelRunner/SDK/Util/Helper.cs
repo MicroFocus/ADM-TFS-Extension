@@ -17,11 +17,6 @@ namespace PSModule.ParallelRunner.SDK.Util
         public const string FILE_NOT_FOUND = "ParallelRunner html report file not found";
 
         private static readonly char[] EQ = new char[] { '=' };
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver{},
-            Formatting = Formatting.Indented
-        };
 
         public static List<TestRun> GetTestRuns(string reportPath)
         {
@@ -42,8 +37,8 @@ namespace PSModule.ParallelRunner.SDK.Util
                 {
                     var str = node.InnerText.Split(EQ, 2)[1];
                     var len = str.IndexOf(JSON_END_SUFFIX) + 2;
-                    str = str.Substring(0, len);
-                    TestRun obj = JsonConvert.DeserializeObject<TestRun>(str, _jsonSerializerSettings);
+                    var json = str.Substring(0, len);
+                    TestRun obj = json.FromJson<TestRun>();
                     if (obj == null || obj.Status.In(_toBeIgnoredStatuses))
                         continue;
                     if (dict.ContainsKey(obj.Id))

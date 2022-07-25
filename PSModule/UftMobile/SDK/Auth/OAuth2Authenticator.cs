@@ -29,7 +29,7 @@ namespace PSModule.UftMobile.SDK.Auth
             client.IsLoggedIn = res.IsOK;
             if (res.IsOK)
             {
-                client.AccessToken = res.FirstEntity;
+                client.AccessToken = res.Entity;
             }
 
             return res.IsOK;
