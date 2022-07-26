@@ -26,10 +26,21 @@ namespace PSModule.UftMobile.SDK
         }
         public Response(string body, WebHeaderCollection headers, HttpStatusCode statusCode) : this(headers, statusCode)
         {
-            var res = JsonConvert.DeserializeObject<Result>(body);
-            if (res.Error)
+            try
             {
-                _error = res.Message;
+                var res = JsonConvert.DeserializeObject<Result>(body);
+                if (res.Error)
+                {
+                    _error = res.Message;
+                }
+            }
+            catch
+            {
+                bool.TryParse(body, out bool ok);
+                if (!ok)
+                {
+                    _error = body;
+                }
             }
         }
 
@@ -81,9 +92,13 @@ namespace PSModule.UftMobile.SDK
                                 _error = res.Message;
                             }
                         }
-                        catch
+                        catch { /*  no action */ }
+                        finally
                         {
-                            _entries = JsonConvert.DeserializeObject<T[]>(body);
+                            if (_error.IsNullOrEmpty())
+                            {
+                                _entries = JsonConvert.DeserializeObject<T[]>(body);
+                            }
                         }
                         break;
                     }
@@ -97,10 +112,14 @@ namespace PSModule.UftMobile.SDK
                                 _error = res.Message;
                             }
                         }
-                        catch
+                        catch { /*  no action */ }
+                        finally
                         {
-                            var res2 = JsonConvert.DeserializeObject<T>(body);
-                            _entries = new T[] { res2 };
+                            if (_error.IsNullOrEmpty())
+                            {
+                                T obj = JsonConvert.DeserializeObject<T>(body);
+                                _entries = new T[] { obj };
+                            }
                         }
                         break;
                     }

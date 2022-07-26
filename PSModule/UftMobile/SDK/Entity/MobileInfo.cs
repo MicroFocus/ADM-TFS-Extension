@@ -1,4 +1,5 @@
 ﻿
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using C = PSModule.Common.Constants;
 namespace PSModule.UftMobile.SDK.Entity
@@ -9,12 +10,22 @@ namespace PSModule.UftMobile.SDK.Entity
 
         //private const string DEFAULT_HEADER = "{{\"collect\":{{\"cpu\":false,\"memory\":false,\"freeMemory\":false,\"logs\":false,\"wifiState\":false,\"thermalState\":false,\"freeDiskSpace\":false,\"wifiSignalStrength\":false,\"screenshot\":false}},\"configuration\":{{\"installAppBeforeExecution\":false,\"deleteAppAfterExecution\":false,\"restartApp\":false}}";
 
-        public string Id { get; set; }
-        public App Application { get; set; }
-        public List<Device> Devices { get; set; } = new();
-        public string Header { get; set; }
-        public CapableDeviceFilterDetails CapableDeviceFilterDetails { get; set; }
-        public App[] ExtraApps { get; set; }
+        [JsonProperty]
+        private readonly string id;
+        //private readonly App application;
+        [JsonProperty]
+        private readonly List<Device> devices;
+        //private readonly string header;
+        [JsonProperty]
+        private readonly CapableDeviceFilterDetails capableDeviceFilterDetails;
+        //private App[] extraApps;
+
+        public MobileInfo(string jobId, Device device = null, CapableDeviceFilterDetails cdfDetails = null)
+        {
+            id = jobId;
+            devices = device == null ? null : new() { device };
+            capableDeviceFilterDetails = cdfDetails;
+        }
 
         public override string ToString()
         {

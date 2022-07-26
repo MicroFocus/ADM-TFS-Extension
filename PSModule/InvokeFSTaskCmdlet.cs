@@ -32,7 +32,8 @@ namespace PSModule
         private const string DEVICE_ENDPOINT = "rest/device";
         private const string GET_JOB_ENDPOINT = "rest/job";
         private const string CREATE_TEMP_JOB_ENDPOINT = "rest/job/createTempJob";
-        private const string JOB_UPDATE_DEVICES_ENDPOINT = "rest/job/updateDevices";
+        //private const string JOB_UPDATE_DEVICES_ENDPOINT = "rest/job/updateDevices";
+        private const string JOB_UPDATE_ENDPOINT = "rest/job/updateJob";
         private const string GET_PROJECTS_ENPOINT = "rest/v1/project?includeManagement=false";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
@@ -42,6 +43,8 @@ namespace PSModule
         private const string HTTP_PREFIX = "http://";
         private const string HTTPS_PREFIX = "https://";
         private const string JOB_ID = "job_id";
+        private const string UPDATE_JOB_DEVICE_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{{}},""devices"":[{{""deviceID"":""{1}""}}]}}";
+        private const string UPDATE_JOB_CDFD_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{1},""application"":{{""id"":""MC.Home""}},""devices"":[]}}";
 
         private IClient _client;
         private IAuthenticator _auth;
@@ -248,17 +251,19 @@ namespace PSModule
                     var device = ValidateDevice().Result;
                     Job job = GetOrCreateTempJob().Result;
                     List<Device> jobDevices = job.Devices ?? new();
-                    if (device != null)
+                    if (device != null) // it means that the deviceId was provided
                     {
                         if (jobDevices.Count != 1 || !jobDevices[0].DeviceId.EqualsIgnoreCase(device.DeviceId))
                         {
                             UpdateJobDevice(job.Id, device.DeviceId).Wait();
                         }
-                        _mobileConfig.MobileInfo = $"{new MobileInfo { Id = job.Id, Devices = { device } }}";
+                        _mobileConfig.MobileInfo = $"{new MobileInfo(job.Id, device)}";
                     }
-                    else
+                    else // other device properties were provided
                     {
-                        //TODO 
+                        var cdfDetails = (CapableDeviceFilterDetails)_mobileConfig.Device;
+                        UpdateJobCDFDetails(job.Id, cdfDetails).Wait();
+                        _mobileConfig.MobileInfo = $"{new MobileInfo(job.Id, cdfDetails: cdfDetails)}";
                     }
                 }
             }
@@ -551,15 +556,21 @@ namespace PSModule
 
         private async Task UpdateJobDevice(string jobId, string deviceId)
         {
-            string json = $@"{{""id"": ""{jobId}"", ""devices"": [ {{ ""deviceID"": ""{deviceId}"" }} ] }}";
-
-            var res = await _client.HttpPost(JOB_UPDATE_DEVICES_ENDPOINT, json);
+            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_DEVICE_FORMAT, jobId, deviceId));
             if (!res.IsOK)
             {
                 ThrowTerminatingError(res.Error, nameof(UpdateJobDevice), ErrorCategory.NotSpecified, nameof(UpdateJobDevice));
             }
         }
 
+        private async Task UpdateJobCDFDetails(string jobId, CapableDeviceFilterDetails details)
+        {
+            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, details.ToJson(false, true)));
+            if (!res.IsOK)
+            {
+                ThrowTerminatingError(res.Error, nameof(UpdateJobCDFDetails), ErrorCategory.NotSpecified, nameof(UpdateJobCDFDetails));
+            }
+        }
         private async Task<Project[]> GetProjects()
         {
             var res = await _client.HttpGet<Project>($"{GET_PROJECTS_ENPOINT}", resType: ResType.Array);

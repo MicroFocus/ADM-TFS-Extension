@@ -199,5 +199,15 @@ namespace PSModule.UftMobile.SDK.Entity
         {
             return !prop.IsNullOrWhiteSpace() && prop.In(true, _pipelineAttributes);
         }
+
+        public static explicit operator CapableDeviceFilterDetails(Device dev)
+        {
+            return new()
+            {
+                DeviceName = $"{dev.Manufacturer} {dev.Model}",
+                PlatformName = dev.OSType,
+                PlatformVersion = dev.OSVersion
+            };
+        }
     }
 }

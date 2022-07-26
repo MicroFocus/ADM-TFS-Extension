@@ -29,8 +29,8 @@ namespace PSModule.UftMobile.SDK.Interface
 
         Task<Response> HttpPut(
                 string endpoint,
-                WebHeaderCollection headers = null,
-                string body = null);
+                string body,
+                WebHeaderCollection headers = null);
 
         Uri ServerUrl { get; }
 
