@@ -35,7 +35,7 @@ namespace PSModule.UftMobile.SDK.Entity
         }
         public string ToRawString()
         {
-            return $@"deviceId: {DeviceId}, manufacturerAndModel: {Manufacturer} {Model}, osType: {OSType}, osVersion: {OSVersion}";
+            return $@"deviceId: {DeviceId}, manufacturer: {Manufacturer}, model: {Model}, osType: {OSType}, osVersion: {OSVersion}";
         }
 
         public string ToHtmlString()
@@ -55,6 +55,7 @@ namespace PSModule.UftMobile.SDK.Entity
                 Append(OS_VERSION, OSVersion);
             return @$"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""border-collapse:collapse;"">{props}</table>";
         }
+
         public bool IsAvailable(IQueryable<Device> devices, out string msg)
         {
             IList<string> props = new List<string>();

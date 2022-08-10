@@ -43,7 +43,7 @@ namespace PSModule.Common
         public const char DOUBLE_QUOTE_ = '"';
         public static readonly char[] LF_ = new char[] { '\n' };
         public static readonly char[] COMMA_ = COMMA.ToCharArray();
-        public static readonly char[] COLON_ = new char[] { ':' };
+        public static readonly char[] COLON_ = new char[] { COLON };
         public static readonly char[] SEMI_COLON_ = SEMI_COLON.ToCharArray();
 
         public const char SLASH = '/';
