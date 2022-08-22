@@ -51,8 +51,8 @@ namespace PSModule.ParallelRunner.SDK.Util
                     }
                 }
             }
-
-            return dict.Values.ToList();
+            
+            return dict.Values.OrderBy(r => r.ReportPath).ToList();
         }
     }
 }

@@ -139,7 +139,7 @@ namespace PSModule
                     {
                         failedTestSteps.Add(reportmetadata);
                     }
-                    if (addParallelTestRuns)
+                    if (addParallelTestRuns && !reportmetadata.ReportPath.IsNullOrEmpty())
                     {
                         reportmetadata.TestRuns = PRHelper.GetTestRuns(reportmetadata.ReportPath);
                     }

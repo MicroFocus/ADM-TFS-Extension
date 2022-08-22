@@ -111,7 +111,6 @@ namespace PSModule
                 {
                     return;
                 }
-
                 //run the build task
                 var exitCode = Run(launcherPath, paramFileName);
                 var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
@@ -168,7 +167,7 @@ namespace PSModule
                                                 }
                                                 else
                                                 {
-                                                    LogError(new FileNotFoundException($"The report file '{RUN_RESULTS_XML}' is not found in '{path}'."), ErrorCategory.ResourceUnavailable);
+                                                    LogWarning($"The report file '{RUN_RESULTS_XML}' is not found in '{path}'.");
                                                 }
                                             }
                                         }
@@ -518,6 +517,10 @@ namespace PSModule
         protected void LogError(Exception ex, ErrorCategory categ = ErrorCategory.NotSpecified, [CallerMemberName] string methodName = "")
         {
             WriteError(new ErrorRecord(ex, $"{ex.GetType()}", categ, methodName));
+        }
+        protected void LogWarning(string warning)
+        {
+            WriteWarning(warning);
         }
     }
 }
