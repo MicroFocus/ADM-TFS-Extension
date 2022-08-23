@@ -37,6 +37,7 @@ namespace PSModule
         private const string DEVICES_HEAD = "================================== Devices ===================================";
         private const string APPS_HEAD = "================================== Applications ==============================";
         private const string RESOURCES_BOTTOM = "==============================================================================";
+        private const string MC = "MC";
 
         private MobileResxConfig _config;
 
@@ -153,10 +154,10 @@ namespace PSModule
             var res = await client.HttpGet<App>(APPS_ENDPOINT);
             if (res.IsOK)
             {
-                var apps = res.Entities;
+                var apps = res.Entities.Where(app => app.Source == MC);
                 if (apps.Any())
                 {
-                    BaseWriteObject($"Available applications ({apps.Length}):");
+                    BaseWriteObject($"Available applications ({apps.Count()}):");
                     int x = 0;
                     apps.ForEach(app => BaseWriteObject($"App #{++x} - {app}"));
 

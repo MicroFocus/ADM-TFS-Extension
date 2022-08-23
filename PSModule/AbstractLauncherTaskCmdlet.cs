@@ -12,8 +12,6 @@ using PSModule.Models;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
 using PSModule.UftMobile.SDK.UI;
-using PSModule.ParallelRunner.SDK.Entity;
-using PRHelper = PSModule.ParallelRunner.SDK.Util.Helper;
 namespace PSModule
 {
     using H = Helper;
