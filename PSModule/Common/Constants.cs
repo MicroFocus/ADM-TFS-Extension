@@ -1,7 +1,4 @@
 ﻿
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
 namespace PSModule.Common
 {
     public static class Constants
@@ -36,6 +33,8 @@ namespace PSModule.Common
 
         public const string YES = "yes";
         public const string NO = "no";
+        public const string TRUE = "true";
+        public const string FALSE = "false";
 
         public const string HTTPS = "https";
 
@@ -48,5 +47,7 @@ namespace PSModule.Common
 
         public const char SLASH = '/';
         public const char BACK_SLASH = '\\';
+
+        public const string MC = "MC";
     }
 }

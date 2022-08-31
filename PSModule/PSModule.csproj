@@ -122,7 +122,7 @@
     <Compile Include="AlmLabMgmtClient\SDK\Util\Credentials.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\JUnitParser.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ResourceAccessLevel.cs" />
-    <Compile Include="AlmLabMgmtClient\SDK\Util\StringValue.cs" />
+    <Compile Include="Common\StringValue.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\Xml.cs" />
     <Compile Include="AsyncCmdlet.cs" />
     <Compile Include="Common\Constants.cs" />
@@ -151,7 +151,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
+    <Compile Include="Properties\Settings.cs" />
     <Compile Include="UftMobile\Result.cs" />
     <Compile Include="UftMobile\SDK\Auth\OAuth2Authenticator.cs" />
     <Compile Include="UftMobile\SDK\Auth\BasicAuthenticator.cs" />
@@ -161,19 +161,26 @@
     <Compile Include="UftMobile\SDK\Client\RestClient.cs" />
     <Compile Include="UftMobile\SDK\Entity\AccessToken.cs" />
     <Compile Include="UftMobile\SDK\Entity\App.cs" />
+    <Compile Include="UftMobile\SDK\Entity\AppAction.cs" />
+    <Compile Include="UftMobile\SDK\Entity\Header.cs" />
+    <Compile Include="UftMobile\SDK\UI\AppLine.cs" />
     <Compile Include="UftMobile\SDK\Entity\CapableDeviceFilterDetails.cs" />
     <Compile Include="UftMobile\SDK\Entity\Device.cs" />
     <Compile Include="UftMobile\SDK\Entity\MobileInfo.cs" />
     <Compile Include="UftMobile\SDK\Entity\Job.cs" />
     <Compile Include="UftMobile\SDK\Entity\Project.cs" />
     <Compile Include="UftMobile\SDK\Entity\Workspace.cs" />
+    <Compile Include="UftMobile\SDK\Enums\AppType.cs" />
     <Compile Include="UftMobile\SDK\Enums\AuthType.cs" />
     <Compile Include="UftMobile\SDK\Enums\ResType.cs" />
     <Compile Include="UftMobile\SDK\Enums\Resx.cs" />
+    <Compile Include="UftMobile\SDK\Enums\SysApp.cs" />
     <Compile Include="UftMobile\SDK\Interface\IAuthenticator.cs" />
     <Compile Include="UftMobile\SDK\Interface\IClient.cs" />
     <Compile Include="UftMobile\SDK\Interface\ILogger.cs" />
     <Compile Include="UftMobile\SDK\Response\Response.cs" />
+    <Compile Include="UftMobile\SDK\UI\AppConfig.cs" />
+    <Compile Include="UftMobile\SDK\Entity\DeviceMetrics.cs" />
     <Compile Include="UftMobile\SDK\UI\MobileConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\MobileResxConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ParallelRunnerConfig.cs" />

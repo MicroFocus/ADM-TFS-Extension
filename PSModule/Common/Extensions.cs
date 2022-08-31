@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,8 +16,6 @@ namespace PSModule
 {
 	public static class Extensions
 	{
-		private const string ESCAPE_FORMAT = "{0}{1}";
-
 		private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
 		{
 			ContractResolver = new CamelCasePropertyNamesContractResolver { },
@@ -165,14 +163,22 @@ namespace PSModule
 			return result;
 		}
 
-		public static string ToJson<T>(this T obj, bool indented = true, bool ignoreNullValues = false) where T : class
+		public static string ToJson<T>(this T obj, bool indented = true, bool escapeDblQuotes = false, bool ignoreNullValues = false) where T : class
         {
-			return JsonConvert.SerializeObject(obj, 
-				indented ? Formatting.Indented : Formatting.None, 
-				ignoreNullValues ? _jsonSerializerSettings2 : _jsonSerializerSettings);
+			string json = JsonConvert.SerializeObject(obj,
+                indented ? Formatting.Indented : Formatting.None,
+                ignoreNullValues ? _jsonSerializerSettings2 : _jsonSerializerSettings);
+            return escapeDblQuotes ? json.EscapeDblQuotes() : json;
 		}
 
-		public static T FromJson<T>(this string json) where T : class
+        public static string ToJson<T>(this T obj, char[] escapeChars, bool indented = false, bool ignoreNullValues = false) where T : class
+        {
+            string json = JsonConvert.SerializeObject(obj, 
+				indented ? Formatting.Indented : Formatting.None, 
+				ignoreNullValues ? _jsonSerializerSettings2 : _jsonSerializerSettings);
+            return json.Escape(escapeChars);
+        }
+        public static T FromJson<T>(this string json) where T : class
         {
 			return JsonConvert.DeserializeObject<T>(json, _jsonSerializerSettings);
 		}
@@ -192,23 +198,26 @@ namespace PSModule
 			return source.Select((item, index) => (item, index));
 		}
 
-		public static string Escape(this string json, char[] chars)
+		public static string Escape(this string json, char[] escapeChars)
 		{
 			var output = new StringBuilder(json.Length);
 			foreach (char c in json)
 			{
-				if (chars.Contains(c))
-                {
-					output.AppendFormat(ESCAPE_FORMAT, C.BACK_SLASH, c);
-				}
-				else
-                {
-					output.Append(c);
-				}
+                output.Append(escapeChars.Contains(c) ? @$"\{c}" : $"{c}");
 			}
 
 			return output.ToString();
 		}
 
-	}
+        public static string EscapeDblQuotes(this string json)
+        {
+            var output = new StringBuilder(json.Length);
+            foreach (char c in json)
+            {
+                output.Append(c == C.DOUBLE_QUOTE_ ? @$"\{c}" : $"{c}");
+            }
+
+            return output.ToString();
+        }
+    }
 }

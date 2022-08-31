@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PSModule.AlmLabMgmtClient.SDK.Util
+namespace PSModule.Common
 {
     [AttributeUsage(AttributeTargets.Field)]
 	public class StringValueAttribute : Attribute

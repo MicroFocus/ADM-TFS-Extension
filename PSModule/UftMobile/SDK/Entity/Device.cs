@@ -23,6 +23,7 @@ namespace PSModule.UftMobile.SDK.Entity
         private static readonly string[] _pipelineAttributes = new string[] { nameof(DeviceId), nameof(Model), nameof(Manufacturer), nameof(OSType), nameof(OSVersion)};
 
         public string DeviceId { get; set; }
+        public string LogicName { get; set; }
         public string Model { get; set; }
         public string OSType { get; set; }
         public string OSVersion { get; set; }

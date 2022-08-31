@@ -149,15 +149,6 @@
       "helpMarkDown": "The Access Key will provide access to this Mobile Center server during the build step run"
     },
     {
-      "name": "mcDevice",
-      "groupName": "mobileCenter",
-      "type": "string",
-      "label": "Device",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "Specify one single device's information"
-    },
-    {
       "name": "useMcProxy",
       "groupName": "mobileCenter",
       "type": "boolean",
@@ -205,6 +196,143 @@
       "required": false,
       "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
       "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
+    },
+    {
+      "name": "mcDevice",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Device",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify one single device's information"
+    },
+    {
+      "name": "mcAppType",
+      "groupName": "mobileCenter",
+      "type": "pickList",
+      "label": "Launch on start",
+      "defaultValue": "home",
+      "required": false,
+      "helpMarkDown": "TODO",
+      "options": {
+        "home": "Home Screen",
+        "system": "System App",
+        "custom": "UFT Mobile App"
+      }
+    },
+    {
+      "name": "mcSysApp",
+      "groupName": "mobileCenter",
+      "type": "pickList",
+      "label": "Application",
+      "defaultValue": "browser",
+      "required": false,
+      "visibleRule": "mcAppType = system",
+      "helpMarkDown": "TODO",
+      "options": {
+        "browser": "Browser",
+        "settings": "Settings",
+        "sms": "SMS",
+        "phone": "Phone",
+        "mail": "Mail",
+        "calendar": "Calendar",
+        "camera": "Camera"
+      }
+    },
+    {
+      "name": "mcApp",
+      "groupName": "mobileCenter",
+      "type": "string",
+      "label": "Main UFT Mobile Application",
+      "defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged:\"Yes\"",
+      "required": false,
+      "visibleRule": "mcAppType = custom",
+      "helpMarkDown": "TODO"
+    },
+    {
+      "name": "mcExtraApps",
+      "groupName": "mobileCenter",
+      "type": "multiLine",
+      "label": "Additional UFT Mobile Applications",
+      "defaultValue": "Identifier: \"app2\", Packaged:\"Yes\"\nIdentifier: \"app3\", Packaged:\"No\"",
+      "required": false,
+      "helpMarkDown": "TODO"
+    },
+    {
+      "name": "mcInstall",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Install",
+      "visibleRule": "mcAppType = custom"
+    },
+    {
+      "name": "mcRestart",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Restart",
+      "visibleRule": "mcAppType = custom"
+    },
+    {
+      "name": "mcUninstall",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Uninstall",
+      "visibleRule": "mcAppType = custom"
+    },
+    {
+      "name": "mcLogDeviceMetrics",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Log device metrics"
+    },
+    {
+      "name": "mcCPU",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "CPU",
+      "visibleRule": "mcLogDeviceMetrics = true"
+    },
+    {
+      "name": "mcMemory",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Memory",
+      "visibleRule": "mcLogDeviceMetrics = true"
+    },
+    {
+      "name": "mcFreeMemory",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Free Memory",
+      "visibleRule": "mcLogDeviceMetrics = true"
+    },
+    {
+      "name": "mcLogs",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Logs",
+      "visibleRule": "mcLogDeviceMetrics = true"
+    },
+    {
+      "name": "mcWifiState",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Wifi State",
+      "visibleRule": "mcLogDeviceMetrics = true"
+    },
+    {
+      "name": "mcThermalState",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Thermal State",
+      "visibleRule": "mcLogDeviceMetrics = true"
+    },
+    {
+      "name": "mcFreeDiskSpace",
+      "groupName": "mobileCenter",
+      "type": "boolean",
+      "label": "Free Disk Space",
+      "visibleRule": "mcLogDeviceMetrics = true"
     }
   ],
 

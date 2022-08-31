@@ -1,4 +1,6 @@
 ﻿
+using PSModule.Common;
+
 namespace PSModule.AlmLabMgmtClient.SDK.Util
 {
     public enum ResourceAccessLevel
