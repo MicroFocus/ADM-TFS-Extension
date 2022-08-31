@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using C = PSModule.Common.Constants;
 
 namespace PSModule.UftMobile.SDK.Entity
 {
@@ -55,6 +56,6 @@ namespace PSModule.UftMobile.SDK.Entity
 
         public App() { }
 
-        public string Json4JobUpdate => @$"{{""type"":""{Type}"",""identifier"":""{Identifier}"",""instrumented"":{Instrumented}}}";
+        public string Json4JobUpdate => @$"{{""type"":""{Type}"",""identifier"":""{Identifier}"",""instrumented"":{(Instrumented ? C.TRUE : C.FALSE)}}}";
     }
 }

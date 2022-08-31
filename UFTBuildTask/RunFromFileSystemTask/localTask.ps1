@@ -37,6 +37,7 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	[Device]$device = $null
 	[AppLine]$app = $null
 	[List[AppLine]]$apps = $null
+	[List[string]]$invalidAppLines = $null
 	[DeviceMetrics]$metrics = $null
 	[bool]$mcInstall = $false
 	[bool]$mcRestart = $false
@@ -65,7 +66,6 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	} elseif ($false -eq [Device]::TryParse($mcDevice, [ref]$device)) {
 		throw "Invalid device -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
 	} elseif ($mcAppType -eq "custom") {
-		[List[string]]$invalidAppLines = $null
 		[bool]$isOK = [AppLine]::TryParse($mcApp)
 		if (!$isOK) {
 			throw "The Main UFT Mobile Application is invalid."
