@@ -262,22 +262,19 @@
       "name": "mcInstall",
       "groupName": "mobileCenter",
       "type": "boolean",
-      "label": "Install",
-      "visibleRule": "mcAppType = custom"
+      "label": "Install"
     },
     {
       "name": "mcRestart",
       "groupName": "mobileCenter",
       "type": "boolean",
-      "label": "Restart",
-      "visibleRule": "mcAppType = custom"
+      "label": "Restart"
     },
     {
       "name": "mcUninstall",
       "groupName": "mobileCenter",
       "type": "boolean",
-      "label": "Uninstall",
-      "visibleRule": "mcAppType = custom"
+      "label": "Uninstall"
     },
     {
       "name": "mcLogDeviceMetrics",
