@@ -66,7 +66,7 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	} elseif ($false -eq [Device]::TryParse($mcDevice, [ref]$device)) {
 		throw "Invalid device -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
 	} elseif ($mcAppType -eq "custom") {
-		[bool]$isOK = [AppLine]::TryParse($mcApp)
+		[bool]$isOK = [AppLine]::TryParse($mcApp, [ref]$app)
 		if (!$isOK) {
 			throw "The Main UFT Mobile Application is invalid."
 		}
