@@ -70,9 +70,6 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		if (!$isOK) {
 			throw "The Main UFT Mobile Application is invalid."
 		}
-		if ($devices.Count -eq 0) {
-			throw "Missing or invalid devices."
-		}
 		$mcInstall = Get-VstsInput -Name 'mcInstall' -AsBool
 		$mcRestart = Get-VstsInput -Name 'mcRestart' -AsBool
 		$mcUninstall = Get-VstsInput -Name 'mcUninstall' -AsBool
