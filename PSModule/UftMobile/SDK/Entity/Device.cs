@@ -194,7 +194,7 @@ namespace PSModule.UftMobile.SDK.Entity
 
         private static bool IsValidPropValue(string val)
         {
-            return val.StartsWith(C.DOUBLE_QUOTE) && val.EndsWith(C.DOUBLE_QUOTE);
+            return val.StartsWith(C.DBL_QUOTE) && val.EndsWith(C.DBL_QUOTE);
         }
 
         private static bool IsValidPropName(string prop)

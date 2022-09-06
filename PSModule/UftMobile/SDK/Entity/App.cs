@@ -56,6 +56,7 @@ namespace PSModule.UftMobile.SDK.Entity
 
         public App() { }
 
+        [JsonIgnore]
         public string Json4JobUpdate => @$"{{""type"":""{Type}"",""identifier"":""{Identifier}"",""instrumented"":{(Instrumented ? C.TRUE : C.FALSE)}}}";
     }
 }

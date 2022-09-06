@@ -38,8 +38,8 @@ namespace PSModule.Common
 
         public const string HTTPS = "https";
 
-        public const string DOUBLE_QUOTE = @"""";
-        public const char DOUBLE_QUOTE_ = '"';
+        public const string DBL_QUOTE = @"""";
+        public const char DBL_QUOTE_ = '"';
         public static readonly char[] LF_ = new char[] { '\n' };
         public static readonly char[] COMMA_ = COMMA.ToCharArray();
         public static readonly char[] COLON_ = new char[] { COLON };

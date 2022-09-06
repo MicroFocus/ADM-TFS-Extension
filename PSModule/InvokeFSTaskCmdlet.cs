@@ -589,7 +589,7 @@ namespace PSModule
         {
             string jsonApp = _mobileConfig.App.Json4JobUpdate;
             string jsonExtraApps = GetExtraAppsJson4JobUpdate();
-            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_DEVICE_FORMAT, jobId, deviceId, jsonApp, jsonExtraApps, hdr));
+            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_DEVICE_FORMAT, jobId, deviceId, jsonApp, jsonExtraApps, hdr.EscapeDblQuotes()));
             if (!res.IsOK)
             {
                 ThrowTerminatingError(res.Error, nameof(UpdateJobDevice), ErrorCategory.NotSpecified, nameof(UpdateJobDevice));
@@ -600,7 +600,7 @@ namespace PSModule
         {
             string jsonApp = _mobileConfig.App.Json4JobUpdate;
             string jsonExtraApps = GetExtraAppsJson4JobUpdate();
-            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, details.ToJson(false, true), jsonApp, jsonExtraApps, hdr));
+            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, details.ToJson(false, true), jsonApp, jsonExtraApps, hdr.EscapeDblQuotes()));
             if (!res.IsOK)
             {
                 ThrowTerminatingError(res.Error, nameof(UpdateJobCDFDetails), ErrorCategory.NotSpecified, nameof(UpdateJobCDFDetails));
@@ -698,7 +698,7 @@ namespace PSModule
         private string GetHeaderJson()
         {
             Header hdr = new() { DeviceMetrics = _mobileConfig.DeviceMetrics, AppAction = _mobileConfig.AppAction };
-            return hdr.ToJson(indented: false, escapeDblQuotes: true);
+            return hdr.ToJson(indented: false);
         }
     }
 }

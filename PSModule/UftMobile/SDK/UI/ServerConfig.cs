@@ -57,7 +57,7 @@ namespace PSModule.UftMobile.SDK.UI
             // "client=oauth2-OuV8k3snnGp9vJugC1Zn@microfocus.com; secret=6XSquF1FUD4CyQM7fb0B; tenant=999999999;"
             // "client=oauth2-OuV8k3snnGp9vJugC1Zn@microfocus.com; secret=6XSquF1FUD7CyQM7fb0B; tenant=999999999;"
 
-            accessKey = accessKey.Trim().Trim(C.DOUBLE_QUOTE_);
+            accessKey = accessKey.Trim().Trim(C.DBL_QUOTE_);
             if (accessKey.IsNullOrEmpty()) return Resources.McMissingOrInvalidAcessKey;
 
             var tokens = accessKey.Split(C.SEMI_COLON_, StringSplitOptions.RemoveEmptyEntries);

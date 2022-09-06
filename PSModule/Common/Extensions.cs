@@ -214,7 +214,7 @@ namespace PSModule
             var output = new StringBuilder(json.Length);
             foreach (char c in json)
             {
-                output.Append(c == C.DOUBLE_QUOTE_ ? @$"\{c}" : $"{c}");
+                output.Append(c == C.DBL_QUOTE_ ? @$"\{c}" : $"{c}");
             }
 
             return output.ToString();
