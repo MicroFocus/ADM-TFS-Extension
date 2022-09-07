@@ -49,7 +49,7 @@ namespace PSModule
         private const string HTTPS_PREFIX = "https://";
         private const string JOB_ID = "job_id";
         private const string UPDATE_JOB_DEVICE_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{{}},""devices"":[{{""deviceID"":""{1}""}}],""application"":{2},""extraApps"":{3},""header"":""{4}""}}";
-        private const string UPDATE_JOB_CDFD_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{1},""application"":{2},""devices"":[],""extraApps"":{3}},""header"":""{4}""}";
+        private const string UPDATE_JOB_CDFD_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{1},""application"":{2},""devices"":[],""extraApps"":{3},""header"":""{4}""}";
         private const string MC_HOME = "MC.Home";
         private IClient _client;
         private IAuthenticator _auth;

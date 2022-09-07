@@ -40,8 +40,8 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	[List[string]]$invalidAppLines = $null
 	[DeviceMetrics]$metrics = $null
 	[bool]$mcInstall = $false
-	[bool]$mcRestart = $false
 	[bool]$mcUninstall = $false
+	[bool]$mcRestart = Get-VstsInput -Name 'mcRestart' -AsBool
 
 	$mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 	$mcUsername = Get-VstsInput -Name 'mcUsername'
@@ -70,9 +70,6 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		if (!$isOK) {
 			throw "The Main UFT Mobile Application is invalid."
 		}
-		$mcInstall = Get-VstsInput -Name 'mcInstall' -AsBool
-		$mcRestart = Get-VstsInput -Name 'mcRestart' -AsBool
-		$mcUninstall = Get-VstsInput -Name 'mcUninstall' -AsBool
 	} elseif ($mcAppType -eq "system") {
 		$mcSysApp = Get-VstsInput -Name 'mcSysApp'
 	}
@@ -81,6 +78,11 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		foreach ($line in $invalidAppLines) {
 			Write-Warning "Invalid app line -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: ID, Identifier or Name (required) and Packaged (optional).";
 		}
+	}
+	if ($app -or ($apps -and $apps.Count -gt 0))
+	{
+		$mcInstall = Get-VstsInput -Name 'mcInstall' -AsBool
+		$mcUninstall = Get-VstsInput -Name 'mcUninstall' -AsBool
 	}
 
 	[bool]$mcLogDeviceMetrics = Get-VstsInput -Name 'mcLogDeviceMetrics' -AsBool
