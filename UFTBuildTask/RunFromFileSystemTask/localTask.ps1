@@ -94,7 +94,7 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		[bool]$mcWifiState = Get-VstsInput -Name 'mcWifiState' -AsBool
 		[bool]$mcThermalState = Get-VstsInput -Name 'mcThermalState' -AsBool
 		[bool]$mcFreeDiskSpace = Get-VstsInput -Name 'mcFreeDiskSpace' -AsBool
-		$metrics = [DeviceMetrics]::new($mcCPU, $mcMemory, $mcFreeDiskSpace, $mcLogs, $mcWifiState, $mcThermalState, $mcFreeDiskSpace)
+		$metrics = [DeviceMetrics]::new($mcCPU, $mcMemory, $mcFreeMemory, $mcLogs, $mcWifiState, $mcThermalState, $mcFreeDiskSpace)
 	}
 
 	$appAction = [AppAction]::new($mcInstall, $mcUninstall, $mcRestart)

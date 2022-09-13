@@ -66,6 +66,8 @@ namespace PSModule
         private const string UFT_REPORT_CAPTION = "UFT Report";
         private const string RUN_SUMMARY = "Run Summary";
         private const string FAILED_TESTS = "Failed Tests";
+        private const string HYPHEN = "&ndash;";
+
         #endregion
 
         public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out IDictionary<string, IList<ReportMetaData>> failedSteps, bool addParallelTestRuns = false)
@@ -93,11 +95,11 @@ namespace PSModule
                     {
                         switch (attribute.Name)
                         {
-                            case NAME  :        reportmetadata.DisplayName = attribute.Value; break;
-                            case REPORT:        reportmetadata.ReportPath  = attribute.Value; break;
-                            case STATUS:        reportmetadata.Status      = attribute.Value; break;
-                            case TIME:          reportmetadata.Duration    = attribute.Value; break;
-                            case START_EXEC_DT: reportmetadata.DateTime    = attribute.Value; break;
+                            case NAME: reportmetadata.DisplayName = attribute.Value; break;
+                            case REPORT: reportmetadata.ReportPath = attribute.Value; break;
+                            case STATUS: reportmetadata.Status = attribute.Value; break;
+                            case TIME: reportmetadata.Duration = attribute.Value; break;
+                            case START_EXEC_DT: reportmetadata.DateTime = attribute.Value; break;
                             default: break;
                         }
                     }
@@ -198,7 +200,7 @@ namespace PSModule
             {
                 if (item.TestRuns.Any())
                 {
-                    foreach(var testRun in item.TestRuns)
+                    foreach (var testRun in item.TestRuns)
                     {
                         nrOfTests[testRun.GetAzureStatus()]++;
                     }
@@ -220,38 +222,32 @@ namespace PSModule
         {
             var table = new HtmlTable();
             var header = new HtmlTableRow();
-            var h1 = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
-            h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h1);
+            HtmlTableCell cell;
+            cell = new() { InnerText = TEST_NAME, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
 
-            var h2 = new HtmlTableCell { InnerText = TIMESTAMP, Width = _200, Align = LEFT };
-            h2.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h2);
+            cell = new() { InnerText = TIMESTAMP, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
 
-            var h3 = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT };
-            h3.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h3);
+            cell = new() { InnerText = _STATUS, Width = _200, Align = LEFT };
+            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+            header.Cells.Add(cell);
 
             if (runType == RunType.FileSystem && uploadArtifact)
             {
                 if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
                 {
-                    var h4 = new HtmlTableCell { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
-                    h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-                    header.Cells.Add(h4);
-
-                    if (artifactType == ArtifactType.bothReportArchive)
-                    {
-                        var h5 = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
-                        h5.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-                        header.Cells.Add(h5);
-                    }
+                    cell = new() { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
+                    cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                    header.Cells.Add(cell);
                 }
-                else if (artifactType == ArtifactType.onlyArchive)
+                if (artifactType.In(ArtifactType.onlyArchive, ArtifactType.bothReportArchive))
                 {
-                    var h4 = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
-                    h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-                    header.Cells.Add(h4);
+                    cell = new() { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
+                    cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                    header.Cells.Add(cell);
                 }
             }
 
@@ -266,129 +262,31 @@ namespace PSModule
             foreach (ReportMetaData report in reportList)
             {
                 var row = new HtmlTableRow();
-                var cell1 = new HtmlTableCell { InnerText = GetTestName(report.DisplayName), Align = LEFT };
-                row.Cells.Add(cell1);
+                cell = new() { InnerText = GetTestName(report.DisplayName), Align = LEFT };
+                row.Cells.Add(cell);
 
-                var cell2 = new HtmlTableCell { InnerText = report.DateTime, Align = LEFT };
-                row.Cells.Add(cell2);
+                cell = new() { InnerText = report.DateTime, Align = LEFT };
+                row.Cells.Add(cell);
 
-                var cell3 = new HtmlTableCell { Align = LEFT };
-                cell3.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{report.Status}.svg" });
-                row.Cells.Add(cell3);
+                cell = new() { Align = LEFT };
+                cell.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{report.Status}.svg" });
+                row.Cells.Add(cell);
 
-                if (runType == RunType.FileSystem && uploadArtifact && !report.ReportPath.IsNullOrWhiteSpace())
+                if (runType == RunType.FileSystem && uploadArtifact)
                 {
-                    string htmlLink = $"{htmlLinkPrefix}_{index}.html";
-                    string zipLink = $"{zipLinkPrefix}_{index}.zip";
-                    if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
+                    if (report.ReportPath.IsNullOrWhiteSpace())
                     {
-                        var cell4 = new HtmlTableCell { Align = LEFT };
-                        var reportLink = new HtmlAnchor { HRef = htmlLink, InnerText = VIEW_REPORT };
-                        cell4.Controls.Add(reportLink);
-                        row.Cells.Add(cell4);
-
+                        cell = new() { Align = LEFT };
+                        cell.Controls.Add(new LiteralControl(HYPHEN));
+                        row.Cells.Add(cell);
                         if (artifactType == ArtifactType.bothReportArchive)
                         {
-                            var cell5 = new HtmlTableCell { Align = LEFT };
-                            cell5.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
-                            row.Cells.Add(cell5);
+                            cell = new() { Align = LEFT };
+                            cell.Controls.Add(new LiteralControl(HYPHEN));
+                            row.Cells.Add(cell);
                         }
                     }
-                    else if (artifactType == ArtifactType.onlyArchive)
-                    {
-                        var cell4 = new HtmlTableCell { Align = LEFT };
-                        cell4.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
-                        row.Cells.Add(cell4);
-                    }
-                    index++;
-                }
-                table.Rows.Add(row);
-            }
-
-            //add table to file
-            string html;
-            using (var sw = new StringWriter())
-            {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
-            }
-            File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
-        }
-
-        public static void CreateParallelSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
-                                               bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
-                                               string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
-        {
-            HtmlTable table = new();
-            HtmlTableRow header = new();
-            HtmlTableCell cell;
-            cell = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
-            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(cell);
-
-            cell = new HtmlTableCell { InnerText = TEST_TYPE, Width = _200, Align = LEFT };
-            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(cell);
-
-            cell = new HtmlTableCell { InnerText = RULES, Width = _200, Align = LEFT };
-            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(cell);
-
-            cell = new HtmlTableCell { InnerText = TIMESTAMP, Width = _200, Align = LEFT };
-            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(cell);
-
-            cell = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT };
-            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(cell);
-
-            if (uploadArtifact)
-            {
-                if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
-                {
-                    cell = new HtmlTableCell { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
-                    cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-                    header.Cells.Add(cell);
-
-                    if (artifactType == ArtifactType.bothReportArchive)
-                    {
-                        cell= new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
-                        cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-                        header.Cells.Add(cell);
-                    }
-                }
-                else if (artifactType == ArtifactType.onlyArchive)
-                {
-                    cell = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
-                    cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-                    header.Cells.Add(cell);
-                }
-            }
-
-            header.BgColor = KnownColor.Azure.ToString();
-            table.Rows.Add(header);
-
-            //create table content
-            int index = 1;
-            var linkPrefix = $"https://{storageAccount}.blob.core.windows.net/{container}";
-            var zipLinkPrefix = $"{linkPrefix}/{archiveName}";
-            var htmlLinkPrefix = $"{linkPrefix}/{reportName}";
-            foreach (ReportMetaData report in reportList)
-            {
-                int x = 1;
-                foreach (TestRun testRun in report.TestRuns)
-                {
-                    var row = new HtmlTableRow();
-                    row.Cells.Add(new() { InnerText = $"{testRun.TestName} [{x}]", Align = LEFT });
-                    row.Cells.Add(new() { InnerText = $"{testRun.GetEnvType()}", Align = LEFT });
-                    row.Cells.Add(new() { InnerHtml = testRun.GetDetails(), Align = LEFT });
-                    row.Cells.Add(new() { InnerText = report.DateTime, Align = LEFT }); // currently no timestamp is included in parallelrun_results.html
-
-                    cell = new() { Align = LEFT };
-                    cell.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{testRun.GetAzureStatus()}.svg" });
-                    row.Cells.Add(cell);
-
-                    if (runType == RunType.FileSystem && uploadArtifact && !testRun.ReportPath.IsNullOrWhiteSpace())
+                    else
                     {
                         string htmlLink = $"{htmlLinkPrefix}_{index}.html";
                         string zipLink = $"{zipLinkPrefix}_{index}.zip";
@@ -397,15 +295,8 @@ namespace PSModule
                             cell = new() { Align = LEFT };
                             cell.Controls.Add(new HtmlAnchor { HRef = htmlLink, InnerText = VIEW_REPORT });
                             row.Cells.Add(cell);
-
-                            if (artifactType == ArtifactType.bothReportArchive)
-                            {
-                                cell = new() { Align = LEFT };
-                                cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
-                                row.Cells.Add(cell);
-                            }
                         }
-                        else if (artifactType == ArtifactType.onlyArchive)
+                        if (artifactType.In(ArtifactType.onlyArchive, ArtifactType.bothReportArchive))
                         {
                             cell = new() { Align = LEFT };
                             cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
@@ -413,220 +304,332 @@ namespace PSModule
                         }
                         index++;
                     }
-                    x++;
+                    }
                     table.Rows.Add(row);
                 }
-            }
 
-            //add table to file
-            string html;
-            using (var sw = new StringWriter())
-            {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
-            }
-            File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
-        }
-
-        public static void CreateRunSummary(RunStatus runStatus, int totalTests, IDictionary<string, int> nrOfTests, string rptPath)
-        {
-            var table = new HtmlTable();
-            var header = new HtmlTableRow();
-
-            var h1 = new HtmlTableCell { InnerText = RUN_STATUS, Width = _200, Align = LEFT };
-            h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h1);
-
-            var h2 = new HtmlTableCell { InnerText = TOTAL_TESTS, Width = _200, Align = LEFT };
-            h2.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h2);
-
-            var h3 = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT, ColSpan = 2 };
-            h3.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h3);
-
-            var h4 = new HtmlTableCell { InnerText = NO_OF_TESTS, Width = _200, Align = LEFT };
-            h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h4);
-
-            var h5 = new HtmlTableCell { InnerText = PASSING_RATE, Width = _200, Align = LEFT };
-            h5.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h5);
-
-            header.BgColor = KnownColor.Azure.ToString();
-            table.Rows.Add(header);
-
-            string[] statuses = nrOfTests.Keys.ToArray();
-            int length = statuses.Length;
-
-            var percentages = new decimal[length];
-            for (int index = 0; index < length; index++)
-            {
-                percentages[index] = (decimal)(100 * nrOfTests[statuses[index]]) / totalTests;
-            }
-            var roundedPercentages = GetPerfectRounding(percentages);
-            //create table content
-            for (int index = 0; index < length; index++)
-            {
-                var row = new HtmlTableRow();
-                if (index == 0)
+                //add table to file
+                string html;
+                using (var sw = new StringWriter())
                 {
-                    var cell1 = new HtmlTableCell { Align = LEFT, RowSpan = 4 };
-                    var img = new HtmlImage { Src = $"{IMG_LINK_PREFIX}/build_status/{runStatus.ToString().ToLower()}.svg" };
-                    img.Attributes.Add(STYLE, BUILD_STATUS_IMG_STYLE);
-                    cell1.Controls.Add(img);
-                    
-                    row.Cells.Add(cell1);
+                    table.RenderControl(new HtmlTextWriter(sw));
+                    html = sw.ToString();
+                }
+                File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
+            }
 
-                    var cell2 = new HtmlTableCell { InnerText = $"{totalTests}", Align = LEFT, RowSpan = 4 };
-                    cell2.Attributes.Add(STYLE, FONT_WEIGHT_BOLD);
-                    row.Cells.Add(cell2);
+            public static void CreateParallelSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
+                                                   bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
+                                                   string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
+            {
+                HtmlTable table = new();
+                HtmlTableRow header = new();
+                HtmlTableCell cell;
+                cell = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
+                cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(cell);
+
+                cell = new HtmlTableCell { InnerText = TEST_TYPE, Width = _200, Align = LEFT };
+                cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(cell);
+
+                cell = new HtmlTableCell { InnerText = RULES, Width = _200, Align = LEFT };
+                cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(cell);
+
+                cell = new HtmlTableCell { InnerText = TIMESTAMP, Width = _200, Align = LEFT };
+                cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(cell);
+
+                cell = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT };
+                cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(cell);
+
+                if (uploadArtifact)
+                {
+                    if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
+                    {
+                        cell = new HtmlTableCell { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
+                        cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                        header.Cells.Add(cell);
+
+                        if (artifactType == ArtifactType.bothReportArchive)
+                        {
+                            cell = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
+                            cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                            header.Cells.Add(cell);
+                        }
+                    }
+                    else if (artifactType == ArtifactType.onlyArchive)
+                    {
+                        cell = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
+                        cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                        header.Cells.Add(cell);
+                    }
                 }
 
-                var cell3 = new HtmlTableCell { Align = LEFT };
-                var statusImage = new HtmlImage
+                header.BgColor = KnownColor.Azure.ToString();
+                table.Rows.Add(header);
+
+                //create table content
+                int index = 1;
+                var linkPrefix = $"https://{storageAccount}.blob.core.windows.net/{container}";
+                var zipLinkPrefix = $"{linkPrefix}/{archiveName}";
+                var htmlLinkPrefix = $"{linkPrefix}/{reportName}";
+                foreach (ReportMetaData report in reportList)
                 {
-                    Src = $"{IMG_LINK_PREFIX}/{statuses[index].ToLower()}.svg"
-                };
-                cell3.Controls.Add(statusImage);
-                row.Cells.Add(cell3);
+                    int x = 1;
+                    foreach (TestRun testRun in report.TestRuns)
+                    {
+                        var row = new HtmlTableRow();
+                        row.Cells.Add(new() { InnerText = $"{testRun.TestName} [{x}]", Align = LEFT });
+                        row.Cells.Add(new() { InnerText = $"{testRun.GetEnvType()}", Align = LEFT });
+                        row.Cells.Add(new() { InnerHtml = testRun.GetDetails(), Align = LEFT });
+                        row.Cells.Add(new() { InnerText = report.DateTime, Align = LEFT }); // currently no timestamp is included in parallelrun_results.html
 
-                row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = statuses[index] });
-                row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = nrOfTests[statuses[index]].ToString() });
-                row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = $"{roundedPercentages[index]:0.00}%" });
+                        cell = new() { Align = LEFT };
+                        cell.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{testRun.GetAzureStatus()}.svg" });
+                        row.Cells.Add(cell);
 
-                row.Attributes.Add(STYLE, HEIGHT_30PX);
-                table.Rows.Add(row);
+                        if (runType == RunType.FileSystem && uploadArtifact && !testRun.ReportPath.IsNullOrWhiteSpace())
+                        {
+                            string htmlLink = $"{htmlLinkPrefix}_{index}.html";
+                            string zipLink = $"{zipLinkPrefix}_{index}.zip";
+                            if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
+                            {
+                                cell = new() { Align = LEFT };
+                                cell.Controls.Add(new HtmlAnchor { HRef = htmlLink, InnerText = VIEW_REPORT });
+                                row.Cells.Add(cell);
+
+                                if (artifactType == ArtifactType.bothReportArchive)
+                                {
+                                    cell = new() { Align = LEFT };
+                                    cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
+                                    row.Cells.Add(cell);
+                                }
+                            }
+                            else if (artifactType == ArtifactType.onlyArchive)
+                            {
+                                cell = new() { Align = LEFT };
+                                cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
+                                row.Cells.Add(cell);
+                            }
+                            index++;
+                        }
+                        x++;
+                        table.Rows.Add(row);
+                    }
+                }
+
+                //add table to file
+                string html;
+                using (var sw = new StringWriter())
+                {
+                    table.RenderControl(new HtmlTextWriter(sw));
+                    html = sw.ToString();
+                }
+                File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
             }
 
-            //add table to file
-            string html;
-            using (var sw = new StringWriter())
+            public static void CreateRunSummary(RunStatus runStatus, int totalTests, IDictionary<string, int> nrOfTests, string rptPath)
             {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
-            }
-            File.WriteAllText(Path.Combine(rptPath,RUN_SUMMARY), html);
-        }
+                var table = new HtmlTable();
+                var header = new HtmlTableRow();
 
-        public static void CreateFailedStepsReport(IDictionary<string, IList<ReportMetaData>> failedSteps, string rptPath)
-        {
-            if (failedSteps.IsNullOrEmpty())
-                return;
+                var h1 = new HtmlTableCell { InnerText = RUN_STATUS, Width = _200, Align = LEFT };
+                h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h1);
 
-            var table = new HtmlTable();
-            var header = new HtmlTableRow();
+                var h2 = new HtmlTableCell { InnerText = TOTAL_TESTS, Width = _200, Align = LEFT };
+                h2.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h2);
 
-            var h1 = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
-            h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h1);
+                var h3 = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT, ColSpan = 2 };
+                h3.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h3);
 
-            var h2 = new HtmlTableCell { InnerText = FAILED_STEPS, Width = _200, Align = LEFT };
-            h2.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h2);
+                var h4 = new HtmlTableCell { InnerText = NO_OF_TESTS, Width = _200, Align = LEFT };
+                h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h4);
 
-            var h3 = new HtmlTableCell { InnerText = DURATIONS, Width = _200, Align = LEFT };
-            h3.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-            header.Cells.Add(h3);
+                var h5 = new HtmlTableCell { InnerText = PASSING_RATE, Width = _200, Align = LEFT };
+                h5.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h5);
 
-            var h4 = new HtmlTableCell { InnerText = ERROR_DETAILS, Width = _800, Align = LEFT };
-            h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_800);
-            header.Cells.Add(h4);
+                header.BgColor = KnownColor.Azure.ToString();
+                table.Rows.Add(header);
 
-            header.Attributes.Add(STYLE, HEIGHT_30PX);
-            table.Rows.Add(header);
+                string[] statuses = nrOfTests.Keys.ToArray();
+                int length = statuses.Length;
 
-            bool isOddRow = true;
-            foreach (string testName in failedSteps.Keys)
-            {
-                int index = 0;
-                string style = isOddRow ? HEIGHT_30PX_AZURE : HEIGHT_30PX;
-                var failedTestSteps = failedSteps[testName];
-                foreach (var item in failedTestSteps)
+                var percentages = new decimal[length];
+                for (int index = 0; index < length; index++)
+                {
+                    percentages[index] = (decimal)(100 * nrOfTests[statuses[index]]) / totalTests;
+                }
+                var roundedPercentages = GetPerfectRounding(percentages);
+                //create table content
+                for (int index = 0; index < length; index++)
                 {
                     var row = new HtmlTableRow();
                     if (index == 0)
                     {
-                        var cell1 = new HtmlTableCell { InnerText = testName, Align = LEFT };
-                        cell1.Attributes.Add(STYLE, FONT_WEIGHT_BOLD_UNDERLINE);
-                        cell1.RowSpan = failedTestSteps.Count;
+                        var cell1 = new HtmlTableCell { Align = LEFT, RowSpan = 4 };
+                        var img = new HtmlImage { Src = $"{IMG_LINK_PREFIX}/build_status/{runStatus.ToString().ToLower()}.svg" };
+                        img.Attributes.Add(STYLE, BUILD_STATUS_IMG_STYLE);
+                        cell1.Controls.Add(img);
+
                         row.Cells.Add(cell1);
+
+                        var cell2 = new HtmlTableCell { InnerText = $"{totalTests}", Align = LEFT, RowSpan = 4 };
+                        cell2.Attributes.Add(STYLE, FONT_WEIGHT_BOLD);
+                        row.Cells.Add(cell2);
                     }
 
-                    row.Cells.Add(new HtmlTableCell { InnerText = item.DisplayName, Align = LEFT });
-                    row.Cells.Add(new HtmlTableCell { InnerText = item.Duration, Align = LEFT });
-                    row.Cells.Add(new HtmlTableCell { InnerText = item.ErrorMessage, Align = LEFT });
+                    var cell3 = new HtmlTableCell { Align = LEFT };
+                    var statusImage = new HtmlImage
+                    {
+                        Src = $"{IMG_LINK_PREFIX}/{statuses[index].ToLower()}.svg"
+                    };
+                    cell3.Controls.Add(statusImage);
+                    row.Cells.Add(cell3);
 
-                    row.Attributes.Add(STYLE, style);
+                    row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = statuses[index] });
+                    row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = nrOfTests[statuses[index]].ToString() });
+                    row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = $"{roundedPercentages[index]:0.00}%" });
+
+                    row.Attributes.Add(STYLE, HEIGHT_30PX);
                     table.Rows.Add(row);
-
-                    index++;
                 }
-                if (failedTestSteps.Any())
-                    isOddRow = !isOddRow;
+
+                //add table to file
+                string html;
+                using (var sw = new StringWriter())
+                {
+                    table.RenderControl(new HtmlTextWriter(sw));
+                    html = sw.ToString();
+                }
+                File.WriteAllText(Path.Combine(rptPath, RUN_SUMMARY), html);
             }
 
-            //add table to file
-            string html;
-            using (var sw = new StringWriter())
+            public static void CreateFailedStepsReport(IDictionary<string, IList<ReportMetaData>> failedSteps, string rptPath)
             {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
+                if (failedSteps.IsNullOrEmpty())
+                    return;
+
+                var table = new HtmlTable();
+                var header = new HtmlTableRow();
+
+                var h1 = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
+                h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h1);
+
+                var h2 = new HtmlTableCell { InnerText = FAILED_STEPS, Width = _200, Align = LEFT };
+                h2.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h2);
+
+                var h3 = new HtmlTableCell { InnerText = DURATIONS, Width = _200, Align = LEFT };
+                h3.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
+                header.Cells.Add(h3);
+
+                var h4 = new HtmlTableCell { InnerText = ERROR_DETAILS, Width = _800, Align = LEFT };
+                h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_800);
+                header.Cells.Add(h4);
+
+                header.Attributes.Add(STYLE, HEIGHT_30PX);
+                table.Rows.Add(header);
+
+                bool isOddRow = true;
+                foreach (string testName in failedSteps.Keys)
+                {
+                    int index = 0;
+                    string style = isOddRow ? HEIGHT_30PX_AZURE : HEIGHT_30PX;
+                    var failedTestSteps = failedSteps[testName];
+                    foreach (var item in failedTestSteps)
+                    {
+                        var row = new HtmlTableRow();
+                        if (index == 0)
+                        {
+                            var cell1 = new HtmlTableCell { InnerText = testName, Align = LEFT };
+                            cell1.Attributes.Add(STYLE, FONT_WEIGHT_BOLD_UNDERLINE);
+                            cell1.RowSpan = failedTestSteps.Count;
+                            row.Cells.Add(cell1);
+                        }
+
+                        row.Cells.Add(new HtmlTableCell { InnerText = item.DisplayName, Align = LEFT });
+                        row.Cells.Add(new HtmlTableCell { InnerText = item.Duration, Align = LEFT });
+                        row.Cells.Add(new HtmlTableCell { InnerText = item.ErrorMessage, Align = LEFT });
+
+                        row.Attributes.Add(STYLE, style);
+                        table.Rows.Add(row);
+
+                        index++;
+                    }
+                    if (failedTestSteps.Any())
+                        isOddRow = !isOddRow;
+                }
+
+                //add table to file
+                string html;
+                using (var sw = new StringWriter())
+                {
+                    table.RenderControl(new HtmlTextWriter(sw));
+                    html = sw.ToString();
+                }
+                File.WriteAllText(Path.Combine(rptPath, FAILED_TESTS), html);
             }
-            File.WriteAllText(Path.Combine(rptPath, FAILED_TESTS), html);
-        }
 
-        private static string GetTestName(string testPath)
-        {
-            int pos = testPath.LastIndexOf(@"\", StringComparison.Ordinal) + 1;
-            return testPath.Substring(pos, testPath.Length - pos);
-        }
-
-        private static string ImageToBase64(System.Drawing.Image _imagePath)
-        {
-            byte[] imageBytes = ImageToByteArray(_imagePath);
-            string base64String = Convert.ToBase64String(imageBytes);
-            return base64String;
-        }
-
-        private static byte[] ImageToByteArray(System.Drawing.Image imageIn)
-        {
-            MemoryStream ms = new MemoryStream();
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-
-            return ms.ToArray();
-        }
-
-        private static decimal[] GetPerfectRounding(decimal[] original, decimal expectedSum = 100, int decimals = 1)
-        {
-            var rounded = original.Select(x => Math.Round(x, decimals)).ToArray();
-            var delta = expectedSum - rounded.Sum();
-            if (delta == 0) return rounded;
-            var deltaUnit = Convert.ToDecimal(Math.Pow(0.1, decimals)) * Math.Sign(delta);
-
-            IList<int> applyDeltaSequence;
-            if (delta < 0)
+            private static string GetTestName(string testPath)
             {
-                applyDeltaSequence = original
-                    .Zip(Enumerable.Range(0, int.MaxValue), (x, index) => new { x, index })
-                    .OrderBy(a => original[a.index] - rounded[a.index])
-                    .ThenByDescending(a => a.index)
-                    .Select(a => a.index).ToList();
+                int pos = testPath.LastIndexOf(@"\", StringComparison.Ordinal) + 1;
+                return testPath.Substring(pos, testPath.Length - pos);
             }
-            else
+
+            private static string ImageToBase64(System.Drawing.Image _imagePath)
             {
-                applyDeltaSequence = original
-                    .Zip(Enumerable.Range(0, int.MaxValue), (x, index) => new { x, index })
-                    .OrderByDescending(a => original[a.index] - rounded[a.index])
-                    .Select(a => a.index).ToList();
+                byte[] imageBytes = ImageToByteArray(_imagePath);
+                string base64String = Convert.ToBase64String(imageBytes);
+                return base64String;
             }
 
-            Enumerable.Repeat(applyDeltaSequence, int.MaxValue)
-                .SelectMany(x => x)
-                .Take(Convert.ToInt32(delta / deltaUnit))
-                .ForEach(index => rounded[index] += deltaUnit);
+            private static byte[] ImageToByteArray(System.Drawing.Image imageIn)
+            {
+                MemoryStream ms = new MemoryStream();
+                imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
 
-            return rounded;
+                return ms.ToArray();
+            }
+
+            private static decimal[] GetPerfectRounding(decimal[] original, decimal expectedSum = 100, int decimals = 1)
+            {
+                var rounded = original.Select(x => Math.Round(x, decimals)).ToArray();
+                var delta = expectedSum - rounded.Sum();
+                if (delta == 0) return rounded;
+                var deltaUnit = Convert.ToDecimal(Math.Pow(0.1, decimals)) * Math.Sign(delta);
+
+                IList<int> applyDeltaSequence;
+                if (delta < 0)
+                {
+                    applyDeltaSequence = original
+                        .Zip(Enumerable.Range(0, int.MaxValue), (x, index) => new { x, index })
+                        .OrderBy(a => original[a.index] - rounded[a.index])
+                        .ThenByDescending(a => a.index)
+                        .Select(a => a.index).ToList();
+                }
+                else
+                {
+                    applyDeltaSequence = original
+                        .Zip(Enumerable.Range(0, int.MaxValue), (x, index) => new { x, index })
+                        .OrderByDescending(a => original[a.index] - rounded[a.index])
+                        .Select(a => a.index).ToList();
+                }
+
+                Enumerable.Repeat(applyDeltaSequence, int.MaxValue)
+                    .SelectMany(x => x)
+                    .Take(Convert.ToInt32(delta / deltaUnit))
+                    .ForEach(index => rounded[index] += deltaUnit);
+
+                return rounded;
+            }
         }
     }
-}
