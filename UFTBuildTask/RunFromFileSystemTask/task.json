@@ -10,9 +10,9 @@
   ],
   "author": "Micro Focus",
   "version": {
-    "Major": 3,
+    "Major": 4,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 0
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "demands": "UFT_LAUNCHER",
@@ -279,8 +279,10 @@
     {
       "name": "mcLogDeviceMetrics",
       "groupName": "mobileCenter",
+      "defaultValue": false,
       "type": "boolean",
-      "label": "Log device metrics"
+      "label": "Log device metrics",
+      "visibleRule": "mcTenantId = -2147483647"
     },
     {
       "name": "mcCPU",
