@@ -224,7 +224,7 @@
       "name": "mcSysApp",
       "groupName": "mobileCenter",
       "type": "pickList",
-      "label": "Application",
+      "label": "System Application",
       "defaultValue": "browser",
       "required": false,
       "visibleRule": "mcAppType = system",
