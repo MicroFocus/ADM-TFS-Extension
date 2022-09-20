@@ -213,7 +213,7 @@
       "label": "Launch on start",
       "defaultValue": "home",
       "required": false,
-      "helpMarkDown": "TODO",
+      "helpMarkDown": "The app you want to launch automatically at the start of your test",
       "options": {
         "home": "Home Screen",
         "system": "System App",
@@ -228,7 +228,7 @@
       "defaultValue": "browser",
       "required": false,
       "visibleRule": "mcAppType = system",
-      "helpMarkDown": "TODO",
+      "helpMarkDown": "The pre-installed system application that you want to test on your device",
       "options": {
         "browser": "Browser",
         "settings": "Settings",
@@ -244,19 +244,23 @@
       "groupName": "mobileCenter",
       "type": "string",
       "label": "Main UFT Mobile Application",
-      "defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged:\"Yes\"",
+      "defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged: \"Yes\"",
       "required": false,
       "visibleRule": "mcAppType = custom",
-      "helpMarkDown": "TODO"
+      "helpMarkDown": "The main application that you want to test.<br>Provide the app's identifier, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`",
+      "validation": {
+        "expression": "or(eq(value, ''), isMatch(value, '^\\s?Identifier\\s?:\\s?\"[^\\s\"]+\"\\s*(,\\s?Packaged\\s?:\\s?\"(Yes|No)\"\\s*)?$', 'IgnoreCase'))",
+        "message": "Identifier is required and Packaged is optional. Expected format -> Identifier:\"your-app-identifier\", Packaged:\"Yes/No\""
+      }
     },
     {
       "name": "mcExtraApps",
       "groupName": "mobileCenter",
       "type": "multiLine",
       "label": "Additional UFT Mobile Applications",
-      "defaultValue": "Identifier: \"app2\", Packaged:\"Yes\"\nIdentifier: \"app3\", Packaged:\"No\"",
+      "defaultValue": "Identifier: \"app2\", Packaged: \"Yes\"\nIdentifier: \"app3\", Packaged: \"No\"",
       "required": false,
-      "helpMarkDown": "TODO"
+      "helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`"
     },
     {
       "name": "mcInstall",
@@ -282,7 +286,7 @@
       "defaultValue": false,
       "type": "boolean",
       "label": "Log device metrics",
-      "visibleRule": "mcTenantId = -2147483647"
+      "visibleRule": "mcTenantId = 2147483648"
     },
     {
       "name": "mcCPU",
