@@ -250,7 +250,7 @@
       "helpMarkDown": "The main application that you want to test.<br>Provide the app's identifier, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`",
       "validation": {
         "expression": "or(eq(value, ''), isMatch(value, '^\\s?Identifier\\s?:\\s?\"[^\\s\"]+\"\\s*(,\\s?Packaged\\s?:\\s?\"(Yes|No)\"\\s*)?$', 'IgnoreCase'))",
-        "message": "Identifier is required and Packaged is optional. Expected format -> Identifier:\"your-app-identifier\", Packaged:\"Yes/No\""
+        "message": "Expected format -> Identifier:\"<app identifier>\", Packaged:\"Yes/No\" (Identifier is required, Packaged is optional)"
       }
     },
     {
@@ -260,7 +260,8 @@
       "label": "Additional UFT Mobile Applications",
       "defaultValue": "Identifier: \"app2\", Packaged: \"Yes\"\nIdentifier: \"app3\", Packaged: \"No\"",
       "required": false,
-      "helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`"
+      "helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`",
+      "validation": null
     },
     {
       "name": "mcInstall",
