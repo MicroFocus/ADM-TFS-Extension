@@ -136,7 +136,8 @@ namespace PSModule
                             string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
                             var artifactType = (ArtifactType)Enum.Parse(typeof(ArtifactType), properties[ARTIFACT_TYPE]);
                             var warn = createSummaryReportHandler(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
-                            LogWarning(warn);
+                            if (!warn.IsNullOrEmpty())
+                                LogWarning(warn);
                         }
                         else
                         {
