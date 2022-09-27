@@ -15,6 +15,7 @@ using PSModule.UftMobile.SDK.UI;
 namespace PSModule
 {
     using H = Helper;
+    using C = Common.Constants;
     public abstract class AbstractLauncherTaskCmdlet : PSCmdlet
     {
         #region - Private Constants
@@ -36,7 +37,6 @@ namespace PSModule
         private const string ARCHIVE_NAME = "archiveName";
         protected const string YES = "yes";
         private const string JUNIT_REPORT_XML = "junit_report.xml";
-        private const string RUN_RESULTS_XML = "run_results.xml";
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace PSModule
 
         public abstract Dictionary<string, string> GetTaskProperties();
 
-        private delegate void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
+        private delegate string CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
                                                bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
                                                string storageAccount = "", string container = "", string reportName = "", string archiveName = "");
 
@@ -135,7 +135,8 @@ namespace PSModule
                             string storageAccount = properties.GetValueOrDefault(STORAGE_ACCOUNT, string.Empty);
                             string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
                             var artifactType = (ArtifactType)Enum.Parse(typeof(ArtifactType), properties[ARTIFACT_TYPE]);
-                            createSummaryReportHandler(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
+                            var warn = createSummaryReportHandler(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
+                            LogWarning(warn);
                         }
                         else
                         {
@@ -158,14 +159,14 @@ namespace PSModule
                                         {
                                             foreach (var path in rptPaths)
                                             {
-                                                var dirs = new DirectoryInfo(path).GetFiles(RUN_RESULTS_XML, SearchOption.AllDirectories).Select(f => f.Directory.FullName).OrderBy(d => d);
+                                                var dirs = new DirectoryInfo(path).GetFiles(C.RUN_RESULTS_XML, SearchOption.AllDirectories).Select(f => f.Directory.FullName).OrderBy(d => d);
                                                 if (dirs.Any())
                                                 {
                                                     _rptPaths.AddRange(dirs);
                                                 }
                                                 else
                                                 {
-                                                    LogWarning($"The report file '{RUN_RESULTS_XML}' is not found in '{path}'.");
+                                                    LogWarning($"The report file '{C.RUN_RESULTS_XML}' is not found in '{path}'.");
                                                 }
                                             }
                                         }

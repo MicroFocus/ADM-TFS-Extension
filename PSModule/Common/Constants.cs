@@ -49,5 +49,8 @@ namespace PSModule.Common
         public const char BACK_SLASH = '\\';
 
         public const string MC = "MC";
+
+        public const string RUN_RESULTS_XML = "run_results.xml";
+
     }
 }
