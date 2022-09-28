@@ -70,6 +70,7 @@ namespace PSModule
 
         private const string INVALID_RPT = "This report might be invalid!";
         private const string VIEW_INVALID_REPORT = $@"<font color=""red"" title=""{INVALID_RPT}"">{VIEW_REPORT}</font>";
+        private const string DOWNLOAD_INVALID_REPORT = $@"<font color=""red"" title=""{INVALID_RPT}"">{DOWNLOAD}</font>";
         private const string TITLE = "title";
         private const string INVALID_REPORT_WARNING = "At least one report might be invalid. Please check the report links from Extensions tab.";
 
@@ -294,19 +295,13 @@ namespace PSModule
                     }
                     else
                     {
-                        string htmlLink = $"{htmlLinkPrefix}_{index}.html";
-                        string zipLink = $"{zipLinkPrefix}_{index}.zip";
                         if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
                         {
-                            cell = new() { Align = LEFT };
-                            cell.Controls.Add(new HtmlAnchor { HRef = htmlLink, InnerText = VIEW_REPORT });
-                            row.Cells.Add(cell);
+                            row.Cells.Add(GetNewRptLinkCell($"{htmlLinkPrefix}_{index}.html"));
                         }
                         if (artifactType.In(ArtifactType.onlyArchive, ArtifactType.bothReportArchive))
                         {
-                            cell = new() { Align = LEFT };
-                            cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
-                            row.Cells.Add(cell);
+                            row.Cells.Add(GetNewRptLinkCell($"{zipLinkPrefix}_{index}.zip", false));
                         }
                         index++;
                     }
@@ -360,15 +355,8 @@ namespace PSModule
                     cell = new HtmlTableCell { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
                     cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
                     header.Cells.Add(cell);
-
-                    if (artifactType == ArtifactType.bothReportArchive)
-                    {
-                        cell = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
-                        cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
-                        header.Cells.Add(cell);
-                    }
                 }
-                else if (artifactType == ArtifactType.onlyArchive)
+                if (artifactType.In(ArtifactType.onlyArchive, ArtifactType.bothReportArchive))
                 {
                     cell = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
                     cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
@@ -401,37 +389,16 @@ namespace PSModule
 
                     if (runType == RunType.FileSystem && uploadArtifact && !testRun.RunResultsHtmlRelativePath.IsNullOrWhiteSpace())
                     {
-                        string htmlLink = $"{htmlLinkPrefix}_{index}.html";
-                        string zipLink = $"{zipLinkPrefix}_{index}.zip";
+                        bool hasInvalidRpt = testRun.HasValidReport(report.ReportPath);
+                        if (hasInvalidRpt && warning.IsNullOrEmpty())
+                            warning = INVALID_REPORT_WARNING;
                         if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
                         {
-                            cell = new() { Align = LEFT };
-                            var a = new HtmlAnchor { HRef = htmlLink };
-                            if (testRun.HasValidReport(report.ReportPath))
-                            {
-                                a.InnerText = VIEW_REPORT;
-                            }
-                            else
-                            {
-                                a.Attributes[TITLE] = INVALID_RPT;
-                                a.InnerHtml = VIEW_INVALID_REPORT;
-                                warning = INVALID_REPORT_WARNING;
-                            }
-                            cell.Controls.Add(a);
-                            row.Cells.Add(cell);
-
-                            if (artifactType == ArtifactType.bothReportArchive)
-                            {
-                                cell = new() { Align = LEFT };
-                                cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
-                                row.Cells.Add(cell);
-                            }
+                            row.Cells.Add(GetNewRptLinkCell($"{htmlLinkPrefix}_{index}.html", true, hasInvalidRpt));
                         }
-                        else if (artifactType == ArtifactType.onlyArchive)
+                        if (artifactType.In(ArtifactType.onlyArchive, ArtifactType.bothReportArchive))
                         {
-                            cell = new() { Align = LEFT };
-                            cell.Controls.Add(new HtmlAnchor { HRef = zipLink, InnerText = DOWNLOAD });
-                            row.Cells.Add(cell);
+                            row.Cells.Add(GetNewRptLinkCell($"{zipLinkPrefix}_{index}.zip", false, hasInvalidRpt));
                         }
                         index++;
                     }
@@ -449,6 +416,23 @@ namespace PSModule
             }
             File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
             return warning;
+        }
+
+        private static HtmlTableCell GetNewRptLinkCell(string href, bool isHtmlLink = true, bool hasValidRpt = true)
+        {
+            HtmlTableCell cell = new() { Align = LEFT };
+            var a = new HtmlAnchor { HRef = href };
+            if (hasValidRpt)
+            {
+                a.InnerText = isHtmlLink ? VIEW_REPORT : DOWNLOAD;
+            }
+            else
+            {
+                a.Attributes[TITLE] = INVALID_RPT;
+                a.InnerHtml = isHtmlLink ? VIEW_INVALID_REPORT : DOWNLOAD_INVALID_REPORT;
+            }
+            cell.Controls.Add(a);
+            return cell;
         }
 
         public static void CreateRunSummary(RunStatus runStatus, int totalTests, IDictionary<string, int> nrOfTests, string rptPath)
