@@ -1,14 +1,13 @@
 # Integration with UFT One
 This extension enables you to run UFT One tests as part of your Azure DevOps build process. In a build step, run UFT One tests stored in the local file system or on an ALM server. When running tests from ALM Lab Management, you can also include a build step that prepares the test environment before running. After the build is complete, you can view comprehensive test results. 
 
-# What's new in UFT One Azure DevOps extension - version 3.*
-##### Release date: November 2021
+# What's new in UFT One Azure DevOps extension - version 4.*
+##### Release date: September 2022
 This plugin update includes the following:
-- ALM Lab Management runs:  Support running build verification suites, run on hosts assigned using ALM’s automatch option.
-- Enhanced support for release pipelines
-- Cosmetic report improvements
-- Bug fixes
-
+- Run your GUI Mobile tests from the file system.
+  You can directly define UFT Mobile connection settings and Mobile Record and Run settings in the pipelines without defining them separately in UFT One.
+- Use a UFT Mobile Get Resources task to retrieve application and device information from UFT Mobile.
+- Use a UFT One Parallel Test Run task to run GUI Web and GUI Mobile tests in parallel.
 
 #  Configuration
 #### Prerequisites
@@ -55,6 +54,14 @@ This plugin update includes the following:
 - Use this task to assign values to AUT Environment Configurations located in ALM.
 - More information is available [here][alm-env-docs]
 
+##### UFT One Parallel Test Run
+- Use this task to  to trigger a parallel testing task to run GUI Web or GUI Mobile tests in parallel from Azure DevOps Server (formerly known as TFS).
+- More information is available [here][parallel-docs]
+
+##### UFT Mobile Get Resources
+- Use this task to configure a task that retrieves device and application information from UFT Mobile.
+- More information is available [here][get-mobile-resources-docs]
+
 # Additional Resources
 For assistance or more information on configuring and using this extension, please consult the following resources:
 - [GitHub repository][repository]
@@ -75,3 +82,5 @@ For assistance or more information on configuring and using this extension, plea
    [azure-portal]:<http://portal.azure.com/>
    [azure-powershell]:<https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-6.0.0>
    [azure-connect]:<https://docs.microsoft.com/en-us/powershell/module/az.accounts/connect-azaccount?view=azps-6.0.0>
+   [parallel-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-trigger-parallel-run.htm>
+   [get-mobile-resources-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-getresources.htm>

@@ -60,6 +60,14 @@ In a build step, run UFT One tests stored in the local file system or on an ALM 
 - Use this task to assign values to AUT Environment Configurations located in ALM.
 - More information is available [here][alm-env-docs]
 
+##### UFT One Parallel Test Run
+- Use this task to  to trigger a parallel testing task to run GUI Web or GUI Mobile tests in parallel from Azure DevOps Server (formerly known as TFS).
+- More information is available [here][parallel-docs]
+
+##### UFT Mobile Get Resources
+- Use this task to configure a task that retrieves device and application information from UFT Mobile.
+- More information is available [here][get-mobile-resources-docs]
+
 # Additional Resources
 For assistance or more information on configuring and using this extension, please consult the following resources:
 - [Extension Marketplace page][marketplace]
@@ -81,3 +89,5 @@ For assistance or more information on configuring and using this extension, plea
    [azure-portal]:<http://portal.azure.com/>
    [azure-powershell]:<https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-6.0.0>
    [azure-connect]:<https://docs.microsoft.com/en-us/powershell/module/az.accounts/connect-azaccount?view=azps-6.0.0>
+   [parallel-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-trigger-parallel-run.htm>
+   [get-mobile-resources-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-getresources.htm>
