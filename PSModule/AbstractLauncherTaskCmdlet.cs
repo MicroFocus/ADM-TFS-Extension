@@ -53,7 +53,7 @@ namespace PSModule
 
         public abstract Dictionary<string, string> GetTaskProperties();
 
-        private delegate string CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
+        private delegate void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
                                                bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
                                                string storageAccount = "", string container = "", string reportName = "", string archiveName = "");
 
@@ -135,9 +135,7 @@ namespace PSModule
                             string storageAccount = properties.GetValueOrDefault(STORAGE_ACCOUNT, string.Empty);
                             string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
                             var artifactType = (ArtifactType)Enum.Parse(typeof(ArtifactType), properties[ARTIFACT_TYPE]);
-                            var warn = createSummaryReportHandler(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
-                            if (!warn.IsNullOrEmpty())
-                                LogWarning(warn);
+                            createSummaryReportHandler(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
                         }
                         else
                         {

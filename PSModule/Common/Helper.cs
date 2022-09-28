@@ -68,12 +68,6 @@ namespace PSModule
         private const string FAILED_TESTS = "Failed Tests";
         private const string HYPHEN = "&ndash;";
 
-        private const string INVALID_RPT = "This report might be invalid!";
-        private const string VIEW_INVALID_REPORT = $@"<font color=""red"" title=""{INVALID_RPT}"">{VIEW_REPORT}</font>";
-        private const string DOWNLOAD_INVALID_REPORT = $@"<font color=""red"" title=""{INVALID_RPT}"">{DOWNLOAD}</font>";
-        private const string TITLE = "title";
-        private const string INVALID_REPORT_WARNING = "At least one report might be invalid. Please check the report links from Extensions tab.";
-
         #endregion
 
         public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out IDictionary<string, IList<ReportMetaData>> failedSteps, bool addParallelTestRuns = false)
@@ -222,11 +216,10 @@ namespace PSModule
             return nrOfTestsCount;
         }
 
-        public static string CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
+        public static void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
                                                bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
                                                string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
         {
-            string warning = string.Empty;
             var table = new HtmlTable();
             var header = new HtmlTableRow();
             HtmlTableCell cell;
@@ -317,14 +310,12 @@ namespace PSModule
                 html = sw.ToString();
             }
             File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
-            return warning;
         }
 
-        public static string CreateParallelSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
+        public static void CreateParallelSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
                                                bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
                                                string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
         {
-            string warning = string.Empty;
             HtmlTable table = new();
             HtmlTableRow header = new();
             HtmlTableCell cell;
@@ -389,16 +380,13 @@ namespace PSModule
 
                     if (runType == RunType.FileSystem && uploadArtifact && !testRun.RunResultsHtmlRelativePath.IsNullOrWhiteSpace())
                     {
-                        bool hasInvalidRpt = testRun.HasValidReport(report.ReportPath);
-                        if (hasInvalidRpt && warning.IsNullOrEmpty())
-                            warning = INVALID_REPORT_WARNING;
                         if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
                         {
-                            row.Cells.Add(GetNewRptLinkCell($"{htmlLinkPrefix}_{index}.html", true, hasInvalidRpt));
+                            row.Cells.Add(GetNewRptLinkCell($"{htmlLinkPrefix}_{index}.html"));
                         }
                         if (artifactType.In(ArtifactType.onlyArchive, ArtifactType.bothReportArchive))
                         {
-                            row.Cells.Add(GetNewRptLinkCell($"{zipLinkPrefix}_{index}.zip", false, hasInvalidRpt));
+                            row.Cells.Add(GetNewRptLinkCell($"{zipLinkPrefix}_{index}.zip", false));
                         }
                         index++;
                     }
@@ -415,22 +403,12 @@ namespace PSModule
                 html = sw.ToString();
             }
             File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
-            return warning;
         }
 
-        private static HtmlTableCell GetNewRptLinkCell(string href, bool isHtmlLink = true, bool hasValidRpt = true)
+        private static HtmlTableCell GetNewRptLinkCell(string href, bool isHtmlLink = true)
         {
             HtmlTableCell cell = new() { Align = LEFT };
-            var a = new HtmlAnchor { HRef = href };
-            if (hasValidRpt)
-            {
-                a.InnerText = isHtmlLink ? VIEW_REPORT : DOWNLOAD;
-            }
-            else
-            {
-                a.Attributes[TITLE] = INVALID_RPT;
-                a.InnerHtml = isHtmlLink ? VIEW_INVALID_REPORT : DOWNLOAD_INVALID_REPORT;
-            }
+            var a = new HtmlAnchor { HRef = href, InnerText = (isHtmlLink ? VIEW_REPORT : DOWNLOAD) };
             cell.Controls.Add(a);
             return cell;
         }

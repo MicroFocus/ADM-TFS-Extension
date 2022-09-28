@@ -130,9 +130,10 @@ function UploadArtifactToAzureStorage($storageContext, $container, $testPathRepo
 }
 
 function ArchiveReport($artifact, $rptFolder) {
-	if (Test-Path $rptFolder) {
-		$fullPathZipFile = Join-Path $rptFolder -ChildPath $artifact
-		Compress-Archive -Path $rptFolder -DestinationPath $fullPathZipFile
+	if (Test-Path -LiteralPath $rptFolder) {
+		$rootFolder = "$rptFolder\..\.." | Convert-Path
+		$fullPathZipFile = Join-Path $rootFolder -ChildPath $artifact
+		Compress-Archive -LiteralPath $rptFolder -DestinationPath $fullPathZipFile
 		return $fullPathZipFile
 	}
 	return $null

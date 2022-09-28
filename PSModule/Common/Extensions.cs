@@ -45,11 +45,6 @@ namespace PSModule
 			return string.IsNullOrEmpty(str);
 		}
 
-        public static bool IsNullOrEmptyOrValue(this string str, string val)
-        {
-            return string.IsNullOrEmpty(str) || str.EqualsIgnoreCase(val);
-        }
-
         public static bool IsEmptyOrWhiteSpace(this string str)
 		{
 			return str != null && str.Trim() == string.Empty;
