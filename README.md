@@ -25,8 +25,8 @@ In a build step, run UFT One tests stored in the local file system or on an ALM 
 ##### For extension version >=**2.0.0**:
 5. From [Azure Portal][azure-portal]: Have available a Resource Group, a Storage Account and a Container (for storing report artifacts)
 6. On your agent machine:
-6.1. Install [Azure Powershell] [azure-powershell]
-6.2. Connect to [Azure Portal][azure-connect]
+6.1. Install [Azure Powershell] [azure-powershell]    
+6.2. Connect to [Azure Portal][azure-connect]    
 6.3. To access the artifacts (HTML report, archive or both), change the *container's access level* to **blob**
 
 # Extension Functionality

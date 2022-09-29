@@ -20,13 +20,13 @@ This plugin update includes the following:
 1. Install this extension for the relevant Azure DevOps organization
 2. From our [GitHub][repository]: Browse a specific **release** (latest: 2.0.3)
 3. From [Azure DevOps][azure-devops]: Have an agent set up (interactive or run as a service) 
-4. On your agent machine:
-4.1. Download the resources provided by a specific release (UFT.zip, unpack.ps1 and optionally the .vsix file)
+4. On your agent machine:    
+4.1. Download the resources provided by a specific release (UFT.zip, unpack.ps1 and optionally the .vsix file)    
 4.2. Run the *unpack.ps1* script
 ###### For extension version >=**2.0.0**:
 5. From [Azure Portal][azure-portal]: Have available a Resource Group, a Storage Account and a Container (for storing report artifacts)
-6. On your agent machine:
-6.1. Install [Azure Powershell] [azure-powershell]
+6. On your agent machine:    
+6.1. Install [Azure Powershell] [azure-powershell]    
 6.2. Connect to [Azure Portal][azure-connect]
 
 # Extension Functionality
