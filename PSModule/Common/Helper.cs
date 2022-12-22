@@ -22,6 +22,7 @@ namespace PSModule
         internal const string FAIL = "fail";
         internal const string ERROR = "error";
         internal const string WARNING = "warning";
+        internal const string SKIPPED = "skipped";
         private const string DIEZ = "#";
         private const string TEST_REPORT_NAME_PATTERN_SUFFIX = @" - Report[\d]*$";
         private const char COLON = ':';
@@ -132,7 +133,7 @@ namespace PSModule
                                 }
                             }
                         }
-                        else if (xmlNode.Name == SYSTEM_OUT && reportmetadata.DateTime.IsNullOrWhiteSpace())
+                        else if (xmlNode.Name == SYSTEM_OUT && reportmetadata.DateTime.IsNullOrWhiteSpace() && reportmetadata.Status != SKIPPED)
                         {
                             reportmetadata.DateTime = xmlNode.InnerText.Substring(0, 19);
                         }
@@ -192,7 +193,8 @@ namespace PSModule
                 { PASS, 0 },
                 { FAIL, 0 },
                 { ERROR, 0 },
-                { WARNING, 0 }
+                { WARNING, 0 },
+                { SKIPPED, 0 }
             };
 
             int nrOfTestsCount = 0;
@@ -265,7 +267,15 @@ namespace PSModule
                 cell = new() { InnerText = GetTestName(report.DisplayName), Align = LEFT };
                 row.Cells.Add(cell);
 
-                cell = new() { InnerText = report.DateTime, Align = LEFT };
+                cell = new() { Align = LEFT };
+                if (report.DateTime.IsNullOrEmpty())
+                {
+                    cell.Controls.Add(new LiteralControl(HYPHEN));
+                }
+                else
+                {
+                    cell.InnerText = report.DateTime;
+                }
                 row.Cells.Add(cell);
 
                 cell = new() { Align = LEFT };
@@ -456,14 +466,14 @@ namespace PSModule
                 var row = new HtmlTableRow();
                 if (index == 0)
                 {
-                    var cell1 = new HtmlTableCell { Align = LEFT, RowSpan = 4 };
+                    var cell1 = new HtmlTableCell { Align = LEFT, RowSpan = 5 };
                     var img = new HtmlImage { Src = $"{IMG_LINK_PREFIX}/build_status/{runStatus.ToString().ToLower()}.svg" };
                     img.Attributes.Add(STYLE, BUILD_STATUS_IMG_STYLE);
                     cell1.Controls.Add(img);
 
                     row.Cells.Add(cell1);
 
-                    var cell2 = new HtmlTableCell { InnerText = $"{totalTests}", Align = LEFT, RowSpan = 4 };
+                    var cell2 = new HtmlTableCell { InnerText = $"{totalTests}", Align = LEFT, RowSpan = 5 };
                     cell2.Attributes.Add(STYLE, FONT_WEIGHT_BOLD);
                     row.Cells.Add(cell2);
                 }

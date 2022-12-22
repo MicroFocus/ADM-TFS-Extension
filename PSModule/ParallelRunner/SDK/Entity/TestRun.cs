@@ -14,6 +14,7 @@ namespace PSModule.ParallelRunner.SDK.Entity
         private const string FAIL = "fail";
         private const string WARNING = "warning";
         private const string ERROR = "error";
+        private const string SKIPPED = "skipped";
 
         private EnvType _envType = EnvType.None;
 
@@ -73,6 +74,8 @@ namespace PSModule.ParallelRunner.SDK.Entity
                 return PASS;
             if (Status.EqualsIgnoreCase(WARNING))
                 return WARNING;
+            if (Status.EqualsIgnoreCase(SKIPPED))
+                return SKIPPED;
 
             return ERROR;
         }
