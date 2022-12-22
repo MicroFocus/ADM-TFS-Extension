@@ -1,7 +1,5 @@
 ﻿using PSModule.ParallelRunner.SDK.Entity;
 using HtmlAgilityPack;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
