@@ -137,6 +137,9 @@ namespace PSModule
             }
         }
 
+        [Parameter(Position = 14)]
+        public bool CancelRunOnFailure { get; set; }
+
         protected override bool CollateResults(string resultFile, string resdir)
         {
             return true; //do nothing here. Collate results should be made by the standard "Copy and Publish Artifacts" TFS task
@@ -164,7 +167,8 @@ namespace PSModule
             builder.SetStorageAccount(StorageAccount);
             builder.SetContainer(Container);
             builder.SetBuildNumber(BuildNumber);
-            builder.SetEnableFailedTestsReport(EnableFailedTestsReport);
+            builder.SetCancelRunOnFailure(CancelRunOnFailure);
+            builder.SetEnableFailedTestsReport(_enableFailedTestsReport);
             builder.SetUseParallelRunner(_isParallelRunnerMode);
             if (_isParallelRunnerMode)
             {

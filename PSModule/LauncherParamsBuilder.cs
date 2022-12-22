@@ -49,9 +49,14 @@ namespace PSModule
             SetParamValue("buildNumber", buildNumber);
         }
 
-        public void SetEnableFailedTestsReport(bool enableJunitRpt)
+        public void SetCancelRunOnFailure(bool cancelRunOnFailure)
         {
-            SetParamValue("enableFailedTestsReport", enableJunitRpt ? C.YES : C.NO);
+            SetParamValue("cancelRunOnFailure", cancelRunOnFailure ? C.YES : C.NO);
+        }
+
+        public void SetEnableFailedTestsReport(bool enableFailedTestsRpt)
+        {
+            SetParamValue("enableFailedTestsReport", enableFailedTestsRpt ? C.YES : C.NO);
         }
 
         public void SetParallelTestEnv(int testIdx, int envIdx, string device)

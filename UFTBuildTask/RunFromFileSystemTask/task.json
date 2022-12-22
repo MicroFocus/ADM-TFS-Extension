@@ -41,6 +41,14 @@
       "helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
     },
     {
+      "name": "cancelRunOnFailure",
+      "type": "boolean",
+      "label": "Cancel run on first failure",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Choose whether to cancel the run when a test fails, so that the subsequent tests will be skipped"
+    },
+    {
       "name": "enableFailedTestsReport",
       "type": "boolean",
       "label": "Generate 'Failed Tests' report",

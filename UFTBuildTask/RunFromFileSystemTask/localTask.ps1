@@ -11,6 +11,7 @@ $timeOutIn = Get-VstsInput -Name 'timeOutIn'
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
 $rptFileName = Get-VstsInput -Name 'reportFileName'
+[bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 
 $mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
@@ -275,7 +276,7 @@ if ($rerunIdx) {
 
 #---------------------------------------------------------------------------------------------------
 #Run the tests
-Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders $mobileConfig -Verbose 
+Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders $mobileConfig $cancelRunOnFailure -Verbose 
 
 $ind = 1
 foreach ($item in $rptFolders) {
