@@ -14,7 +14,6 @@ $rptFileName = Get-VstsInput -Name 'reportFileName'
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 
 $envType = Get-VstsInput -Name 'envType'
-$mcDevices = Get-VstsInput -Name 'mcDevices'
 
 [bool]$useChrome = Get-VstsInput -Name 'chrome' -AsBool
 [bool]$useChromeH = Get-VstsInput -Name 'chromeH' -AsBool
@@ -26,34 +25,54 @@ $mcDevices = Get-VstsInput -Name 'mcDevices'
 [bool]$useIExplorer64 = Get-VstsInput -Name 'iExplorer64' -AsBool
 [bool]$useSafari = Get-VstsInput -Name 'safari' -AsBool
 
-$mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
-$mcUsername = Get-VstsInput -Name 'mcUsername'
-$mcPassword = Get-VstsInput -Name 'mcPassword'
-[int]$mcTenantId = Get-VstsInput -Name 'mcTenantId' -AsInt
-[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
-$mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
-[bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
-$mcProxyUsername = Get-VstsInput -Name 'mcProxyUsername'
-$mcProxyPassword = Get-VstsInput -Name 'mcProxyPassword'
-
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
 $parallelRunnerConfig = $null
 $mobileConfig = $null
-$proxyConfig = $null
 
 [List[Device]]$devices = $null
 if ($envType -eq "") {
 	throw "Environment type not selected."
 } elseif ($envType -eq "mobile") {
+	$mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
+	$mcDevices = Get-VstsInput -Name 'mcDevices'
+	$mcAuthType = Get-VstsInput -Name 'mcAuthType'
+	$mcUsername = Get-VstsInput -Name 'mcUsername'
+	$mcPassword = Get-VstsInput -Name 'mcPassword'
+	[int]$mcTenantId = Get-VstsInput -Name 'mcTenantId' -AsInt
+	$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
+
+	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
+
 	if ([string]::IsNullOrWhiteSpace($mcDevices)) {
 		throw "The Devices field is required."
 	} elseif ([string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		throw "Mobile Center Server is empty."
-	} elseif ([string]::IsNullOrWhiteSpace($mcUsername)) {
+	} elseif ($isBasicAuth -and [string]::IsNullOrWhiteSpace($mcUsername)) {
 		throw "Mobile Center Username is empty."
+	} elseif (!$isBasicAuth -and [string]::IsNullOrWhiteSpace($mcAccessKey)) {
+		throw "Mobile Center AccessKey is empty."
 	}
+
+	if ($isBasicAuth) {
+		$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
+	} else {
+		$mcClientId = $mcSecret = $null
+		$err = [ServerConfig]::ParseAccessKey($mcAccessKey, [ref]$mcClientId, [ref]$mcSecret, [ref]$mcTenantId)
+		if ($err) {
+			throw $err
+		}
+		$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
+	}
+
+	[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
+	$proxyConfig = $null
+
 	if ($useMcProxy) {
+		$mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
+		[bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
+		$mcProxyUsername = Get-VstsInput -Name 'mcProxyUsername'
+		$mcProxyPassword = Get-VstsInput -Name 'mcProxyPassword'
 		if ([string]::IsNullOrWhiteSpace($mcProxyUrl)) {
 			throw "Proxy Server is empty."
 		} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
@@ -62,7 +81,6 @@ if ($envType -eq "") {
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
 	}
-	$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
 	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig)
 	[List[string]]$invalidDeviceLines = $null
 	[Device]::ParseLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)

@@ -137,12 +137,25 @@
       "helpMarkDown": "The address of your Mobile Center server, in the format http[s]://(MC server name):(port)"
     },
     {
+      "name": "mcAuthType",
+      "type": "radio",
+      "label": "Authentication type",
+      "defaultValue": "basic",
+      "required": true,
+      "options": {
+        "basic": "Basic authentication",
+        "key": "Access key authentication"
+      },
+      "visibleRule": "envType = mobile",
+      "helpMarkDown": "Select the authentication mode to use for connecting to UFT Mobile"
+    },
+    {
       "name": "mcUsername",
       "type": "string",
       "label": "Username",
       "defaultValue": "",
-      "required": true,
-      "visibleRule": "envType = mobile",
+      "required": false,
+      "visibleRule": "envType = mobile && mcAuthType = basic",
       "helpMarkDown": "The username that will access this Mobile Center server during the build step run"
     },
     {
@@ -151,7 +164,7 @@
       "label": "Password",
       "defaultValue": "",
       "required": false,
-      "visibleRule": "envType = mobile",
+      "visibleRule": "envType = mobile && mcAuthType = basic",
       "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
     },
     {
@@ -160,12 +173,21 @@
       "label": "Tenant Id",
       "defaultValue": "",
       "required": false,
-      "visibleRule": "envType = mobile",
+      "visibleRule": "envType = mobile && mcAuthType = basic",
       "validation": {
         "expression": "or(eq(value, ''), and(isMatch(value, '^\\d*$', 'IgnoreCase'), isInRange(value, 1, 2147483647)))",
         "message": "This field must be a valid and positive number (maximum 2147483647)"
       },
       "helpMarkDown": "The tenant ID used to connect to the UFT Mobile server with multi-tenant mode enabled"
+    },
+    {
+      "name": "mcAccessKey",
+      "type": "string",
+      "label": "Access Key",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "envType = mobile && mcAuthType = key",
+      "helpMarkDown": "The Access Key will provide access to this Mobile Center server during the build step run"
     },
     {
       "name": "useMcProxy",
