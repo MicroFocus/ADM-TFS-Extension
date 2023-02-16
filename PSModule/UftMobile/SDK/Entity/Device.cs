@@ -22,12 +22,24 @@ namespace PSModule.UftMobile.SDK.Entity
 
         private static readonly string[] _pipelineAttributes = new string[] { nameof(DeviceId), nameof(Model), nameof(Manufacturer), nameof(OSType), nameof(OSVersion)};
 
+        [JsonProperty("deviceID")] // as defined in parallelrun_results.json
         public string DeviceId { get; set; }
+
         public string LogicName { get; set; }
+
+        [JsonProperty("model")]
         public string Model { get; set; }
+
+        [JsonProperty("osType")]
         public string OSType { get; set; }
+
+        [JsonProperty("osVersion")]
         public string OSVersion { get; set; }
+
+        [JsonProperty("manufacturer")]
         public string Manufacturer { get; set; }
+
+        [JsonProperty("deviceStatus")]
         public string DeviceStatus { get; set; }
 
         public override string ToString()

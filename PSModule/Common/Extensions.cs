@@ -179,9 +179,9 @@ namespace PSModule
 				ignoreNullValues ? _jsonSerializerSettings2 : _jsonSerializerSettings);
             return json.Escape(escapeChars);
         }
-        public static T FromJson<T>(this string json) where T : class
+        public static T FromJson<T>(this string json, JsonSerializerSettings jsonSerializerSettings = null) where T : class
         {
-			return JsonConvert.DeserializeObject<T>(json, _jsonSerializerSettings);
+			return JsonConvert.DeserializeObject<T>(json, jsonSerializerSettings ?? _jsonSerializerSettings);
 		}
 
 		public static bool StartsWithAny(this string str, params char[] chars)

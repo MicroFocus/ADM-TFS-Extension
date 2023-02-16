@@ -3,27 +3,47 @@ using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+
 namespace PSModule.ParallelRunner.SDK.Util
 {
     public static class Helper
     {
         private static readonly string[] _toBeIgnoredStatuses = new string[] { "Running", "Pending" };
         private const string PARALLEL_RUN_RESULTS_HTML = "parallelrun_results.html";
+        private const string PARALLEL_RUN_RESULTS_JSON = "parallelrun_results.json";
         private const string HTML_SCRIPT_XPATH = "/html/script";
         private const string VAR_JSON_PREFIX = "var json_";
         private const string JSON_END_SUFFIX = "}};";
         public const string FILE_NOT_FOUND = "ParallelRunner html report file not found";
 
         private static readonly char[] EQ = new char[] { '=' };
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new() { ContractResolver = new FieldsContractResolver() };
 
         public static List<TestRun> GetTestRuns(string reportPath)
         {
-            string fullPathFilename = Path.Combine(reportPath, PARALLEL_RUN_RESULTS_HTML);
-            if (!File.Exists(fullPathFilename))
+            string fullPathFilename = Path.Combine(reportPath, PARALLEL_RUN_RESULTS_JSON);
+            if (File.Exists(fullPathFilename))
             {
-                throw new FileNotFoundException(FILE_NOT_FOUND, fullPathFilename);
+                return GetTestRunsFromJson(fullPathFilename);
             }
-
+            else
+            {
+                fullPathFilename = Path.Combine(reportPath, PARALLEL_RUN_RESULTS_HTML);
+                return File.Exists(fullPathFilename) ? 
+                    GetTestRunsFromHtml(fullPathFilename): 
+                    throw new FileNotFoundException(FILE_NOT_FOUND, fullPathFilename);
+            }
+        }
+        private static List<TestRun> GetTestRunsFromJson(string fullPathFilename)
+        {
+            using StreamReader sr = new(fullPathFilename);
+            string json = sr.ReadToEnd();
+            TestRun[] tests = json.FromJson<TestRun[]>(_jsonSerializerSettings);
+            return tests?.OrderBy(r => r.Path).ToList() ?? new();
+        }
+        private static List<TestRun> GetTestRunsFromHtml(string fullPathFilename)
+        {
             Dictionary<int, TestRun> dict = new();
             using StreamReader sr = new(fullPathFilename);
             HtmlDocument doc = new();
@@ -36,7 +56,7 @@ namespace PSModule.ParallelRunner.SDK.Util
                     var str = node.InnerText.Split(EQ, 2)[1];
                     var len = str.IndexOf(JSON_END_SUFFIX) + 2;
                     var json = str.Substring(0, len);
-                    TestRun obj = json.FromJson<TestRun>();
+                    TestRun obj = json.FromJson<TestRun>(_jsonSerializerSettings);
                     if (obj == null || obj.Status.In(_toBeIgnoredStatuses))
                         continue;
                     if (dict.ContainsKey(obj.Id))
@@ -49,7 +69,7 @@ namespace PSModule.ParallelRunner.SDK.Util
                     }
                 }
             }
-            
+
             return dict.Values.OrderBy(r => r.RunResultsHtmlRelativePath).ToList();
         }
     }

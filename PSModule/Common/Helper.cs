@@ -68,6 +68,7 @@ namespace PSModule
         private const string RUN_SUMMARY = "Run Summary";
         private const string FAILED_TESTS = "Failed Tests";
         private const string HYPHEN = "&ndash;";
+        private const string DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
         #endregion
 
@@ -379,10 +380,10 @@ namespace PSModule
                 foreach (TestRun testRun in report.TestRuns)
                 {
                     var row = new HtmlTableRow();
-                    row.Cells.Add(new() { InnerText = $"{testRun.TestName} [{x}]", Align = LEFT });
+                    row.Cells.Add(new() { InnerText = $"{testRun.Name} [{x}]", Align = LEFT });
                     row.Cells.Add(new() { InnerText = $"{testRun.GetEnvType()}", Align = LEFT });
                     row.Cells.Add(new() { InnerHtml = testRun.GetDetails(), Align = LEFT });
-                    row.Cells.Add(new() { InnerText = report.DateTime, Align = LEFT }); // currently no timestamp is included in parallelrun_results.html
+                    row.Cells.Add(new() { InnerText = testRun.RunStartTime.IsNullOrEmpty() ? report.DateTime : testRun.RunStartTime, Align = LEFT });
 
                     cell = new() { Align = LEFT };
                     cell.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{testRun.GetAzureStatus()}.svg" });

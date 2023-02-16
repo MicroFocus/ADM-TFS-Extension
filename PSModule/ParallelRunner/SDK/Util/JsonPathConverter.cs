@@ -14,7 +14,15 @@ namespace PSModule.ParallelRunner.SDK.Util
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var jo = JObject.Load(reader);
+            JObject jo;
+            try
+            {
+                jo = JObject.Load(reader);
+            }
+            catch
+            {
+                return null;
+            }
             object targetObj = existingValue ?? Activator.CreateInstance(objectType);
 
             foreach (var prop in objectType.GetProperties().Where(p => p.CanRead))
