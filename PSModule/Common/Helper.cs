@@ -389,7 +389,7 @@ namespace PSModule
                     cell.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{testRun.GetAzureStatus()}.svg" });
                     row.Cells.Add(cell);
 
-                    if (runType == RunType.FileSystem && uploadArtifact && !testRun.RunResultsHtmlRelativePath.IsNullOrWhiteSpace())
+                    if (runType == RunType.FileSystem && uploadArtifact && testRun.HasUFTReport(report.ReportPath))
                     {
                         if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
                         {

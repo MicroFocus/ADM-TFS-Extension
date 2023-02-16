@@ -51,6 +51,8 @@ namespace PSModule.Common
         public const string MC = "MC";
 
         public const string RUN_RESULTS_XML = "run_results.xml";
-
+        public const string RUN_RESULTS_HTML = "run_results.html";
+        public const string PARALLEL_RUN_RESULTS_JSON = "parallelrun_results.json";
+        public const string PARALLEL_RUN_RESULTS_HTML = "parallelrun_results.html";
     }
 }

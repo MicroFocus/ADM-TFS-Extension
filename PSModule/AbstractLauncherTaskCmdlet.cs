@@ -15,6 +15,7 @@ using PSModule.UftMobile.SDK.UI;
 namespace PSModule
 {
     using H = Helper;
+    using H2 = ParallelRunner.SDK.Util.Helper;
     using C = Common.Constants;
     public abstract class AbstractLauncherTaskCmdlet : PSCmdlet
     {
@@ -151,27 +152,35 @@ namespace PSModule
                             {
                                 if (listReport.Any())
                                 {
-                                    var rptPaths = listReport.Select(p => p.ReportPath).Where(p => !p.IsNullOrWhiteSpace());
-                                    if (rptPaths.Any())
+                                    var validTestCases = listReport.Where(t => !t.ReportPath.IsNullOrWhiteSpace());
+                                    if (validTestCases.Any())
                                     {
                                         if (_isParallelRunnerMode)
                                         {
-                                            foreach (var path in rptPaths)
+                                            foreach (var tc in validTestCases)
                                             {
-                                                var dirs = new DirectoryInfo(path).GetFiles(C.RUN_RESULTS_XML, SearchOption.AllDirectories).Select(f => f.Directory.FullName).OrderBy(d => d);
+                                                IOrderedEnumerable<string> dirs;
+                                                if (H2.HasParallelRunnerJsonReport(tc.ReportPath))
+                                                {
+                                                    dirs = tc.TestRuns.Where(tr => H2.HasUftHtmlReport(tr.Path)).Select(tr => @$"{tr.Path}\Report").OrderBy(d => d);
+                                                }
+                                                else
+                                                {
+                                                    dirs = new DirectoryInfo(tc.ReportPath).GetFiles(C.RUN_RESULTS_XML, SearchOption.AllDirectories).Select(f => f.Directory.FullName).OrderBy(d => d);
+                                                }
                                                 if (dirs.Any())
                                                 {
                                                     _rptPaths.AddRange(dirs);
                                                 }
                                                 else
                                                 {
-                                                    LogWarning($"The report file '{C.RUN_RESULTS_XML}' is not found in '{path}'.");
+                                                    LogWarning($"The report file '{C.RUN_RESULTS_XML}' is not found in '{tc.ReportPath}'.");
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            rptPaths.ForEach(p => _rptPaths.Add(p));
+                                            validTestCases.ForEach(tc => _rptPaths.Add(tc.ReportPath));
                                         }
                                     }
                                 }
