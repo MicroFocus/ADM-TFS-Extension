@@ -36,7 +36,7 @@ namespace PSModule
         PASSED = 0,
         FAILED = -1,
         UNSTABLE = -2,
-        CLOSED_BY_USER = -3,
+        ABORTED = -3,
         UNDEFINED = -9
     }
     public enum LauncherExitCode
@@ -46,7 +46,8 @@ namespace PSModule
         PartialFailed = -2,
         Aborted = -3,
         Unstable = -4,
-        AlmNotConnected = -5
+        AlmNotConnected = -5,
+        Closed = -1073741510 // 0xC000013A STATUS_CONTROL_C_EXIT https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55
     }
 
     public enum EnvType

@@ -284,73 +284,75 @@ if ($rerunIdx) {
 
 #---------------------------------------------------------------------------------------------------
 #Run the tests
-Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $parallelRunnerConfig $rptFolders $mobileConfig -Verbose 
-
-$ind = 1
-foreach ($item in $rptFolders) {
-	$rptFileNames.Add("${rptFileName}_${ind}.html")
-	$zipFileNames.Add("${rptFileName}_Report_${ind}.zip")
-	$ind += 1
-}
-
-#---------------------------------------------------------------------------------------------------
-#upload artifacts to Azure storage
-if ($uploadArtifact -eq "yes") {
-	if ($artifactType -eq "onlyReport") { #upload only report
-		UploadHtmlReport
-	} elseif ($artifactType -eq "onlyArchive") { #upload only archive
-		UploadArchive
-	} else { #upload both report and archive
-		UploadHtmlReport
-		UploadArchive
+try {
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $parallelRunnerConfig $rptFolders $mobileConfig -Verbose 
+} finally {
+	$ind = 1
+	foreach ($item in $rptFolders) {
+		$rptFileNames.Add("${rptFileName}_${ind}.html")
+		$zipFileNames.Add("${rptFileName}_Report_${ind}.zip")
+		$ind += 1
 	}
-}
 
-#---------------------------------------------------------------------------------------------------
-# uploads report files to build artifacts
-$all = "$resDir\all_" + $rerunIdx
-if ((Test-Path $runSummary) -and (Test-Path $uftReport)) {
-	$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
-	$html = [System.Text.StringBuilder]""
-	$html.Append("<div class=`"margin-right-8 margin-left-8 padding-8 depth-8`"><div class=`"body-xl`">Run Sumary</div>")
-	$html.AppendLine((Get-Content -Path $runSummary))
-	$html.AppendLine("</div><div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">UFT Report</div>")
-	$html.AppendLine((Get-Content -Path $uftReport))
-	$html.AppendLine("</div>")
-	if (Test-Path $failedTests) {
-		$html.AppendLine("<div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">Failed Tests</div>")
-		$html.AppendLine((Get-Content -Path $failedTests))
+	#---------------------------------------------------------------------------------------------------
+	#upload artifacts to Azure storage
+	if ($uploadArtifact -eq "yes") {
+		if ($artifactType -eq "onlyReport") { #upload only report
+			UploadHtmlReport
+		} elseif ($artifactType -eq "onlyArchive") { #upload only archive
+			UploadArchive
+		} else { #upload both report and archive
+			UploadHtmlReport
+			UploadArchive
+		}
+	}
+
+	#---------------------------------------------------------------------------------------------------
+	# uploads report files to build artifacts
+	$all = "$resDir\all_" + $rerunIdx
+	if ((Test-Path $runSummary) -and (Test-Path $uftReport)) {
+		$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+		$html = [System.Text.StringBuilder]""
+		$html.Append("<div class=`"margin-right-8 margin-left-8 padding-8 depth-8`"><div class=`"body-xl`">Run Sumary</div>")
+		$html.AppendLine((Get-Content -Path $runSummary))
+		$html.AppendLine("</div><div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">UFT Report</div>")
+		$html.AppendLine((Get-Content -Path $uftReport))
 		$html.AppendLine("</div>")
+		if (Test-Path $failedTests) {
+			$html.AppendLine("<div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">Failed Tests</div>")
+			$html.AppendLine((Get-Content -Path $failedTests))
+			$html.AppendLine("</div>")
+		}
+		$html.ToString() >> $all
+		if ($rerunIdx) {
+			Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Reports ($rerunType $rerunIdx);]$all"
+		} else {
+			Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Reports;]$all"
+		}
 	}
-	$html.ToString() >> $all
-	if ($rerunIdx) {
-		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Reports ($rerunType $rerunIdx);]$all"
-	} else {
-		Write-Host "##vso[task.addattachment type=Distributedtask.Core.Summary;name=Reports;]$all"
-	}
-}
 
-# read return code
-if (Test-Path $retcodefile) {
-	$content = Get-Content $retcodefile
-	if ($content) {
-		$sep = [Environment]::NewLine
-		$option = [System.StringSplitOptions]::RemoveEmptyEntries
-		$arr = $content.Split($sep, $option)
-		[int]$retcode = [convert]::ToInt32($arr[-1], 10)
+	# read return code
+	if (Test-Path $retcodefile) {
+		$content = Get-Content $retcodefile
+		if ($content) {
+			$sep = [Environment]::NewLine
+			$option = [System.StringSplitOptions]::RemoveEmptyEntries
+			$arr = $content.Split($sep, $option)
+			[int]$retcode = [convert]::ToInt32($arr[-1], 10)
 	
-		if ($retcode -eq 0) {
-			Write-Host "Test passed"
-		}
+			if ($retcode -eq 0) {
+				Write-Host "Test passed"
+			}
 
-		if ($retcode -eq -3) {
-			Write-Error "Task Failed with message: Closed by user"
-		} elseif ($retcode -ne 0) {
-			Write-Error "Task Failed"
+			if ($retcode -eq -3) {
+				Write-Error "Task Failed with message: Closed by user"
+			} elseif ($retcode -ne 0) {
+				Write-Error "Task Failed"
+			}
+		} else {
+			Write-Error "The file [$retcodefile] is empty!"
 		}
 	} else {
-		Write-Error "The file [$retcodefile] is empty!"
+		Write-Error "The file [$retcodefile] is missing!"
 	}
-} else {
-	Write-Error "The file [$retcodefile] is missing!"
 }

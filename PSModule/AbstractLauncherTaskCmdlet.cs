@@ -12,6 +12,7 @@ using PSModule.Models;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
 using PSModule.UftMobile.SDK.UI;
+
 namespace PSModule
 {
     using H = Helper;
@@ -143,7 +144,7 @@ namespace PSModule
                             createSummaryReportHandler(resdir, runType, listReport);
                         }
                         //get task return code
-                        runStatus = H.GetRunStatus(listReport);
+                        runStatus = exitCode == LauncherExitCode.Closed ? RunStatus.ABORTED : H.GetRunStatus(listReport);
                         int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);
                         if (totalTests > 0)
                         {
@@ -184,7 +185,7 @@ namespace PSModule
                                         }
                                     }
                                 }
-                                if (_rptPaths.Any() && _enableFailedTestsReport)
+                                if (runStatus != RunStatus.ABORTED && _rptPaths.Any() && _enableFailedTestsReport)
                                 {
                                     //run junit report converter
                                     string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
@@ -204,11 +205,6 @@ namespace PSModule
             catch (IOException ioe)
             {
                 LogError(ioe);
-            }
-            catch (ThreadInterruptedException e)
-            {
-                LogError(e, ErrorCategory.OperationStopped);
-                Run(aborterPath, paramFileName);
             }
         }
 
@@ -240,7 +236,6 @@ namespace PSModule
         private LauncherExitCode? Run(string launcherPath, string paramFile)
         {
             Console.WriteLine($"{launcherPath} -paramfile {paramFile}");
-
             _launcherConsole.Clear();
             try
             {
@@ -261,7 +256,7 @@ namespace PSModule
                     RedirectStandardError = true
                 };
 
-                Process launcher = new Process { StartInfo = info };
+                Process launcher = new() { StartInfo = info };
 
                 launcher.OutputDataReceived += Launcher_OutputDataReceived;
                 launcher.ErrorDataReceived += Launcher_ErrorDataReceived;
@@ -284,12 +279,20 @@ namespace PSModule
                 launcher.ErrorDataReceived -= Launcher_ErrorDataReceived;
 
                 launcher.WaitForExit();
-
+                
                 return (LauncherExitCode?)launcher.ExitCode;
             }
             catch (ThreadInterruptedException)
             {
-                throw;
+                return LauncherExitCode.Aborted;
+            }
+            catch (OperationCanceledException)
+            {
+                return LauncherExitCode.Aborted;
+            }
+            catch (PipelineStoppedException)
+            {
+                return LauncherExitCode.Aborted;
             }
             catch (Exception e)
             {
@@ -384,7 +387,7 @@ namespace PSModule
             string retCodeFilename = Path.Combine(resdir, fileName);
             try
             {
-                using StreamWriter file = new StreamWriter(retCodeFilename, true);
+                using StreamWriter file = new (retCodeFilename, true);
                 file.WriteLine(retCode.ToString());
             }
             catch (ThreadInterruptedException)
