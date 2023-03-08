@@ -278,6 +278,8 @@ if ($rerunIdx) {
 #Run the tests
 try {
 	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders $mobileConfig $cancelRunOnFailure -Verbose 
+} catch {
+	Write-Error $_
 } finally {
 	$ind = 1
 	foreach ($item in $rptFolders) {
@@ -288,7 +290,7 @@ try {
 
 	#---------------------------------------------------------------------------------------------------
 	#upload artifacts to Azure storage
-	if ($uploadArtifact -eq "yes") {
+	if (($uploadArtifact -eq "yes") -and ($rptFolders.Count -gt 0)) {
 		if ($artifactType -eq "onlyReport") { #upload only report
 			UploadHtmlReport
 		} elseif ($artifactType -eq "onlyArchive") { #upload only archive
@@ -344,7 +346,5 @@ try {
 		} else {
 			Write-Error "The file [$retcodefile] is empty!"
 		}
-	} else {
-		Write-Error "The file [$retcodefile] is missing!"
 	}
 }
