@@ -36,7 +36,7 @@ namespace PSModule
         PASSED = 0,
         FAILED = -1,
         UNSTABLE = -2,
-        ABORTED = -3,
+        CANCELED = -3,
         UNDEFINED = -9
     }
     public enum LauncherExitCode

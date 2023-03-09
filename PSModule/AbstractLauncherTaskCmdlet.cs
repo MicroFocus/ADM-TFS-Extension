@@ -144,7 +144,7 @@ namespace PSModule
                             createSummaryReportHandler(resdir, runType, listReport);
                         }
                         //get task return code
-                        runStatus = exitCode == LauncherExitCode.Closed ? RunStatus.ABORTED : H.GetRunStatus(listReport);
+                        runStatus = exitCode == LauncherExitCode.Closed ? RunStatus.CANCELED : H.GetRunStatus(listReport);
                         int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);
                         if (totalTests > 0)
                         {
@@ -185,7 +185,7 @@ namespace PSModule
                                         }
                                     }
                                 }
-                                if (runStatus != RunStatus.ABORTED && _rptPaths.Any() && _enableFailedTestsReport)
+                                if (runStatus != RunStatus.CANCELED && _rptPaths.Any() && _enableFailedTestsReport)
                                 {
                                     //run junit report converter
                                     string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
