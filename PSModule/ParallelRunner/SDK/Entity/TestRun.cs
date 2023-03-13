@@ -6,7 +6,7 @@ using System.IO;
 namespace PSModule.ParallelRunner.SDK.Entity
 {
     using C = Common.Constants;
-    //[JsonConverter(typeof(JsonPathConverter))]
+    [JsonConverter(typeof(JsonFieldsConverter))]
     public class TestRun
     {
         private const string PASSED = "Passed";
@@ -54,7 +54,6 @@ namespace PSModule.ParallelRunner.SDK.Entity
         [JsonProperty("browser")]
         private string _browser;
 
-        [JsonConverter(typeof(JsonPathConverter))]
         [JsonProperty("device")]
         private Device _device;
 
@@ -142,9 +141,13 @@ namespace PSModule.ParallelRunner.SDK.Entity
                     return false;
                 fullPathOfRunResults = System.IO.Path.Combine(resPath, _oldRunResultsHtmlRelativePath);
             }
-            else
+            else if (!_path.IsNullOrWhiteSpace())
             {
                 fullPathOfRunResults = System.IO.Path.Combine(_path, $@"Report\{C.RUN_RESULTS_HTML}");
+            }
+            else
+            {
+                return false;
             }
             return File.Exists(fullPathOfRunResults);
         }

@@ -132,6 +132,7 @@
     <Compile Include="ParallelRunner\SDK\Entity\TestRun.cs" />
     <Compile Include="ParallelRunner\SDK\Util\FieldsContractResolver.cs" />
     <Compile Include="ParallelRunner\SDK\Util\Helper.cs" />
+    <Compile Include="ParallelRunner\SDK\Util\JsonFieldsConverter.cs" />
     <Compile Include="ParallelRunner\SDK\Util\JsonPathConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

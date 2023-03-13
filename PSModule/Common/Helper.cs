@@ -35,6 +35,7 @@ namespace PSModule
         private const string FAILURE = "failure";
         private const string MESSAGE = "message";
         private const string SYSTEM_OUT = "system-out";
+        private const string SYSTEM_ERR = "system-err";
         private const string TEST_NAME = "Test name";
         private const string TEST_TYPE = "Test type";
         private const string RULES = "Rules";
@@ -123,9 +124,17 @@ namespace PSModule
                         {
                             foreach (XmlAttribute attribute in xmlNode.Attributes)
                             {
-                                if (attribute.Name == MESSAGE)
+                                if (attribute.Name == MESSAGE && !attribute.Value.IsNullOrWhiteSpace())
                                 {
-                                    reportmetadata.ErrorMessage = attribute.Value;
+                                    if (reportmetadata.ErrorMessage.IsNullOrWhiteSpace())
+                                    {
+                                        reportmetadata.ErrorMessage = attribute.Value;
+                                    }
+                                    else
+                                    {
+                                        reportmetadata.ErrorMessage += $"<br>{attribute.Value}";
+                                    }
+
                                     if (reportmetadata.Status.IsNullOrWhiteSpace())
                                     {
                                         reportmetadata.Status = xmlNode.Name == FAILURE ? FAIL : ERROR;
@@ -137,6 +146,18 @@ namespace PSModule
                         else if (xmlNode.Name == SYSTEM_OUT && reportmetadata.DateTime.IsNullOrWhiteSpace() && reportmetadata.Status != SKIPPED)
                         {
                             reportmetadata.DateTime = xmlNode.InnerText.Substring(0, 19);
+                        }
+                        else if (xmlNode.Name == SYSTEM_ERR && xmlNode.InnerText.IsNullOrWhiteSpace())
+                        {
+                            if (reportmetadata.ErrorMessage.IsNullOrWhiteSpace())
+                            {
+                                reportmetadata.ErrorMessage = $"{xmlNode.InnerText.Trim()}";
+                            }
+                            else
+                            {
+                                reportmetadata.ErrorMessage += $"<br>{xmlNode.InnerText.Trim()}";
+                            }
+
                         }
                     }
                     if (isJUnitReport && reportmetadata.Status == FAIL)

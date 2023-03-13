@@ -17,7 +17,7 @@ namespace PSModule.Models
 
         public string Duration { get; set; }
 
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
 
         public List<TestRun> TestRuns { get; set; } = new(); // used for Parallel Runner
     }

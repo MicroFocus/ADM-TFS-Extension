@@ -18,6 +18,7 @@ namespace PSModule
     using H = Helper;
     using H2 = ParallelRunner.SDK.Util.Helper;
     using C = Common.Constants;
+
     public abstract class AbstractLauncherTaskCmdlet : PSCmdlet
     {
         #region - Private Constants
@@ -161,7 +162,7 @@ namespace PSModule
                                             foreach (var tc in validTestCases)
                                             {
                                                 IOrderedEnumerable<string> dirs;
-                                                if (H2.HasParallelRunnerJsonReport(tc.ReportPath))
+                                                if (tc.AreTestRunsFromJsonRpt())
                                                 {
                                                     dirs = tc.TestRuns.Where(tr => H2.HasUftHtmlReport(tr.Path)).Select(tr => @$"{tr.Path}\Report").OrderBy(d => d);
                                                 }
@@ -198,6 +199,10 @@ namespace PSModule
                                 }
                             }
                         }
+                    }
+                    if (errorToProcess.TryDequeue(out string error) && !error.StartsWith(C.LAUNCHER_EXITED_WITH_CODE))
+                    {
+                        ThrowTerminatingError(new ErrorRecord(new Exception(error), nameof(ProcessRecord), ErrorCategory.InvalidData, nameof(ProcessRecord)));
                     }
                     CollateRetCode(resdir, (int)runStatus);
                 }
@@ -258,8 +263,8 @@ namespace PSModule
 
                 Process launcher = new() { StartInfo = info };
 
-                launcher.OutputDataReceived += Launcher_OutputDataReceived;
-                launcher.ErrorDataReceived += Launcher_ErrorDataReceived;
+                launcher.OutputDataReceived += Proc_OutDataReceived;
+                launcher.ErrorDataReceived += Proc_ErrDataReceived;
 
                 launcher.Start();
 
@@ -275,8 +280,8 @@ namespace PSModule
                     }
                 }
 
-                launcher.OutputDataReceived -= Launcher_OutputDataReceived;
-                launcher.ErrorDataReceived -= Launcher_ErrorDataReceived;
+                launcher.OutputDataReceived -= Proc_OutDataReceived;
+                launcher.ErrorDataReceived -= Proc_ErrDataReceived;
 
                 launcher.WaitForExit();
                 
@@ -318,10 +323,10 @@ namespace PSModule
                     info.Arguments += $" \"{reportFolder}\"";
                 }
 
-                Process converter = new Process { StartInfo = info };
+                Process converter = new() { StartInfo = info };
 
-                converter.OutputDataReceived += Launcher_OutputDataReceived;
-                converter.ErrorDataReceived += Launcher_ErrorDataReceived;
+                converter.OutputDataReceived += Proc_OutDataReceived;
+                converter.ErrorDataReceived += Conv_ErrDataReceived;
 
                 converter.Start();
 
@@ -334,15 +339,10 @@ namespace PSModule
                     {
                         WriteObject(line);
                     }
-
-                    if (errorToProcess.TryDequeue(out line))
-                    {
-                        WriteObject(line);
-                    }
                 }
 
-                converter.OutputDataReceived -= Launcher_OutputDataReceived;
-                converter.ErrorDataReceived -= Launcher_ErrorDataReceived;
+                converter.OutputDataReceived -= Proc_OutDataReceived;
+                converter.ErrorDataReceived -= Conv_ErrDataReceived;
 
                 converter.WaitForExit();
             }
@@ -356,7 +356,15 @@ namespace PSModule
             }
         }
 
-        private void Launcher_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        private void Conv_ErrDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (!e.Data.IsNullOrWhiteSpace())
+            {
+                Console.WriteLine($"Report Converter error: {e.Data}");
+            }
+        }
+
+        private void Proc_ErrDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (!e.Data.IsNullOrWhiteSpace())
             {
@@ -364,7 +372,7 @@ namespace PSModule
             }
         }
 
-        private void Launcher_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void Proc_OutDataReceived(object sender, DataReceivedEventArgs e)
         {
             outputToProcess.Enqueue(e.Data);
         }

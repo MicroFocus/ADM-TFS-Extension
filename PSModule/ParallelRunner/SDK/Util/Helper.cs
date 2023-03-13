@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using System;
+using Newtonsoft.Json.Serialization;
 
 namespace PSModule.ParallelRunner.SDK.Util
 {
@@ -18,31 +18,20 @@ namespace PSModule.ParallelRunner.SDK.Util
         public const string FILE_NOT_FOUND = "ParallelRunner html report file not found";
 
         private static readonly char[] EQ = new char[] { '=' };
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new() { ContractResolver = new FieldsContractResolver() };
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new() { ContractResolver = new DefaultContractResolver() };
 
         public static List<TestRun> GetTestRuns(string reportPath)
         {
             if (HasParallelRunnerJsonReport(reportPath, out string fullPathFilename))
             {
-                return GetTestRunsFromJson(fullPathFilename);
+                var runs = GetTestRunsFromJson(fullPathFilename);
+                if (runs.Any())
+                    return runs;
             }
-            else
-            {
-                fullPathFilename = Path.Combine(reportPath, C.PARALLEL_RUN_RESULTS_HTML);
-                return File.Exists(fullPathFilename) ? 
-                    GetTestRunsFromHtml(fullPathFilename): 
-                    throw new FileNotFoundException(FILE_NOT_FOUND, fullPathFilename);
-            }
-        }
-
-        /// <summary>
-        /// Check if the parallelrun_results.json exists in the specified path
-        /// </summary>
-        /// <param name="parallelRptResPath">test's ParallelReport Res subdir, like "D:\Work\UFTTests\MobileConfigP2\ParallelReport\Res5"</param>
-        /// <returns></returns>
-        public static bool HasParallelRunnerJsonReport(string parallelRptResPath)
-        {
-            return HasParallelRunnerJsonReport(parallelRptResPath, out _);
+            fullPathFilename = Path.Combine(reportPath, C.PARALLEL_RUN_RESULTS_HTML);
+            return File.Exists(fullPathFilename) ? 
+                GetTestRunsFromHtml(fullPathFilename): 
+                throw new FileNotFoundException(FILE_NOT_FOUND, fullPathFilename);
         }
 
         /// <summary>
@@ -66,7 +55,7 @@ namespace PSModule.ParallelRunner.SDK.Util
             using StreamReader sr = new(fullPathFilename);
             string json = sr.ReadToEnd();
             TestRun[] tests = json.FromJson<TestRun[]>(_jsonSerializerSettings);
-            return tests?.OrderBy(r => r.Path).ToList() ?? new();
+            return tests?.Where(t => t != null).OrderBy(r => r.Path).ToList() ?? new();
         }
         private static List<TestRun> GetTestRunsFromHtml(string fullPathFilename)
         {

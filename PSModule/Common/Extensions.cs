@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using PSModule.Common;
+using PSModule.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -220,5 +221,11 @@ namespace PSModule
 
             return output.ToString();
         }
+
+        public static bool AreTestRunsFromJsonRpt(this ReportMetaData testCase)
+        {
+            return testCase?.TestRuns?.Any(tr => tr.Id == 0) == true;
+        }
+
     }
 }
