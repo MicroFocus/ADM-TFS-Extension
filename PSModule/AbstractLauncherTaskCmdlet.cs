@@ -368,6 +368,7 @@ namespace PSModule
         {
             if (!e.Data.IsNullOrWhiteSpace())
             {
+                Console.WriteLine($"Error: {e.Data}");
                 errorToProcess.Enqueue(e.Data);
             }
         }
