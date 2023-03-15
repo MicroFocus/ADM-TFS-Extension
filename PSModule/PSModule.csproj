@@ -124,7 +124,7 @@
     <Compile Include="Common\Enums.cs" />
     <Compile Include="InvokeAlmLabManagementTaskCmdlet.cs" />
     <Compile Include="InvokeGetMobileResourcesTaskCmdlet.cs" />
-    <Compile Include="InvokeRunFromAlmTaskCmdlet.cs" />
+    <Compile Include="InvokeAlmTaskCmdlet.cs" />
     <Compile Include="Models\MobileSettings.cs" />
     <Compile Include="InvokeFSTaskCmdlet.cs" />
     <Compile Include="LauncherParamsBuilder.cs" />

@@ -51,14 +51,13 @@ namespace PSModule
         protected bool _isParallelRunnerMode;
         protected List<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 or ParallelRunnerTask\localTask.ps1 and passed to / filled in InvokeFSTaskCmdlet, then read in localTask.ps1
         protected MobileConfig _mobileConfig;
+        protected string _timestampPattern;
 
         protected AbstractLauncherTaskCmdlet() { }
 
         public abstract Dictionary<string, string> GetTaskProperties();
 
-        private delegate void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
-                                               bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
-                                               string storageAccount = "", string container = "", string reportName = "", string archiveName = "");
+        private delegate void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList, string tsPattern, H.OptionalParams optionalParams = null);
 
         protected override void ProcessRecord()
         {
@@ -138,11 +137,12 @@ namespace PSModule
                             string storageAccount = properties.GetValueOrDefault(STORAGE_ACCOUNT, string.Empty);
                             string container = properties.GetValueOrDefault(CONTAINER, string.Empty);
                             var artifactType = (ArtifactType)Enum.Parse(typeof(ArtifactType), properties[ARTIFACT_TYPE]);
-                            createSummaryReportHandler(resdir, runType, listReport, true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
+                            var optParams = new H.OptionalParams(true, artifactType, storageAccount, container, properties[REPORT_NAME], properties[ARCHIVE_NAME]);
+                            createSummaryReportHandler(resdir, runType, listReport, _timestampPattern, optParams);
                         }
                         else
                         {
-                            createSummaryReportHandler(resdir, runType, listReport);
+                            createSummaryReportHandler(resdir, runType, listReport, _timestampPattern);
                         }
                         //get task return code
                         runStatus = exitCode == LauncherExitCode.Closed ? RunStatus.CANCELED : H.GetRunStatus(listReport);

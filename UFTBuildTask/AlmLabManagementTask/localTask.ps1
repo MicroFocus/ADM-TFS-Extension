@@ -15,6 +15,7 @@ $varDescription = Get-VstsInput -Name 'varDescription'
 $varTimeslotDuration = Get-VstsInput -Name 'varTimeslotDuration' -Require
 $varClientType = Get-VstsInput -Name 'varClientType'
 $varReportName = Get-VstsInput -Name 'varReportName'
+[string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 $uftworkdir = $env:UFT_LAUNCHER
 
 # determine whether the entity to run is a Test Set or a Build Verification Suite
@@ -81,7 +82,14 @@ if ($rerunIdx) {
 	}
 }
 
-Invoke-AlmLabManagementTask $varAlmServ $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varRunType $varEntityId $varDescription $varTimeslotDuration $varEnvironmentConfigurationID $varReportName $buildNumber $varClientType -Verbose
+# validate $tsPattern
+try {
+	[DateTime]$dtNow = Get-Date
+	$dtNow.ToString($tsPattern.Trim())
+} catch {
+	Write-Error "Invalid Timestamp Pattern '$tsPattern'"
+}
+Invoke-AlmLabManagementTask $varAlmServ $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varRunType $varEntityId $varDescription $varTimeslotDuration $varEnvironmentConfigurationID $varReportName $buildNumber $varClientType $tsPattern -Verbose
 
 #---------------------------------------------------------------------------------------------------
 # uploads report files to build artifacts

@@ -11,6 +11,7 @@ $timeOutIn = Get-VstsInput -Name 'timeOutIn'
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
 $rptFileName = Get-VstsInput -Name 'reportFileName'
+[string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 
@@ -274,10 +275,17 @@ if ($rerunIdx) {
 	}
 }
 
+# validate $tsPattern
+try {
+	[DateTime]$dtNow = Get-Date
+	$dtNow.ToString($tsPattern.Trim())
+} catch {
+	Write-Error "Invalid Timestamp Pattern '$tsPattern'"
+}
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders $mobileConfig $cancelRunOnFailure -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $useParallelRunner $parallelRunnerConfig $rptFolders $mobileConfig $cancelRunOnFailure $tsPattern -Verbose 
 } catch {
 	Write-Error $_
 } finally {

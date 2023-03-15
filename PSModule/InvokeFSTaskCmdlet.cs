@@ -85,10 +85,6 @@ namespace PSModule
         [Parameter(Position = 9)]
         public bool EnableFailedTestsReport
         {
-            get
-            {
-                return _enableFailedTestsReport;
-            }
             set
             {
                 _enableFailedTestsReport = value;
@@ -98,10 +94,6 @@ namespace PSModule
         [Parameter(Position = 10)]
         public bool UseParallelRunner
         {
-            get
-            {
-                return _isParallelRunnerMode;
-            }
             set
             {
                 _isParallelRunnerMode = value;
@@ -114,10 +106,6 @@ namespace PSModule
         [Parameter(Position = 12)]
         public List<string> ReportPaths
         {
-            get
-            {
-                return _rptPaths;
-            }
             set
             {
                 _rptPaths = value;
@@ -127,10 +115,6 @@ namespace PSModule
         [Parameter(Position = 13)]
         public MobileConfig MobileConfig
         {
-            get
-            {
-                return _mobileConfig;
-            }
             set
             {
                 _mobileConfig = value;
@@ -139,6 +123,15 @@ namespace PSModule
 
         [Parameter(Position = 14)]
         public bool CancelRunOnFailure { get; set; }
+
+        [Parameter(Position = 15)]
+        public string TimestampPattern
+        {
+            set
+            {
+                _timestampPattern = value?.Trim();
+            }
+        }
 
         protected override bool CollateResults(string resultFile, string resdir)
         {
@@ -217,19 +210,19 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
-            if (MobileConfig != null)
+            if (_mobileConfig != null)
             {
                 InitRestClientAndLogin().Wait();
                 if (!IsValidTenantId().Result)
                 {
-                    ThrowTerminatingError($"{NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID}: {MobileConfig.TenantId}", nameof(IsValidTenantId), ErrorCategory.InvalidData, nameof(IsValidTenantId));
+                    ThrowTerminatingError($"{NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID}: {_mobileConfig.TenantId}", nameof(IsValidTenantId), ErrorCategory.InvalidData, nameof(IsValidTenantId));
                 }
 
-                if (MobileConfig.UseProxy)
+                if (_mobileConfig.UseProxy)
                 {
                     try
                     {
-                        CheckProxy(MobileConfig.ProxyConfig).Wait();
+                        CheckProxy(_mobileConfig.ProxyConfig).Wait();
                     }
                     catch (WebException wex)
                     {
@@ -414,7 +407,7 @@ namespace PSModule
         {
             WriteDebug("Validating the device ....");
             Device device = null;
-            Device dev = MobileConfig.Device;
+            Device dev = _mobileConfig.Device;
             string err = null;
             if (dev == null)
             {
@@ -571,7 +564,7 @@ namespace PSModule
         private async Task<Job> GetOrCreateTempJob()
         {
             Job job = null;
-            string workDir = MobileConfig.WorkDir;
+            string workDir = _mobileConfig.WorkDir;
             string jobIdFile = Path.Combine(workDir, JOB_ID);
             if (File.Exists(jobIdFile))
             {
@@ -630,7 +623,7 @@ namespace PSModule
 
         private async Task<bool> IsValidTenantId()
         {
-            int tenantId = MobileConfig.TenantId;
+            int tenantId = _mobileConfig.TenantId;
             if (tenantId == 0)
                 return true;
             var project = await GetProject(tenantId);
@@ -641,7 +634,7 @@ namespace PSModule
         {
             WriteDebug("Validating the extra apps ....");
             List<string> warnings = new();
-            var extraAppLines = MobileConfig.ExtraAppLines;
+            var extraAppLines = _mobileConfig.ExtraAppLines;
 
             foreach (var appLine in extraAppLines)
             {

@@ -4,8 +4,8 @@ using System.Management.Automation;
 namespace PSModule
 {
     using C = Common.Constants;
-    [Cmdlet(VerbsLifecycle.Invoke, "RunFromAlmTask")]
-    public class InvokeRunFromAlmTaskCmdlet : AbstractLauncherTaskCmdlet
+    [Cmdlet(VerbsLifecycle.Invoke, "AlmTask")]
+    public class InvokeAlmTaskCmdlet : AbstractLauncherTaskCmdlet
     {
         [Parameter(Position = 0, Mandatory = true)]
         public string ALMServerPath { get; set; }
@@ -49,6 +49,15 @@ namespace PSModule
         [Parameter(Position = 13)]
         public string BuildNumber { get; set; }
 
+        [Parameter(Position = 14)]
+        public string TimestampPattern
+        {
+            set
+            {
+                _timestampPattern = value?.Trim();
+            }
+        }
+
         protected override string GetReportFilename()
         {
             return string.IsNullOrEmpty(ReportName) ? base.GetReportFilename() : ReportName;
@@ -56,7 +65,7 @@ namespace PSModule
 
         public override Dictionary<string, string> GetTaskProperties()
         {
-            LauncherParamsBuilder builder = new LauncherParamsBuilder();
+            LauncherParamsBuilder builder = new();
 
             builder.SetRunType(RunType.Alm);
             builder.SetAlmServerUrl(ALMServerPath);
@@ -94,7 +103,7 @@ namespace PSModule
             }
             else
             {
-                builder.SetAlmTestSet("");
+                builder.SetAlmTestSet(string.Empty);
             }
 
             return builder.GetProperties();

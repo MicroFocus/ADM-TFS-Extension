@@ -56,5 +56,6 @@ namespace PSModule.Common
         public const string PARALLEL_RUN_RESULTS_HTML = "parallelrun_results.html";
 
         public const string LAUNCHER_EXITED_WITH_CODE = "The launcher tool exited with error code:";
+        public const string DEFAULT_DT_PATTERN = "yyyy-MM-dd HH:mm:ss";
     }
 }

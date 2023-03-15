@@ -33,6 +33,14 @@
       "helpMarkDown": "List of tests or folders that contain tests, to run. Each line should contain a single test, folder, or MTB file"
     },
     {
+      "name": "tsPattern",
+      "type": "string",
+      "label": "Timestamp pattern",
+      "defaultValue": "yyyy-MM-dd HH:mm:ss",
+      "required": false,
+      "helpMarkDown": "Timestamp format used in [UFT Report] from Extensions tab. The default value is yyyy-MM-dd HH:mm:ss"
+    },
+    {
       "name": "timeOutIn",
       "type": "string",
       "label": "Timeout",

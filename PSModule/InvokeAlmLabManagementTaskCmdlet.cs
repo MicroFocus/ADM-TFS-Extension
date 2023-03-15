@@ -66,6 +66,15 @@ namespace PSModule
         [Parameter(Position = 15)]
         public string ClientType { get; set; }
 
+        [Parameter(Position = 16)]
+        public string TimestampPattern
+        {
+            set
+            {
+                _timestampPattern = value?.Trim();
+            }
+        }
+
         protected override string GetReportFilename()
         {
             return string.IsNullOrEmpty(ReportName) ? base.GetReportFilename() : ReportName;
@@ -73,7 +82,7 @@ namespace PSModule
 
         public override Dictionary<string, string> GetTaskProperties()
         {
-            LauncherParamsBuilder builder = new LauncherParamsBuilder();
+            LauncherParamsBuilder builder = new();
 
             builder.SetRunType(RunType.AlmLabManagement);
             builder.SetAlmServerUrl(ALMServerPath);
@@ -174,7 +183,7 @@ namespace PSModule
                 if (hasResults)
                 {
                     var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
-                    H.CreateSummaryReport(resdir, RunType.AlmLabManagement, listReport);
+                    H.CreateSummaryReport(resdir, RunType.AlmLabManagement, listReport, _timestampPattern);
                     //get task return code
                     runStatus = H.GetRunStatus(listReport);
                     int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);

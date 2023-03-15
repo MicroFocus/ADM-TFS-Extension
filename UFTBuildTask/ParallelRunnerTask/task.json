@@ -235,6 +235,14 @@
       "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
     },
     {
+      "name": "tsPattern",
+      "type": "string",
+      "label": "Timestamp pattern",
+      "defaultValue": "yyyy-MM-dd HH:mm:ss",
+      "required": false,
+      "helpMarkDown": "Timestamp format used in [UFT Report] from Extensions tab. The default value is yyyy-MM-dd HH:mm:ss"
+    },
+    {
       "name": "timeOutIn",
       "type": "string",
       "label": "Timeout",

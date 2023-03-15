@@ -3,6 +3,7 @@ using PSModule.ParallelRunner.SDK.Entity;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,6 +14,7 @@ using PRHelper = PSModule.ParallelRunner.SDK.Util.Helper;
 
 namespace PSModule
 {
+    using C = Common.Constants;
     static class Helper
     {
         #region - Private & Internal Constants
@@ -69,9 +71,35 @@ namespace PSModule
         private const string RUN_SUMMARY = "Run Summary";
         private const string FAILED_TESTS = "Failed Tests";
         private const string HYPHEN = "&ndash;";
-        private const string DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
+        private static readonly CultureInfo _enUS = new CultureInfo("en-US");
 
         #endregion
+
+        public class OptionalParams
+        {
+            private bool _uploadArtifact;
+            private ArtifactType _artifactType;
+            private string _storageAccount;
+            private string _container;
+            private string _reportName;
+            private string _archiveName;
+            public OptionalParams(bool uploadArtifact, ArtifactType artifactType, string storageAccount, string container, string reportName, string archiveName)
+            {
+                _uploadArtifact = uploadArtifact;
+                _artifactType = artifactType;
+                _storageAccount = storageAccount;
+                _container = container;
+                _reportName = reportName;
+                _archiveName = archiveName;
+            }
+            public bool UploadArtifact => _uploadArtifact;
+            public ArtifactType ArtifactType => _artifactType;
+            public string StorageAccount => _storageAccount;
+            public string Container => _container;
+            public string ReportName => _reportName;
+            public string ArchiveName => _archiveName;
+        }
 
         public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out IDictionary<string, IList<ReportMetaData>> failedSteps, bool addParallelTestRuns = false)
         {
@@ -240,10 +268,21 @@ namespace PSModule
             return nrOfTestsCount;
         }
 
-        public static void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
-                                               bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
-                                               string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
+        public static void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList, string tsPattern, OptionalParams optParams = null)
         {
+            bool uploadArtifact = false;
+            ArtifactType artifactType = ArtifactType.None;
+            string storageAccount = string.Empty, container = string.Empty, reportName = string.Empty, archiveName = string.Empty;
+            if (optParams != null)
+            {
+                uploadArtifact = optParams.UploadArtifact;
+                artifactType = optParams.ArtifactType;
+                storageAccount = optParams.StorageAccount;
+                container = optParams.Container;
+                reportName = optParams.ReportName;
+                archiveName = optParams.ArchiveName;
+            }
+
             var table = new HtmlTable();
             var header = new HtmlTableRow();
             HtmlTableCell cell;
@@ -296,7 +335,25 @@ namespace PSModule
                 }
                 else
                 {
-                    cell.InnerText = report.DateTime;
+                    if (tsPattern.IsNullOrWhiteSpace())
+                    {
+                        tsPattern = C.DEFAULT_DT_PATTERN;
+                    }
+                    if (DateTime.TryParseExact(report.DateTime, C.DEFAULT_DT_PATTERN, _enUS, DateTimeStyles.None, out DateTime dt))
+                    {
+                        try
+                        {
+                            cell.InnerText = dt.ToString(tsPattern);
+                        }
+                        catch
+                        {
+                            cell.InnerText = report.DateTime;
+                        }
+                    }
+                    else
+                    {
+                        cell.InnerText = report.DateTime;
+                    }
                 }
                 row.Cells.Add(cell);
 
@@ -344,10 +401,21 @@ namespace PSModule
             File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
         }
 
-        public static void CreateParallelSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList,
-                                               bool uploadArtifact = false, ArtifactType artifactType = ArtifactType.None,
-                                               string storageAccount = "", string container = "", string reportName = "", string archiveName = "")
+        public static void CreateParallelSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList, string tsPattern, OptionalParams optParams = null)
         {
+            bool uploadArtifact = false;
+            ArtifactType artifactType = ArtifactType.None;
+            string storageAccount = string.Empty, container = string.Empty, reportName = string.Empty, archiveName = string.Empty;
+            if (optParams != null)
+            {
+                uploadArtifact = optParams.UploadArtifact;
+                artifactType = optParams.ArtifactType;
+                storageAccount = optParams.StorageAccount;
+                container = optParams.Container;
+                reportName = optParams.ReportName;
+                archiveName = optParams.ArchiveName;
+            }
+
             HtmlTable table = new();
             HtmlTableRow header = new();
             HtmlTableCell cell;
@@ -400,11 +468,25 @@ namespace PSModule
                 int x = 1;
                 foreach (TestRun testRun in report.TestRuns)
                 {
+                    string timestamp = testRun.RunStartTime.IsNullOrEmpty() ? report.DateTime : testRun.RunStartTime;
+                    if (tsPattern.IsNullOrWhiteSpace())
+                    {
+                        tsPattern = C.DEFAULT_DT_PATTERN;
+                    }
+                    if (DateTime.TryParseExact(timestamp, C.DEFAULT_DT_PATTERN, _enUS, DateTimeStyles.None, out DateTime dt))
+                    {
+                        try
+                        {
+                            timestamp = dt.ToString(tsPattern);
+                        }
+                        catch { }
+                    }
+
                     var row = new HtmlTableRow();
                     row.Cells.Add(new() { InnerText = $"{testRun.Name} [{x}]", Align = LEFT });
                     row.Cells.Add(new() { InnerText = $"{testRun.GetEnvType()}", Align = LEFT });
                     row.Cells.Add(new() { InnerHtml = testRun.GetDetails(), Align = LEFT });
-                    row.Cells.Add(new() { InnerText = testRun.RunStartTime.IsNullOrEmpty() ? report.DateTime : testRun.RunStartTime, Align = LEFT });
+                    row.Cells.Add(new() { InnerText = timestamp, Align = LEFT });
 
                     cell = new() { Align = LEFT };
                     cell.Controls.Add(new HtmlImage { Src = $"{IMG_LINK_PREFIX}/{testRun.GetAzureStatus()}.svg" });

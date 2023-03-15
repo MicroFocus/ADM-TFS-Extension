@@ -15,6 +15,7 @@ $varTimeout = Get-VstsInput -Name 'varTimeout'
 $varReportName = Get-VstsInput -Name 'varReportName'
 $runMode = Get-VstsInput -Name 'runMode'
 $testingToolHost = Get-VstsInput -Name 'testingToolHost'
+[string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 
 $uftworkdir = $env:UFT_LAUNCHER
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
@@ -72,8 +73,15 @@ if ($rerunIdx) {
 		}
 	}
 }
+# validate $tsPattern
+try {
+	[DateTime]$dtNow = Get-Date
+	$dtNow.ToString($tsPattern.Trim())
+} catch {
+	Write-Error "Invalid Timestamp Pattern '$tsPattern'"
+}
 
-Invoke-RunFromAlmTask $varAlmserv $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varTestsets $varTimeout $varReportName $runMode $testingToolHost $buildNumber -Verbose
+Invoke-AlmTask $varAlmserv $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varTestsets $varTimeout $varReportName $runMode $testingToolHost $buildNumber $tsPattern -Verbose
 
 #---------------------------------------------------------------------------------------------------
 # uploads report files to build artifacts
