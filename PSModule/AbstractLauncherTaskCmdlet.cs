@@ -193,7 +193,7 @@ namespace PSModule
                                     RunConverter(converterPath, outputFileReport);
                                     if (File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0 && nrOfTests[H.FAIL] > 0)
                                     {
-                                        H.ReadReportFromXMLFile(outputFileReport, true, out IDictionary<string, IList<ReportMetaData>> failedSteps);
+                                        H.ReadReportFromXMLFile(outputFileReport, true, out List<KeyValuePair<string, IList<ReportMetaData>>> failedSteps);
                                         H.CreateFailedStepsReport(failedSteps, resdir);
                                     }
                                 }

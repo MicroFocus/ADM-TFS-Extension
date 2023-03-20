@@ -101,9 +101,9 @@ namespace PSModule
             public string ArchiveName => _archiveName;
         }
 
-        public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out IDictionary<string, IList<ReportMetaData>> failedSteps, bool addParallelTestRuns = false)
+        public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out List<KeyValuePair<string, IList<ReportMetaData>>> failedSteps, bool addParallelTestRuns = false)
         {
-            failedSteps = new Dictionary<string, IList<ReportMetaData>>();
+            failedSteps = new();
             var listReport = new List<ReportMetaData>();
             XmlDocument xmlDoc = new();
             xmlDoc.Load(reportPath);
@@ -200,7 +200,7 @@ namespace PSModule
                 }
                 if (isJUnitReport && failedTestSteps.Any())
                 {
-                    failedSteps.Add(testName, failedTestSteps);
+                    failedSteps.Add(new(testName, failedTestSteps));
                 }
             }
 
@@ -608,7 +608,7 @@ namespace PSModule
             File.WriteAllText(Path.Combine(rptPath, RUN_SUMMARY), html);
         }
 
-        public static void CreateFailedStepsReport(IDictionary<string, IList<ReportMetaData>> failedSteps, string rptPath)
+        public static void CreateFailedStepsReport(IList<KeyValuePair<string, IList<ReportMetaData>>> failedSteps, string rptPath)
         {
             if (failedSteps.IsNullOrEmpty())
                 return;
@@ -636,11 +636,12 @@ namespace PSModule
             table.Rows.Add(header);
 
             bool isOddRow = true;
-            foreach (string testName in failedSteps.Keys)
+            foreach (var kvp in failedSteps)
             {
+                string testName = kvp.Key;
+                var failedTestSteps = kvp.Value;
                 int index = 0;
                 string style = isOddRow ? HEIGHT_30PX_AZURE : HEIGHT_30PX;
-                var failedTestSteps = failedSteps[testName];
                 foreach (var item in failedTestSteps)
                 {
                     var row = new HtmlTableRow();
