@@ -3,6 +3,7 @@ using PSModule.ParallelRunner.SDK.Entity;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -72,7 +73,7 @@ namespace PSModule
         private const string FAILED_TESTS = "Failed Tests";
         private const string HYPHEN = "&ndash;";
 
-        private static readonly CultureInfo _enUS = new CultureInfo("en-US");
+        private static readonly CultureInfo _enUS = new("en-US");
 
         #endregion
 
@@ -104,7 +105,7 @@ namespace PSModule
         public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out List<KeyValuePair<string, IList<ReportMetaData>>> failedSteps, bool addParallelTestRuns = false)
         {
             failedSteps = new();
-            var listReport = new List<ReportMetaData>();
+            List<ReportMetaData> listReport = new();
             XmlDocument xmlDoc = new();
             xmlDoc.Load(reportPath);
 
@@ -120,7 +121,7 @@ namespace PSModule
 
                 foreach (XmlNode currentNode in node) //inside <testcase> nodes
                 {
-                    var reportmetadata = new ReportMetaData();
+                    ReportMetaData reportmetadata = new();
                     var attributesList = currentNode.Attributes;
                     foreach (XmlAttribute attribute in attributesList)
                     {
@@ -283,8 +284,8 @@ namespace PSModule
                 archiveName = optParams.ArchiveName;
             }
 
-            var table = new HtmlTable();
-            var header = new HtmlTableRow();
+            HtmlTable table = new();
+            HtmlTableRow header = new();
             HtmlTableCell cell;
             cell = new() { InnerText = TEST_NAME, Width = _200, Align = LEFT };
             cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
@@ -392,12 +393,9 @@ namespace PSModule
             }
 
             //add table to file
-            string html;
-            using (var sw = new StringWriter())
-            {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
-            }
+            using StringWriter sw = new();
+            table.RenderControl(new HtmlTextWriter(sw));
+            string html = sw.ToString();
             File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
         }
 
@@ -419,23 +417,23 @@ namespace PSModule
             HtmlTable table = new();
             HtmlTableRow header = new();
             HtmlTableCell cell;
-            cell = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
+            cell = new() { InnerText = TEST_NAME, Width = _200, Align = LEFT };
             cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(cell);
 
-            cell = new HtmlTableCell { InnerText = TEST_TYPE, Width = _200, Align = LEFT };
+            cell = new() { InnerText = TEST_TYPE, Width = _200, Align = LEFT };
             cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(cell);
 
-            cell = new HtmlTableCell { InnerText = RULES, Width = _200, Align = LEFT };
+            cell = new() { InnerText = RULES, Width = _200, Align = LEFT };
             cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(cell);
 
-            cell = new HtmlTableCell { InnerText = TIMESTAMP, Width = _200, Align = LEFT };
+            cell = new() { InnerText = TIMESTAMP, Width = _200, Align = LEFT };
             cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(cell);
 
-            cell = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT };
+            cell = new() { InnerText = _STATUS, Width = _200, Align = LEFT };
             cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(cell);
 
@@ -443,13 +441,13 @@ namespace PSModule
             {
                 if (artifactType.In(ArtifactType.onlyReport, ArtifactType.bothReportArchive))
                 {
-                    cell = new HtmlTableCell { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
+                    cell = new() { InnerText = UFT_REPORT_COL_CAPTION, Width = _200, Align = LEFT };
                     cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
                     header.Cells.Add(cell);
                 }
                 if (artifactType.In(ArtifactType.onlyArchive, ArtifactType.bothReportArchive))
                 {
-                    cell = new HtmlTableCell { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
+                    cell = new() { InnerText = UFT_REPORT_ARCHIVE, Width = _200, Align = LEFT };
                     cell.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
                     header.Cells.Add(cell);
                 }
@@ -482,7 +480,7 @@ namespace PSModule
                         catch { }
                     }
 
-                    var row = new HtmlTableRow();
+                    HtmlTableRow row = new();
                     row.Cells.Add(new() { InnerText = $"{testRun.Name} [{x}]", Align = LEFT });
                     row.Cells.Add(new() { InnerText = $"{testRun.GetEnvType()}", Align = LEFT });
                     row.Cells.Add(new() { InnerHtml = testRun.GetDetails(), Align = LEFT });
@@ -510,45 +508,42 @@ namespace PSModule
             }
 
             //add table to file
-            string html;
-            using (var sw = new StringWriter())
-            {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
-            }
+            StringWriter sw = new();
+            table.RenderControl(new(sw));
+            string html = sw.ToString();
             File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
         }
 
         private static HtmlTableCell GetNewRptLinkCell(string href, bool isHtmlLink = true)
         {
             HtmlTableCell cell = new() { Align = LEFT };
-            var a = new HtmlAnchor { HRef = href, InnerText = (isHtmlLink ? VIEW_REPORT : DOWNLOAD) };
+            HtmlAnchor a = new() { HRef = href, InnerText = (isHtmlLink ? VIEW_REPORT : DOWNLOAD) };
             cell.Controls.Add(a);
             return cell;
         }
 
         public static void CreateRunSummary(RunStatus runStatus, int totalTests, IDictionary<string, int> nrOfTests, string rptPath)
         {
-            var table = new HtmlTable();
-            var header = new HtmlTableRow();
+            HtmlTable table = new();
+            HtmlTableRow header = new();
 
-            var h1 = new HtmlTableCell { InnerText = RUN_STATUS, Width = _200, Align = LEFT };
+            HtmlTableCell h1 = new() { InnerText = RUN_STATUS, Width = _200, Align = LEFT };
             h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h1);
 
-            var h2 = new HtmlTableCell { InnerText = TOTAL_TESTS, Width = _200, Align = LEFT };
+            HtmlTableCell h2 = new() { InnerText = TOTAL_TESTS, Width = _200, Align = LEFT };
             h2.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h2);
 
-            var h3 = new HtmlTableCell { InnerText = _STATUS, Width = _200, Align = LEFT, ColSpan = 2 };
+            HtmlTableCell h3 = new() { InnerText = _STATUS, Width = _200, Align = LEFT, ColSpan = 2 };
             h3.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h3);
 
-            var h4 = new HtmlTableCell { InnerText = NO_OF_TESTS, Width = _200, Align = LEFT };
+            HtmlTableCell h4 = new() { InnerText = NO_OF_TESTS, Width = _200, Align = LEFT };
             h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h4);
 
-            var h5 = new HtmlTableCell { InnerText = PASSING_RATE, Width = _200, Align = LEFT };
+            HtmlTableCell h5 = new() { InnerText = PASSING_RATE, Width = _200, Align = LEFT };
             h5.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h5);
 
@@ -567,44 +562,41 @@ namespace PSModule
             //create table content
             for (int index = 0; index < length; index++)
             {
-                var row = new HtmlTableRow();
+                HtmlTableRow row = new();
                 if (index == 0)
                 {
-                    var cell1 = new HtmlTableCell { Align = LEFT, RowSpan = 5 };
-                    var img = new HtmlImage { Src = $"{IMG_LINK_PREFIX}/build_status/{runStatus.ToString().ToLower()}.svg" };
+                    HtmlTableCell cell1 = new() { Align = LEFT, RowSpan = 5 };
+                    HtmlImage img = new() { Src = $"{IMG_LINK_PREFIX}/build_status/{runStatus.ToString().ToLower()}.svg" };
                     img.Attributes.Add(STYLE, BUILD_STATUS_IMG_STYLE);
                     cell1.Controls.Add(img);
 
                     row.Cells.Add(cell1);
 
-                    var cell2 = new HtmlTableCell { InnerText = $"{totalTests}", Align = LEFT, RowSpan = 5 };
+                    HtmlTableCell cell2 = new() { InnerText = $"{totalTests}", Align = LEFT, RowSpan = 5 };
                     cell2.Attributes.Add(STYLE, FONT_WEIGHT_BOLD);
                     row.Cells.Add(cell2);
                 }
 
-                var cell3 = new HtmlTableCell { Align = LEFT };
-                var statusImage = new HtmlImage
+                HtmlTableCell cell3 = new() { Align = LEFT };
+                HtmlImage statusImage = new()
                 {
                     Src = $"{IMG_LINK_PREFIX}/{statuses[index].ToLower()}.svg"
                 };
                 cell3.Controls.Add(statusImage);
                 row.Cells.Add(cell3);
 
-                row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = statuses[index] });
-                row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = nrOfTests[statuses[index]].ToString() });
-                row.Cells.Add(new HtmlTableCell { Align = LEFT, InnerText = $"{roundedPercentages[index]:0.00}%" });
+                row.Cells.Add(new() { Align = LEFT, InnerText = statuses[index] });
+                row.Cells.Add(new() { Align = LEFT, InnerText = nrOfTests[statuses[index]].ToString() });
+                row.Cells.Add(new() { Align = LEFT, InnerText = $"{roundedPercentages[index]:0.00}%" });
 
                 row.Attributes.Add(STYLE, HEIGHT_30PX);
                 table.Rows.Add(row);
             }
 
             //add table to file
-            string html;
-            using (var sw = new StringWriter())
-            {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
-            }
+            using StringWriter sw = new();
+            table.RenderControl(new(sw));
+            string html = sw.ToString();
             File.WriteAllText(Path.Combine(rptPath, RUN_SUMMARY), html);
         }
 
@@ -613,22 +605,22 @@ namespace PSModule
             if (failedSteps.IsNullOrEmpty())
                 return;
 
-            var table = new HtmlTable();
-            var header = new HtmlTableRow();
+            HtmlTable table = new();
+            HtmlTableRow header = new();
 
-            var h1 = new HtmlTableCell { InnerText = TEST_NAME, Width = _200, Align = LEFT };
+            HtmlTableCell h1 = new() { InnerText = TEST_NAME, Width = _200, Align = LEFT };
             h1.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h1);
 
-            var h2 = new HtmlTableCell { InnerText = FAILED_STEPS, Width = _200, Align = LEFT };
+            HtmlTableCell h2 = new() { InnerText = FAILED_STEPS, Width = _200, Align = LEFT };
             h2.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h2);
 
-            var h3 = new HtmlTableCell { InnerText = DURATIONS, Width = _200, Align = LEFT };
+            HtmlTableCell h3 = new() { InnerText = DURATIONS, Width = _200, Align = LEFT };
             h3.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_200);
             header.Cells.Add(h3);
 
-            var h4 = new HtmlTableCell { InnerText = ERROR_DETAILS, Width = _800, Align = LEFT };
+            HtmlTableCell h4 = new() { InnerText = ERROR_DETAILS, Width = _800, Align = LEFT };
             h4.Attributes.Add(STYLE, HDR_FONT_WEIGHT_BOLD_MIN_WIDTH_800);
             header.Cells.Add(h4);
 
@@ -644,18 +636,18 @@ namespace PSModule
                 string style = isOddRow ? HEIGHT_30PX_AZURE : HEIGHT_30PX;
                 foreach (var item in failedTestSteps)
                 {
-                    var row = new HtmlTableRow();
+                    HtmlTableRow row = new();
                     if (index == 0)
                     {
-                        var cell1 = new HtmlTableCell { InnerText = testName, Align = LEFT };
+                        HtmlTableCell cell1 = new() { InnerText = testName, Align = LEFT };
                         cell1.Attributes.Add(STYLE, FONT_WEIGHT_BOLD_UNDERLINE);
                         cell1.RowSpan = failedTestSteps.Count;
                         row.Cells.Add(cell1);
                     }
 
-                    row.Cells.Add(new HtmlTableCell { InnerText = item.DisplayName, Align = LEFT });
-                    row.Cells.Add(new HtmlTableCell { InnerText = item.Duration, Align = LEFT });
-                    row.Cells.Add(new HtmlTableCell { InnerText = item.ErrorMessage, Align = LEFT });
+                    row.Cells.Add(new() { InnerText = item.DisplayName, Align = LEFT });
+                    row.Cells.Add(new() { InnerText = item.Duration, Align = LEFT });
+                    row.Cells.Add(new() { InnerText = item.ErrorMessage, Align = LEFT });
 
                     row.Attributes.Add(STYLE, style);
                     table.Rows.Add(row);
@@ -667,12 +659,9 @@ namespace PSModule
             }
 
             //add table to file
-            string html;
-            using (var sw = new StringWriter())
-            {
-                table.RenderControl(new HtmlTextWriter(sw));
-                html = sw.ToString();
-            }
+            using StringWriter sw = new();
+            table.RenderControl(new(sw));
+            string html = sw.ToString();
             File.WriteAllText(Path.Combine(rptPath, FAILED_TESTS), html);
         }
 
@@ -682,17 +671,17 @@ namespace PSModule
             return testPath.Substring(pos, testPath.Length - pos);
         }
 
-        private static string ImageToBase64(System.Drawing.Image _imagePath)
+        private static string ImageToBase64(Image _imagePath)
         {
             byte[] imageBytes = ImageToByteArray(_imagePath);
             string base64String = Convert.ToBase64String(imageBytes);
             return base64String;
         }
 
-        private static byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        private static byte[] ImageToByteArray(Image imageIn)
         {
-            MemoryStream ms = new MemoryStream();
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            MemoryStream ms = new();
+            imageIn.Save(ms, ImageFormat.Png);
 
             return ms.ToArray();
         }
