@@ -18,8 +18,8 @@
   "demands": "UFT_LAUNCHER",
   "groups": [
     {
-      "name": "mobileCenter",
-      "displayName": "Mobile Center",
+      "name": "digitalLab",
+      "displayName": "Digital Lab",
       "isExpanded": false
     }
   ],
@@ -100,16 +100,16 @@
     },
     {
       "name": "mcServerUrl",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Server",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "The address of your Mobile Center server, in the format http[s]://(MC server name):(port)"
+      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(MC server name):(port)"
     },
     {
       "name": "mcAuthType",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "radio",
       "label": "Authentication type",
       "defaultValue": "basic",
@@ -118,31 +118,31 @@
         "basic": "Basic authentication",
         "key": "Access key authentication"
       },
-      "helpMarkDown": "Select the authentication mode to use for connecting to UFT Mobile"
+      "helpMarkDown": "Select the authentication mode to use for connecting to Digital Lab"
     },
     {
       "name": "mcUsername",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Username",
       "defaultValue": "",
       "required": false,
       "visibleRule": "mcAuthType = basic",
-      "helpMarkDown": "The username that will access this Mobile Center server during the build step run"
+      "helpMarkDown": "The username that will access this Digital Lab server during the build step run"
     },
     {
       "name": "mcPassword",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Password",
       "defaultValue": "",
       "required": false,
       "visibleRule": "mcAuthType = basic",
-      "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
+      "helpMarkDown": "The password for the user that will access this Digital Lab server during the build step run"
     },
     {
       "name": "mcTenantId",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "int",
       "label": "Tenant Id",
       "defaultValue": "",
@@ -152,30 +152,30 @@
         "expression": "or(eq(value, ''), and(isMatch(value, '^\\d*$', 'IgnoreCase'), isInRange(value, 1, 2147483647)))",
         "message": "This field must be a valid and positive number (maximum 2147483647)"
       },
-      "helpMarkDown": "The tenant ID used to connect to the UFT Mobile server with multi-tenant mode enabled"
+      "helpMarkDown": "The tenant ID used to connect to the Digital Lab server with multi-tenant mode enabled"
     },
     {
       "name": "mcAccessKey",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Access Key",
       "defaultValue": "",
       "required": false,
       "visibleRule": "mcAuthType = key",
-      "helpMarkDown": "The Access Key will provide access to this Mobile Center server during the build step run"
+      "helpMarkDown": "The Access Key will provide access to this Digital Lab server during the build step run"
     },
     {
       "name": "useMcProxy",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Use proxy settings",
       "defaultValue": false,
       "required": false,
-      "helpMarkDown": "Choose whether to use a proxy for connecting to the Mobile Center server"
+      "helpMarkDown": "Choose whether to use a proxy for connecting to the Digital Lab server"
     },
     {
       "name": "mcProxyUrl",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Proxy Sever",
       "defaultValue": "",
@@ -185,7 +185,7 @@
     },
     {
       "name": "useMcProxyCredentials",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Use proxy credentials",
       "defaultValue": false,
@@ -195,7 +195,7 @@
     },
     {
       "name": "mcProxyUsername",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Proxy Username",
       "defaultValue": "",
@@ -205,7 +205,7 @@
     },
     {
       "name": "mcProxyPassword",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Proxy Password",
       "defaultValue": "",
@@ -215,7 +215,7 @@
     },
     {
       "name": "mcDevice",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
       "label": "Device",
       "defaultValue": "",
@@ -224,7 +224,7 @@
     },
     {
       "name": "mcAppType",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "pickList",
       "label": "Launch on start",
       "defaultValue": "home",
@@ -233,12 +233,12 @@
       "options": {
         "home": "Home Screen",
         "system": "System App",
-        "custom": "UFT Mobile App"
+        "custom": "Digital Lab App"
       }
     },
     {
       "name": "mcSysApp",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "pickList",
       "label": "System Application",
       "defaultValue": "browser",
@@ -257,9 +257,9 @@
     },
     {
       "name": "mcApp",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "string",
-      "label": "Main UFT Mobile Application",
+      "label": "Main Digital Lab Application",
       "defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged: \"Yes\"",
       "required": false,
       "visibleRule": "mcAppType = custom",
@@ -271,9 +271,9 @@
     },
     {
       "name": "mcExtraApps",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "multiLine",
-      "label": "Additional UFT Mobile Applications",
+      "label": "Additional Digital Lab Applications",
       "defaultValue": "Identifier: \"app2\", Packaged: \"Yes\"\nIdentifier: \"app3\", Packaged: \"No\"",
       "required": false,
       "helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`",
@@ -281,25 +281,25 @@
     },
     {
       "name": "mcInstall",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Install"
     },
     {
       "name": "mcRestart",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Restart"
     },
     {
       "name": "mcUninstall",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Uninstall"
     },
     {
       "name": "mcLogDeviceMetrics",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "defaultValue": false,
       "type": "boolean",
       "label": "Log device metrics",
@@ -307,49 +307,49 @@
     },
     {
       "name": "mcCPU",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "CPU",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcMemory",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Memory",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcFreeMemory",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Free Memory",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcLogs",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Logs",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcWifiState",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Wifi State",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcThermalState",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Thermal State",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcFreeDiskSpace",
-      "groupName": "mobileCenter",
+      "groupName": "digitalLab",
       "type": "boolean",
       "label": "Free Disk Space",
       "visibleRule": "mcLogDeviceMetrics = true"

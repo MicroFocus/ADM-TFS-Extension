@@ -27,7 +27,7 @@ namespace PSModule
         private const string MISSING_OR_INVALID_APP = "Missing or invalid application";
         private const string MISSING_OR_INVALID_APPS = "Missing or invalid applications";
         private const string MISSING_OR_INVALID_DEVICE = "Missing or invalid device";
-        private const string FAILED_TO_CREATE_TEMP_JOB = "UFT Mobile server failed to create a temp job";
+        private const string FAILED_TO_CREATE_TEMP_JOB = "Digital Lab server failed to create a temp job";
         private const string NO_JOB_FOUND_BY_GIVEN_ID = "No job found by given ID";
         private const string NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID = "No active tenant (project) found by given ID";
         private const string APPS_ENDPOINT = "rest/apps/getAplicationsLastVersion";

@@ -67,9 +67,9 @@ After the build is complete, you can view comprehensive test results.
 - Use this task to  to trigger a parallel testing task to run GUI Web or GUI Mobile tests in parallel from Azure DevOps Server (formerly known as TFS).
 - More information is available [here][parallel-docs]
 
-##### UFT Mobile Get Resources
-- Use this task to configure a task that retrieves device and application information from UFT Mobile.
-- More information is available [here][get-mobile-resources-docs]
+##### Digital Lab Get Resources
+- Use this task to configure a task that retrieves device and application information from Digital Lab.
+- More information is available [here][get-digital-lab-resources]
 
 # Additional Resources
 For assistance or more information on configuring and using this extension, please consult the following resources:
@@ -93,4 +93,4 @@ For assistance or more information on configuring and using this extension, plea
    [azure-powershell]:<https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-6.0.0>
    [azure-connect]:<https://docs.microsoft.com/en-us/powershell/module/az.accounts/connect-azaccount?view=azps-6.0.0>
    [parallel-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-trigger-parallel-run.htm>
-   [get-mobile-resources-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-getresources.htm>
+   [get-digital-lab-resources]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-getresources.htm>

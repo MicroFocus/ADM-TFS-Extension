@@ -1,8 +1,8 @@
 ﻿{
   "id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
   "name": "GetMobileDevicesTask",
-  "friendlyName": "UFT Mobile Get Resources",
-  "description": "Use this build step to retrieve resources from a Mobile Center server",
+  "friendlyName": "Digital Lab Get Resources",
+  "description": "Use this build step to retrieve resources from a Digital Lab server",
   "category": "Test",
   "visibility": [
     "Build",
@@ -19,10 +19,10 @@
     {
       "name": "mcServerUrl",
       "type": "string",
-      "label": "Mobile Center Server",
+      "label": "Digital Lab Server",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The address of your Mobile Center server, in the format http[s]://(MC server name):(port)"
+      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(MC server name):(port)"
     },
     {
       "name": "mcAuthType",
@@ -34,7 +34,7 @@
         "basic": "Basic authentication",
         "key": "Access key authentication"
       },
-      "helpMarkDown": "Select the authentication mode to use for connecting to UFT Mobile"
+      "helpMarkDown": "Select the authentication mode to use for connecting to Digital Lab"
     },
     {
       "name": "mcUsername",
@@ -43,7 +43,7 @@
       "defaultValue": "",
       "required": true,
       "visibleRule": "mcAuthType = basic",
-      "helpMarkDown": "The username that will access this Mobile Center server during the build step run"
+      "helpMarkDown": "The username that will access this Digital Lab server during the build step run"
     },
     {
       "name": "mcPassword",
@@ -52,7 +52,7 @@
       "defaultValue": "",
       "required": true,
       "visibleRule": "mcAuthType = basic",
-      "helpMarkDown": "The password for the user that will access this Mobile Center server during the build step run"
+      "helpMarkDown": "The password for the user that will access this Digital Lab server during the build step run"
     },
     {
       "name": "mcTenantId",
@@ -65,7 +65,7 @@
         "expression": "or(eq(value, ''), and(isMatch(value, '^\\d*$', 'IgnoreCase'), isInRange(value, 1, 2147483647)))",
         "message": "This field must be a valid and positive number (maximum 2147483647)"
       },
-      "helpMarkDown": "The tenant ID used to connect to the UFT Mobile server with multi-tenant mode enabled"
+      "helpMarkDown": "The tenant ID used to connect to the Digital Lab server with multi-tenant mode enabled"
     },
     {
       "name": "mcAccessKey",
@@ -74,7 +74,7 @@
       "defaultValue": "",
       "required": true,
       "visibleRule": "mcAuthType = key",
-      "helpMarkDown": "The Access Key will provide access to this Mobile Center server during the build step run"
+      "helpMarkDown": "The Access Key will provide access to this Digital Lab server during the build step run"
     },
     {
       "name": "mcResources",
@@ -82,7 +82,7 @@
       "label": "Resources to retrieve",
       "defaultValue": "onlyDevices",
       "required": false,
-      "helpMarkDown": "Choose what resources will be retrieved from the Mobile Center server",
+      "helpMarkDown": "Choose what resources will be retrieved from the Digital Lab server",
       "options": {
         "onlyDevices": "Only devices",
         "onlyApps": "Only applications",

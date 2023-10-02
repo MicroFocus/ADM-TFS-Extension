@@ -48,11 +48,11 @@ if ($envType -eq "") {
 	if ([string]::IsNullOrWhiteSpace($mcDevices)) {
 		throw "The Devices field is required."
 	} elseif ([string]::IsNullOrWhiteSpace($mcServerUrl)) {
-		throw "Mobile Center Server is empty."
+		throw "Digital Lab Server is empty."
 	} elseif ($isBasicAuth -and [string]::IsNullOrWhiteSpace($mcUsername)) {
-		throw "Mobile Center Username is empty."
+		throw "Digital Lab Username is empty."
 	} elseif (!$isBasicAuth -and [string]::IsNullOrWhiteSpace($mcAccessKey)) {
-		throw "Mobile Center AccessKey is empty."
+		throw "Digital Lab AccessKey is empty."
 	}
 
 	if ($isBasicAuth) {

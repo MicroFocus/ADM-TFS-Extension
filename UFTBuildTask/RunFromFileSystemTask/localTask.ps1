@@ -60,9 +60,9 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 
 	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
 	if ($isBasicAuth -and [string]::IsNullOrWhiteSpace($mcUsername)) {
-		throw "Mobile Center Username is empty."
+		throw "Digital Lab Username is empty."
 	} elseif (!$isBasicAuth -and [string]::IsNullOrWhiteSpace($mcAccessKey)) {
-		throw "Mobile Center AccessKey is empty."
+		throw "Digital Lab AccessKey is empty."
 	} elseif ([string]::IsNullOrWhiteSpace($mcDevice)) {
 		throw "The Device field is required."
 	} elseif ($false -eq [Device]::TryParse($mcDevice, [ref]$device)) {
@@ -70,7 +70,7 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	} elseif ($mcAppType -eq "custom") {
 		[bool]$isOK = [AppLine]::TryParse($mcApp, [ref]$app)
 		if (!$isOK) {
-			throw "The Main UFT Mobile Application is invalid. The expected pattern is Identifier:""value"", Packaged:""Yes/No"" (Identifier is required, Packaged is optional)."
+			throw "The Main Digital Lab Application is invalid. The expected pattern is Identifier:""value"", Packaged:""Yes/No"" (Identifier is required, Packaged is optional)."
 		}
 	} elseif ($mcAppType -eq "system") {
 		$mcSysApp = Get-VstsInput -Name 'mcSysApp'
