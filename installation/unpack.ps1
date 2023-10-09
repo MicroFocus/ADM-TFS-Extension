@@ -38,5 +38,5 @@ if($result)
 
 }else
 {
-     Write-Error "OpenText UFT One is not installed"
+     Write-Error "UFT One is not installed"
 }
