@@ -12,7 +12,7 @@
   "version": {
     "Major": 5,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "demands": "UFT_LAUNCHER",
@@ -105,7 +105,7 @@
       "label": "Server",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(MC server name):(port)"
+      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(server name):(port)"
     },
     {
       "name": "mcAuthType",
@@ -263,7 +263,7 @@
       "defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged: \"Yes\"",
       "required": false,
       "visibleRule": "mcAppType = custom",
-      "helpMarkDown": "The main application that you want to test.<br>Provide the app's identifier, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`",
+      "helpMarkDown": "The main application that you want to test.<br>Provide the app's identifier, as returned by the Get Digital Lab Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`",
       "validation": {
         "expression": "or(eq(value, ''), isMatch(value, '^\\s?Identifier\\s?:\\s?\"[^\\s\"]+\"\\s*(,\\s?Packaged\\s?:\\s?\"(Yes|No)\"\\s*)?$', 'IgnoreCase'))",
         "message": "Expected format -> Identifier:\"<app identifier>\", Packaged:\"Yes/No\" (Identifier is required, Packaged is optional)"
@@ -276,7 +276,7 @@
       "label": "Additional Digital Lab Applications",
       "defaultValue": "Identifier: \"app2\", Packaged: \"Yes\"\nIdentifier: \"app3\", Packaged: \"No\"",
       "required": false,
-      "helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Mobile Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`",
+      "helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Digital Lab Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`",
       "validation": null
     },
     {

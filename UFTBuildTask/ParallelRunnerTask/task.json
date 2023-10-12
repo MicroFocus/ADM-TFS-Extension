@@ -12,7 +12,7 @@
   "version": {
     "Major": 5,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "demands": "UFT_LAUNCHER",
@@ -134,7 +134,7 @@
       "defaultValue": "",
       "required": true,
       "visibleRule": "envType = mobile",
-      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(MC server name):(port)"
+      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(server name):(port)"
     },
     {
       "name": "mcAuthType",

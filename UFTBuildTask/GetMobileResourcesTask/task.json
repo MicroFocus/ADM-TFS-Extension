@@ -1,7 +1,7 @@
 ﻿{
   "id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
   "name": "GetMobileDevicesTask",
-  "friendlyName": "Digital Lab Get Resources",
+  "friendlyName": "Get Digital Lab Resources",
   "description": "Use this build step to retrieve resources from a Digital Lab server",
   "category": "Test",
   "visibility": [
@@ -12,7 +12,7 @@
   "version": {
     "Major": 4,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "inputs": [
@@ -22,7 +22,7 @@
       "label": "Digital Lab Server",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(MC server name):(port)"
+      "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(server name):(port)"
     },
     {
       "name": "mcAuthType",

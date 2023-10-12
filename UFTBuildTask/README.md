@@ -24,7 +24,7 @@ This plugin update includes the following:
 This plugin update includes the following:
 - Run your GUI Mobile tests from the file system.
   You can directly define Digital Lab connection settings and Mobile Record and Run settings in the pipelines without defining them separately in UFT One.
-- Use a Digital Lab Get Resources task to retrieve application and device information from Digital Lab.
+- Use a Get Digital Lab Resources task to retrieve application and device information from Digital Lab.
 - Use a UFT One Parallel Test Run task to run GUI Web and GUI Mobile tests in parallel.
 
 #  Configuration
@@ -76,8 +76,8 @@ This plugin update includes the following:
 - Use this task to  to trigger a parallel testing task to run GUI Web or GUI Mobile tests in parallel from Azure DevOps Server (formerly known as TFS).
 - More information is available [here][parallel-docs]
 
-##### Digital Lab Get Resources
-- Use this task to configure a task that retrieves device and application information from Digital Lab.
+##### Get Digital Lab Resources
+- Use this task to configure a task that retrieves device and application information from Digital Lab (formerly UFT Mobile).
 - More information is available [here][get-digital-lab-resources]
 
 # Additional Resources

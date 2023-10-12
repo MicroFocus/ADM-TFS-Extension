@@ -67,8 +67,8 @@ After the build is complete, you can view comprehensive test results.
 - Use this task to  to trigger a parallel testing task to run GUI Web or GUI Mobile tests in parallel from Azure DevOps Server (formerly known as TFS).
 - More information is available [here][parallel-docs]
 
-##### Digital Lab Get Resources
-- Use this task to configure a task that retrieves device and application information from Digital Lab.
+##### Get Digital Lab Resources
+- Use this task to configure a task that retrieves device and application information from Digital Lab (formerly UFT Mobile).
 - More information is available [here][get-digital-lab-resources]
 
 # Additional Resources
