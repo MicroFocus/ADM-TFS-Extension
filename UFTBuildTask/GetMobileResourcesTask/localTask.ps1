@@ -48,7 +48,7 @@ if ($mcAuthType -eq "basic") {
 	}
 	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
 }
-$config = [MobileResxConfig]::new($srvConfig, $mcResources, $includeOfflineDevices, $false)
+$config = [LabResxConfig]::new($srvConfig, $mcResources, $includeOfflineDevices)
 
 #---------------------------------------------------------------------------------------------------
 

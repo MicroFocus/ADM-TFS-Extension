@@ -37,7 +37,7 @@ $envType = Get-VstsInput -Name 'envType'
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
 $parallelRunnerConfig = $null
-$mobileConfig = $null
+$deviceConfig = $null
 
 [List[Device]]$devices = $null
 if ($envType -eq "") {
@@ -90,7 +90,7 @@ if ($envType -eq "") {
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
 	}
-	$mobileConfig = [MobileConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig)
+	$deviceConfig = [DeviceConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig)
 	[List[string]]$invalidDeviceLines = $null
 	[Device]::ParseLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
 	if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {
@@ -302,7 +302,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $parallelRunnerConfig $rptFolders $mobileConfig $false $tsPattern -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $parallelRunnerConfig $rptFolders $deviceConfig $false $tsPattern -Verbose 
 } catch {
 	Write-Error $_
 } finally {

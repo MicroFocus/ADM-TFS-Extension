@@ -9,7 +9,6 @@
  * The information contained herein is subject to change without notice.
  */
 
-
 using PSModule.Properties;
 using PSModule.UftMobile.SDK.Enums;
 using System;
@@ -31,14 +30,6 @@ namespace PSModule.UftMobile.SDK.UI
         public string PasswordOrSecret => _passwordOrSecret;
         public int TenantId => _tenantId;
 
-        public ServerConfig(ServerConfig config)
-        {
-            _serverUrl = config.ServerUrl;
-            _usernameOrClientId = config.UsernameOrClientId;
-            _passwordOrSecret = config.PasswordOrSecret;
-            _tenantId = config.TenantId;
-            _authType = config.AuthType;
-        }
         public ServerConfig(string serverUrl, string usernameOrClientId, string passwordOrSecret, int tenantId = 0, bool isBasicAuth = true)
         {
             _serverUrl = serverUrl.Trim();

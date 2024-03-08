@@ -122,7 +122,15 @@ namespace PSModule
 				action(item);
 			}
 		}
-		public static string GetMD5Hash(this string text)
+        public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T, int> action)
+        {
+			int x = 0;
+            foreach (T item in enumeration)
+            {
+                action(item, ++x);
+            }
+        }
+        public static string GetMD5Hash(this string text)
 		{
 			using var md5 = MD5.Create();
 			byte[] computedHash = md5.ComputeHash(Encoding.UTF8.GetBytes(text));

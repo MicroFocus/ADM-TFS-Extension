@@ -16,6 +16,7 @@ namespace PSModule.UftMobile.SDK.Enums
     {
         OnlyDevices,
         OnlyApps,
-        BothDevicesAndApps
+        BothDevicesAndApps,
+        CloudBrowsers
     }
 }

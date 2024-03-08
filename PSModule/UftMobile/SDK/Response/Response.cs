@@ -86,7 +86,7 @@ namespace PSModule.UftMobile.SDK
                 case ResType.DataEntity:
                     {
                         var res = JsonConvert.DeserializeObject<SingleResult<T>>(body);
-                        _entries = new T[] { res.Entry };
+                        _entries = [res.Entry];
                         if (res.Error)
                         {
                             _error = res.Message;
@@ -129,7 +129,7 @@ namespace PSModule.UftMobile.SDK
                             if (_error.IsNullOrEmpty())
                             {
                                 T obj = JsonConvert.DeserializeObject<T>(body);
-                                _entries = new T[] { obj };
+                                _entries = [obj];
                             }
                         }
                         break;

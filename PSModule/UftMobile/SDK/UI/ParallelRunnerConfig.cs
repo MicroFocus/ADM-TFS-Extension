@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace PSModule.UftMobile.SDK.UI
 {
-    public class ParallelRunnerConfig
+    public class ParallelRunnerConfig : IConfig
     {
         private readonly EnvType _envType;
         private readonly List<Device> _devices;

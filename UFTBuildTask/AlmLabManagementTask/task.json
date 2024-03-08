@@ -1,5 +1,5 @@
 ﻿{
-  "id": "91008DAF-AFF5-4E1A-A6FF-8ACF9D229E3C",
+  "id": "97008DAF-AFF5-4E1A-A6FF-8ACF9D229E4C",
   "name": "AlmLabManagementTask",
   "friendlyName": "UFT One ALM Lab Management Run",
   "description": "Use this build step to run ALM server-side functional test sets",
@@ -10,7 +10,7 @@
   ],
   "author": "OpenText",
   "version": {
-    "Major": 5,
+    "Major": 6,
     "Minor": 0,
     "Patch": 1
   },

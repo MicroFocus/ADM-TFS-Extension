@@ -61,7 +61,9 @@ namespace PSModule
         protected bool _enableFailedTestsReport;
         protected bool _isParallelRunnerMode;
         protected List<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 or ParallelRunnerTask\localTask.ps1 and passed to / filled in InvokeFSTaskCmdlet, then read in localTask.ps1
-        protected MobileConfig _mobileConfig;
+        protected DeviceConfig _deviceConfig;
+        protected CloudBrowserConfig _cloudBrowserConfig;
+        protected ParallelRunnerConfig _parallelRunnerConfig;
         protected string _timestampPattern;
 
         protected AbstractLauncherTaskCmdlet() { }

@@ -33,6 +33,8 @@ namespace PSModule
     {
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string APPS_ENDPOINT = "rest/apps/getAplicationsLastVersion";
+        private const string BROWSERS_ENDPOINT = "rest/v2/browser-lab/uftone/templates";
+        private const string TOOL_VERSION = "toolVersion=2023";
         private const string APPS_QUERY_PARAMS = "excludeIosAgents=false&multiWorkspace=true";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
@@ -45,15 +47,18 @@ namespace PSModule
         private const string NO_AVAILABLE_DEVICE_FOUND = "No available device has been retrieved from the Digital Lab server";
         private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Digital Lab server";
         private const string NO_APP_FOUND = "No application has been retrieved from the Digital Lab server";
+        private const string NO_BROWSER_FOUND = "No browser has been retrieved from the Digital Lab server";
         private const string LOGIN_FAILED = "Login failed";
         private const string DEVICES_HEAD = "================================== Devices ===================================";
         private const string APPS_HEAD = "================================== Applications ==============================";
+        private const string CLOUD_BROWSERS_HEAD = "================================== Cloud Browsers ==============================";
+        private const string SECTION_BOTTOM = "------------------------------------------------------------------------------";
         private const string RESOURCES_BOTTOM = "==============================================================================";
 
-        private MobileResxConfig _config;
+        private LabResxConfig _config;
 
         [Parameter(Position = 0, Mandatory = true)]
-        public MobileResxConfig Config {
+        public LabResxConfig Config {
             get { return _config; }
             set { _config = value; }
         }
@@ -81,21 +86,28 @@ namespace PSModule
                 bool ok = await auth.Login(client);
                 if (ok)
                 {
-                    if (_config.Resx == Resx.OnlyDevices || _config.Resx == Resx.BothDevicesAndApps)
-                        runStatusDevices = await CheckAndPrintDevices(client);
-                    if (_config.Resx == Resx.OnlyApps || _config.Resx == Resx.BothDevicesAndApps)
-                        runStatusApps = await GetAndPrintApps(client);
+                    if (_config.Resx == Resx.CloudBrowsers)
+                        runStatus = await GetAndPrintCloudBrowsers(client);
+                    else
+                    {
+                        if (_config.Resx.In(Resx.OnlyDevices, Resx.BothDevicesAndApps))
+                            runStatusDevices = await CheckAndPrintDevices(client);
+                        if (_config.Resx.In(Resx.OnlyApps, Resx.BothDevicesAndApps))
+                            runStatusApps = await GetAndPrintApps(client);
+
+                        if (runStatusDevices == RunStatus.PASSED && runStatusApps == RunStatus.PASSED)
+                            runStatus = RunStatus.PASSED;
+                        else if (runStatusDevices == RunStatus.FAILED && runStatusApps == RunStatus.FAILED)
+                            runStatus = RunStatus.FAILED;
+                        else
+                            runStatus = RunStatus.UNSTABLE;
+                    }
+
                     await auth.Logout(client);
+
                 }
                 else
                     LogError(new UftMobileException(LOGIN_FAILED));
-
-                if (runStatusDevices == RunStatus.PASSED && runStatusApps == RunStatus.PASSED)
-                    runStatus = RunStatus.PASSED;
-                else if (runStatusDevices == RunStatus.FAILED && runStatusApps == RunStatus.FAILED)
-                    runStatus = RunStatus.FAILED;
-                else
-                    runStatus = RunStatus.UNSTABLE;
 
                 await SaveRunStatus(resdir, runStatus);
             }
@@ -171,14 +183,46 @@ namespace PSModule
                     BaseWriteObject($"Available applications ({apps.Count()}):");
                     int x = 0;
                     apps.ForEach(app => BaseWriteObject($"App #{++x} - {app}"));
-
-                    return RunStatus.PASSED;
                 }
                 else
                 {
                     WriteObject(NO_APP_FOUND);
-                    status = RunStatus.PASSED;
                 }
+                status = RunStatus.PASSED;
+            }
+            else
+            {
+                LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
+            }
+
+            WriteObject(RESOURCES_BOTTOM);
+            return status;
+        }
+
+        private async Task<RunStatus> GetAndPrintCloudBrowsers(IClient client)
+        {
+            RunStatus status = RunStatus.FAILED;
+            WriteObject(CLOUD_BROWSERS_HEAD);
+            var res = await client.HttpGet<CloudBrowsers>(BROWSERS_ENDPOINT, query: TOOL_VERSION, resType: ResType.Object);
+            if (res.IsOK)
+            {
+                var data = res.Entity;
+                if (data?.Browsers?.Length > 0)
+                {
+                    BaseWriteObject($"Available Locations ({data.Regions.Length}):");
+                    data.Regions.ForEach((r, x) => BaseWriteObject($@"Location #{x} -> ""{r}"""));
+                    BaseWriteObject(SECTION_BOTTOM);
+                    BaseWriteObject($"Available Operating Systems ({data.OS.Length}):");
+                    data.OS.ForEach((os, x) => BaseWriteObject(@$"Operating System #{x} -> ""{os}"""));
+                    BaseWriteObject(SECTION_BOTTOM);
+                    BaseWriteObject($"Available browsers ({data.Browsers.Length}):");
+                    data.Browsers.ForEach((b, x) => BaseWriteObject($"Browser #{x} -> {b}"));
+                }
+                else
+                {
+                    WriteObject(NO_BROWSER_FOUND);
+                }
+                status = RunStatus.PASSED;
             }
             else
             {

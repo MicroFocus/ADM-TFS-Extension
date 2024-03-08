@@ -1,5 +1,5 @@
 ﻿{
-  "id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
+  "id": "33EE3299-D0B4-4E23-B5F1-580E758D5407",
   "name": "GetMobileDevicesTask",
   "friendlyName": "Get Digital Lab Resources",
   "description": "Use this build step to retrieve resources from a Digital Lab server",
@@ -10,9 +10,9 @@
   ],
   "author": "OpenText",
   "version": {
-    "Major": 4,
+    "Major": 7,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 0
   },
   "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
   "inputs": [
@@ -86,7 +86,8 @@
       "options": {
         "onlyDevices": "Only devices",
         "onlyApps": "Only applications",
-        "bothDevicesAndApps": "Both devices and applications"
+        "bothDevicesAndApps": "Both devices and applications",
+        "cloudBrowsers": "Cloud browsers"
       }
     },
     {
@@ -100,7 +101,7 @@
     }
   ],
 
-  "instanceNameFormat": "Get Mobile Resources",
+  "instanceNameFormat": "Get Digital Lab Resources",
   "execution": {
     "PowerShell3": {
       "target": "localTask.ps1",

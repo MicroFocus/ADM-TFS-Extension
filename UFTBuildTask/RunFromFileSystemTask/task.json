@@ -21,6 +21,18 @@
       "name": "digitalLab",
       "displayName": "Digital Lab",
       "isExpanded": false
+    },
+    {
+      "name": "deviceLab",
+      "displayName": "Device Lab",
+      "isExpanded": true,
+      "visibleRule":  "useMcDevice = true"
+    },
+    {
+      "name": "browserLab",
+      "displayName": "Cloud Browser Lab",
+      "isExpanded": true,
+      "visibleRule": "useCloudBrowser = true"
     }
   ],
   "inputs": [
@@ -214,8 +226,26 @@
       "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
     },
     {
-      "name": "mcDevice",
+      "name": "useMcDevice",
       "groupName": "digitalLab",
+      "type": "boolean",
+      "label": "Use Mobile Device",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Choose whether to use a mobile device (applicable for mobile tests only)"
+    },
+    {
+      "name": "useCloudBrowser",
+      "groupName": "digitalLab",
+      "type": "boolean",
+      "label": "Use Cloud Browser",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Choose whether to use a cloud browser"
+    },
+    {
+      "name": "mcDevice",
+      "groupName": "deviceLab",
       "type": "string",
       "label": "Device",
       "defaultValue": "",
@@ -224,7 +254,7 @@
     },
     {
       "name": "mcAppType",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "pickList",
       "label": "Launch on start",
       "defaultValue": "home",
@@ -238,7 +268,7 @@
     },
     {
       "name": "mcSysApp",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "pickList",
       "label": "System Application",
       "defaultValue": "browser",
@@ -257,7 +287,7 @@
     },
     {
       "name": "mcApp",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "string",
       "label": "Main Digital Lab Application",
       "defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged: \"Yes\"",
@@ -271,7 +301,7 @@
     },
     {
       "name": "mcExtraApps",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "multiLine",
       "label": "Additional Digital Lab Applications",
       "defaultValue": "Identifier: \"app2\", Packaged: \"Yes\"\nIdentifier: \"app3\", Packaged: \"No\"",
@@ -281,25 +311,25 @@
     },
     {
       "name": "mcInstall",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Install"
     },
     {
       "name": "mcRestart",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Restart"
     },
     {
       "name": "mcUninstall",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Uninstall"
     },
     {
       "name": "mcLogDeviceMetrics",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "defaultValue": false,
       "type": "boolean",
       "label": "Log device metrics",
@@ -307,52 +337,97 @@
     },
     {
       "name": "mcCPU",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "CPU",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcMemory",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Memory",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcFreeMemory",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Free Memory",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcLogs",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Logs",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcWifiState",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Wifi State",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcThermalState",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Thermal State",
       "visibleRule": "mcLogDeviceMetrics = true"
     },
     {
       "name": "mcFreeDiskSpace",
-      "groupName": "digitalLab",
+      "groupName": "deviceLab",
       "type": "boolean",
       "label": "Free Disk Space",
       "visibleRule": "mcLogDeviceMetrics = true"
+    },
+    {
+      "name": "cbStartUrl",
+      "groupName": "browserLab",
+      "type": "string",
+      "label": "URL",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the URL link of the starting webpage"
+    },
+    {
+      "name": "cbLocation",
+      "groupName": "browserLab",
+      "type": "string",
+      "label": "Location",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the location name (use the task 'Get Digital Lab Resources' to get the available browser locations)"
+    },
+    {
+      "name": "cbOS",
+      "groupName": "browserLab",
+      "type": "string",
+      "label": "Operating System",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the OS name (use the task 'Get Digital Lab Resources' to get the available browser Operating Systems)"
+    },
+    {
+      "name": "cbName",
+      "groupName": "browserLab",
+      "type": "string",
+      "label": "Browser",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the name of one browser only (use the task 'Get Digital Lab Resources' to get the available browsers)"
+    },
+    {
+      "name": "cbVersion",
+      "groupName": "browserLab",
+      "type": "string",
+      "label": "Version",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the browser version / tag (use the task 'Get Digital Lab Resources' to get the available browsers)"
     }
   ],
 

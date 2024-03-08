@@ -9,17 +9,16 @@
  * The information contained herein is subject to change without notice.
  */
 
-using PSModule.UftMobile.SDK.Enums;
-
 namespace PSModule.UftMobile.SDK.UI
 {
-    public class ProxyConfig(ServerConfig srvConfig, bool useCredentials)
+    public class CloudBrowserConfig(ServerConfigEx srvConfigEx, string url, string region, string os, string browser, string version) : IConfig
     {
-        public bool UseCredentials => useCredentials;
-        public AuthType AuthType => srvConfig.AuthType;
-        public string ServerUrl => srvConfig.ServerUrl;
-        public string UsernameOrClientId => srvConfig.UsernameOrClientId;
-        public string PasswordOrSecret => srvConfig.PasswordOrSecret;
-        public int TenantId => srvConfig.TenantId;
+        public ServerConfigEx ServerConfigEx => srvConfigEx;
+
+        public string Url = url;
+        public string Region => region;
+        public string OS => os;
+        public string Browser => browser;
+        public string Version => version;
     }
 }

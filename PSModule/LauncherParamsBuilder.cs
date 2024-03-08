@@ -220,7 +220,7 @@ namespace PSModule
             SetParamValue("PerScenarioTimeOut", paramToSet);
         }
 
-        public void SetMobileConfig(MobileConfig mobileConfig)
+        public void SetMobileConfig(DeviceConfig mobileConfig)
         {
             SetParamValue("MobileHostAddress", mobileConfig.ServerUrl);
             if (mobileConfig.AuthType == UftMobile.SDK.Enums.AuthType.Basic)

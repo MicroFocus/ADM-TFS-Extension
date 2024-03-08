@@ -156,6 +156,7 @@
     <Compile Include="UftMobile\SDK\Entity\AccessToken.cs" />
     <Compile Include="UftMobile\SDK\Entity\App.cs" />
     <Compile Include="UftMobile\SDK\Entity\AppAction.cs" />
+    <Compile Include="UftMobile\SDK\Entity\CloudBrowser.cs" />
     <Compile Include="UftMobile\SDK\Entity\Header.cs" />
     <Compile Include="UftMobile\SDK\UI\AppLine.cs" />
     <Compile Include="UftMobile\SDK\Entity\CapableDeviceFilterDetails.cs" />
@@ -175,8 +176,11 @@
     <Compile Include="UftMobile\SDK\Response\Response.cs" />
     <Compile Include="UftMobile\SDK\UI\AppConfig.cs" />
     <Compile Include="UftMobile\SDK\Entity\DeviceMetrics.cs" />
-    <Compile Include="UftMobile\SDK\UI\MobileConfig.cs" />
-    <Compile Include="UftMobile\SDK\UI\MobileResxConfig.cs" />
+    <Compile Include="UftMobile\SDK\UI\CloudBrowserConfig.cs" />
+    <Compile Include="UftMobile\SDK\UI\IConfig.cs" />
+    <Compile Include="UftMobile\SDK\UI\ServerConfigEx.cs" />
+    <Compile Include="UftMobile\SDK\UI\DeviceConfig.cs" />
+    <Compile Include="UftMobile\SDK\UI\LabResxConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ParallelRunnerConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ProxyConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ServerConfig.cs" />
