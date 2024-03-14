@@ -13,7 +13,7 @@ using PSModule.UftMobile.SDK.Enums;
 
 namespace PSModule.UftMobile.SDK.UI
 {
-    public class ServerConfigEx(ServerConfig srvConfig, bool useProxy = false, ProxyConfig proxyConfig = null)
+    public class ServerConfigEx(ServerConfig srvConfig, bool useProxy = false, ProxyConfig proxyConfig = null) : IConfig
     {
         public bool UseProxy => useProxy;
         public ProxyConfig ProxyConfig => proxyConfig;

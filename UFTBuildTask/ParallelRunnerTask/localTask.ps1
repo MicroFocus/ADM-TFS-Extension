@@ -36,15 +36,14 @@ $envType = Get-VstsInput -Name 'envType'
 
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
-$parallelRunnerConfig = $null
-$deviceConfig = $null
+$configs = [List[IConfig]]::new()
 
 [List[Device]]$devices = $null
 if ($envType -eq "") {
 	throw "Environment type not selected."
 } elseif ($envType -eq "mobile") {
-	$mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
-	$mcDevices = Get-VstsInput -Name 'mcDevices'
+	$mcServerUrl = (Get-VstsInput -Name 'mcServerUrl').Trim()
+	$mcDevices = (Get-VstsInput -Name 'mcDevices').Trim()
 	$mcAuthType = Get-VstsInput -Name 'mcAuthType'
 	$mcUsername = Get-VstsInput -Name 'mcUsername'
 	$mcPassword = Get-VstsInput -Name 'mcPassword'
@@ -53,9 +52,9 @@ if ($envType -eq "") {
 
 	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
 
-	if ([string]::IsNullOrWhiteSpace($mcDevices)) {
+	if ($mcDevices -eq "") {
 		throw "The Devices field is required."
-	} elseif ([string]::IsNullOrWhiteSpace($mcServerUrl)) {
+	} elseif ($mcServerUrl -eq "") {
 		throw "Digital Lab Server is empty."
 	} elseif ($isBasicAuth -and [string]::IsNullOrWhiteSpace($mcUsername)) {
 		throw "Digital Lab Username is empty."
@@ -64,33 +63,34 @@ if ($envType -eq "") {
 	}
 
 	if ($isBasicAuth) {
-		$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
+		$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
 	} else {
 		$mcClientId = $mcSecret = $null
 		$err = [ServerConfig]::ParseAccessKey($mcAccessKey, [ref]$mcClientId, [ref]$mcSecret, [ref]$mcTenantId)
 		if ($err) {
 			throw $err
 		}
-		$mobileSrvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
+		$srvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
 	}
 
 	[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 	$proxyConfig = $null
 
 	if ($useMcProxy) {
-		$mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
+		$mcProxyUrl = (Get-VstsInput -Name 'mcProxyUrl').Trim()
 		[bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
-		$mcProxyUsername = Get-VstsInput -Name 'mcProxyUsername'
+		$mcProxyUsername = (Get-VstsInput -Name 'mcProxyUsername').Trim()
 		$mcProxyPassword = Get-VstsInput -Name 'mcProxyPassword'
-		if ([string]::IsNullOrWhiteSpace($mcProxyUrl)) {
+		if ($mcProxyUrl -eq "") {
 			throw "Proxy Server is empty."
-		} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
+		} elseif ($useMcProxyCredentials -and ($mcProxyUsername -eq "")) {
 			throw "Proxy Username is empty."
 		}
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
 	}
-	$deviceConfig = [DeviceConfig]::new($mobileSrvConfig, $useMcProxy, $proxyConfig)
+	$configs.Add([ServerConfigEx]::new($srvConfig, $useMcProxy, $proxyConfig))
+
 	[List[string]]$invalidDeviceLines = $null
 	[Device]::ParseLines($mcDevices, [ref]$devices, [ref]$invalidDeviceLines)
 	if ($invalidDeviceLines -and $invalidDeviceLines.Count -gt 0) {
@@ -134,7 +134,7 @@ if ($envType -eq "") {
 		throw "At least one browser is required to be selected."
 	}
 }
-$parallelRunnerConfig = [ParallelRunnerConfig]::new($envType, $devices, $browsers)
+$configs.Add([ParallelRunnerConfig]::new($envType, $devices, $browsers))
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
@@ -302,7 +302,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $parallelRunnerConfig $rptFolders $deviceConfig $false $tsPattern -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $configs $rptFolders $false $tsPattern -Verbose 
 } catch {
 	Write-Error $_
 } finally {

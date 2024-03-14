@@ -47,7 +47,6 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	$mcPassword = Get-VstsInput -Name 'mcPassword'
 	[int]$mcTenantId = Get-VstsInput -Name 'mcTenantId' -AsInt
 	$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
-	$mcDevice = Get-VstsInput -Name 'mcDevice'
 	[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 	[ProxyConfig]$proxyConfig = $null
 	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
@@ -81,7 +80,8 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		}
 		$srvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
 	}
-	$srvConfigEx = [ServerConfigEx]::new($srvConfig, $useMcProxy, $proxyConfig)
+	$dlServerConfig = [ServerConfigEx]::new($srvConfig, $useMcProxy, $proxyConfig)
+	$configs.Add($dlServerConfig)
 
 	[bool]$useMcDevice = Get-VstsInput -Name 'useMcDevice' -AsBool
 	[bool]$useCloudBrowser = Get-VstsInput -Name 'useCloudBrowser' -AsBool
@@ -96,12 +96,13 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		[bool]$mcUninstall = $false
 		[bool]$mcRestart = Get-VstsInput -Name 'mcRestart' -AsBool
 
+		$mcDevice = (Get-VstsInput -Name 'mcDevice').Trim(' "')
 		$mcAppType = Get-VstsInput -Name 'mcAppType'
 		$mcSysApp = $null
-		$mcApp = Get-VstsInput -Name 'mcApp'
-		$mcExtraApps = Get-VstsInput -Name 'mcExtraApps'
+		$mcApp = (Get-VstsInput -Name 'mcApp').Trim(' "')
+		$mcExtraApps = (Get-VstsInput -Name 'mcExtraApps').Trim()
 
-		if ([string]::IsNullOrWhiteSpace($mcDevice)) {
+		if ($mcDevice -eq "") {
 			throw "The Device field is required."
 		} elseif ($false -eq [Device]::TryParse($mcDevice, [ref]$device)) {
 			throw "Invalid device -> $($line). The expected pattern is property1:""value1"", property2:""value2""... Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion.";
@@ -139,15 +140,26 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 
 		$appAction = [AppAction]::new($mcInstall, $mcUninstall, $mcRestart)
 		$appConfig = [AppConfig]::new($mcAppType, $mcSysApp, $app, $apps, $metrics, $appAction)
-		$configs.Add([DeviceConfig]::new($srvConfigEx, $device, $appConfig, $workDir))
+		$deviceConfig = [DeviceConfig]::new($device, $appConfig, $workDir)
+``		$configs.Add($deviceConfig)
 	}
 	if ($useCloudBrowser) {
-		$url = Get-VstsInput -Name 'cbStartUrl'
-		$region = Get-VstsInput -Name 'cbLocation' -Require
-		$os = Get-VstsInput -Name 'cbOS' -Require
-		$browser = Get-VstsInput -Name 'cbName' -Require
-		$version = Get-VstsInput -Name 'cbVersion' -Require
-		$configs.Add([CloudBrowserConfig]::new($srvConfigEx, $url, $region, $os, $browser, $version))
+		$url = (Get-VstsInput -Name 'cbStartUrl').Trim(' "')
+		$region = (Get-VstsInput -Name 'cbLocation').Trim(' "')
+		$os = (Get-VstsInput -Name 'cbOS').Trim(' "')
+		$browser = (Get-VstsInput -Name 'cbName').Trim(' "')
+		$version = (Get-VstsInput -Name 'cbVersion').Trim(' "')
+		if ($region -eq "") {
+			throw "The Cloud Browser Location field is required."
+		} elseif ($os -eq "") {
+			throw "The Cloud Browser OS field is required."
+		} elseif ($browser -eq "") {
+			throw "The Cloud Browser field is required."
+		} elseif ($version -eq "") {
+			throw "The Cloud Browser Version field is required."
+		}
+		$cbConfig = [CloudBrowserConfig]::new($url, $region, $os, $browser, $version)
+		$configs.Add($cbConfig)
 	} 
 }
 

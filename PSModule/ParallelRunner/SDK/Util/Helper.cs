@@ -28,7 +28,7 @@ namespace PSModule.ParallelRunner.SDK.Util
         private const string JSON_END_SUFFIX = "}};";
         public const string FILE_NOT_FOUND = "ParallelRunner html report file not found";
 
-        private static readonly char[] EQ = new char[] { '=' };
+        private static readonly char[] EQ = ['='];
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new() { ContractResolver = new DefaultContractResolver() };
 
         public static List<TestRun> GetTestRuns(string reportPath)

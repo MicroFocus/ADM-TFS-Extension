@@ -11,11 +11,9 @@
 
 namespace PSModule.UftMobile.SDK.UI
 {
-    public class CloudBrowserConfig(ServerConfigEx srvConfigEx, string url, string region, string os, string browser, string version) : IConfig
+    public class CloudBrowserConfig(string url, string region, string os, string browser, string version) : IConfig
     {
-        public ServerConfigEx ServerConfigEx => srvConfigEx;
-
-        public string Url = url;
+        public string Url => url;
         public string Region => region;
         public string OS => os;
         public string Browser => browser;

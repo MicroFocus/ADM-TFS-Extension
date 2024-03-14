@@ -33,8 +33,6 @@ namespace PSModule
     {
         private const string DEVICES_ENDPOINT = "rest/devices";
         private const string APPS_ENDPOINT = "rest/apps/getAplicationsLastVersion";
-        private const string BROWSERS_ENDPOINT = "rest/v2/browser-lab/uftone/templates";
-        private const string TOOL_VERSION = "toolVersion=2023";
         private const string APPS_QUERY_PARAMS = "excludeIosAgents=false&multiWorkspace=true";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
@@ -47,7 +45,6 @@ namespace PSModule
         private const string NO_AVAILABLE_DEVICE_FOUND = "No available device has been retrieved from the Digital Lab server";
         private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Digital Lab server";
         private const string NO_APP_FOUND = "No application has been retrieved from the Digital Lab server";
-        private const string NO_BROWSER_FOUND = "No browser has been retrieved from the Digital Lab server";
         private const string LOGIN_FAILED = "Login failed";
         private const string DEVICES_HEAD = "================================== Devices ===================================";
         private const string APPS_HEAD = "================================== Applications ==============================";
@@ -203,7 +200,7 @@ namespace PSModule
         {
             RunStatus status = RunStatus.FAILED;
             WriteObject(CLOUD_BROWSERS_HEAD);
-            var res = await client.HttpGet<CloudBrowsers>(BROWSERS_ENDPOINT, query: TOOL_VERSION, resType: ResType.Object);
+            var res = await client.HttpGet<CloudBrowsers>(C.BROWSERS_ENDPOINT, query: C.TOOL_VERSION, resType: ResType.Object);
             if (res.IsOK)
             {
                 var data = res.Entity;
@@ -220,7 +217,7 @@ namespace PSModule
                 }
                 else
                 {
-                    WriteObject(NO_BROWSER_FOUND);
+                    WriteObject(C.NO_BROWSER_FOUND);
                 }
                 status = RunStatus.PASSED;
             }

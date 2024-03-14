@@ -9,6 +9,8 @@
  * The information contained herein is subject to change without notice.
  */
 
+using System.Collections.Generic;
+using System.Linq;
 using C = PSModule.Common.Constants;
 
 namespace PSModule.UftMobile.SDK.Entity
@@ -28,11 +30,16 @@ namespace PSModule.UftMobile.SDK.Entity
 
         public string Type { get; set; }
 
-        public Ver[] Versions { get; set; }
+        public VerTag[] Versions { get; set; }
 
-        public override string ToString() => @$"""{Type}"": {string.Join<Ver>(C.COMMA, Versions)}";
+        public bool IsValidVersionOrTag(string val)
+        {
+            return Versions.Any(vt => vt.Version.EqualsIgnoreCase(val) || vt.Tag.EqualsIgnoreCase(val));
+        }
 
-        public class Ver
+        public override string ToString() => @$"""{Type}"": {string.Join<VerTag>(C.COMMA, Versions)}";
+
+        public class VerTag
         {
             public string Version { get; set; }
             public string Tag { get; set; }

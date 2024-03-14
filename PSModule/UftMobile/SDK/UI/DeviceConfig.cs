@@ -15,17 +15,8 @@ using System.Collections.Generic;
 
 namespace PSModule.UftMobile.SDK.UI
 {
-    public class DeviceConfig(ServerConfigEx srvConfigEx, Device device = null, AppConfig appConfig = null, string workDir = "") : IConfig
+    public class DeviceConfig(Device device = null, AppConfig appConfig = null, string workDir = "") : IConfig
     {
-        public AuthType AuthType => srvConfigEx.AuthType;
-        public string ServerUrl => srvConfigEx.ServerUrl;
-        public string UsernameOrClientId => srvConfigEx.UsernameOrClientId;
-        public string PasswordOrSecret => srvConfigEx.PasswordOrSecret;
-        public int TenantId => srvConfigEx.TenantId;
-
-        public bool UseProxy => srvConfigEx.UseProxy;
-        public ProxyConfig ProxyConfig => srvConfigEx.ProxyConfig;
-
         public Device Device => device;
         public AppType AppType => appConfig.AppType;
         public SysApp SysApp => appConfig.SysApp;

@@ -220,27 +220,28 @@ namespace PSModule
             SetParamValue("PerScenarioTimeOut", paramToSet);
         }
 
-        public void SetMobileConfig(DeviceConfig mobileConfig)
+        public void SetDigitalLabSrvConfig(ServerConfigEx config)
         {
-            SetParamValue("MobileHostAddress", mobileConfig.ServerUrl);
-            if (mobileConfig.AuthType == UftMobile.SDK.Enums.AuthType.Basic)
+            if (config == null) return;
+            SetParamValue("MobileHostAddress", config.ServerUrl);
+            if (config.AuthType == UftMobile.SDK.Enums.AuthType.Basic)
             {
-                SetParamValue("MobileUserName", mobileConfig.UsernameOrClientId);
-                SetParamValue("MobilePassword", EncryptParameter(mobileConfig.PasswordOrSecret));
+                SetParamValue("MobileUserName", config.UsernameOrClientId);
+                SetParamValue("MobilePassword", EncryptParameter(config.PasswordOrSecret));
             }
             else
             {
-                SetParamValue("MobileClientId", mobileConfig.UsernameOrClientId);
-                SetParamValue("MobileSecretKey", EncryptParameter(mobileConfig.PasswordOrSecret));
+                SetParamValue("MobileClientId", config.UsernameOrClientId);
+                SetParamValue("MobileSecretKey", EncryptParameter(config.PasswordOrSecret));
             }
-            if (mobileConfig.ServerUrl.StartsWith(C.HTTPS, StringComparison.OrdinalIgnoreCase))
+            if (config.ServerUrl.StartsWith(C.HTTPS, StringComparison.OrdinalIgnoreCase))
             {
                 SetParamValue("MobileUseSSL", C.ONE);
             }
-            SetParamValue("MobileTenantId", mobileConfig.TenantId != 0 ? $"{mobileConfig.TenantId}" : string.Empty);
-            if (mobileConfig.UseProxy)
+            SetParamValue("MobileTenantId", config.TenantId != 0 ? $"{config.TenantId}" : string.Empty);
+            if (config.UseProxy)
             {
-                var proxy = mobileConfig.ProxyConfig;
+                var proxy = config.ProxyConfig;
                 SetParamValue("MobileUseProxy", C.ONE);
                 SetParamValue("MobileProxyType", C.TWO);
                 SetParamValue("MobileProxySetting_Address", proxy.ServerUrl);
@@ -251,7 +252,18 @@ namespace PSModule
                     SetParamValue("MobileProxySetting_Password", EncryptParameter(proxy.PasswordOrSecret));
                 }
             }
-            SetParamValue("mobileinfo", mobileConfig.MobileInfo);
+        }
+        public void SetMobileConfig(DeviceConfig config)
+        {
+            if (config == null) return;
+            SetParamValue("mobileinfo", config.MobileInfo);
+        }
+
+        public void SetCloudBrowserConfig(CloudBrowserConfig config)
+        {
+            if (config == null) return;
+            string cb = $@"""url={config.Url};os={config.OS};type={config.Browser};version={config.Version};region={config.Region}""";
+            SetParamValue("cloudBrowser", cb);
         }
 
         private void SetParamValue(string paramName, string paramValue)

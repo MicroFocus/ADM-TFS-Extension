@@ -249,7 +249,7 @@
       "type": "string",
       "label": "Device",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "helpMarkDown": "Specify one single device's information"
     },
     {
@@ -399,7 +399,7 @@
       "type": "string",
       "label": "Location",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "helpMarkDown": "Specify the location name (use the task 'Get Digital Lab Resources' to get the available browser locations)"
     },
     {
@@ -408,7 +408,7 @@
       "type": "string",
       "label": "Operating System",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "helpMarkDown": "Specify the OS name (use the task 'Get Digital Lab Resources' to get the available browser Operating Systems)"
     },
     {
@@ -417,7 +417,7 @@
       "type": "string",
       "label": "Browser",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "helpMarkDown": "Specify the name of one browser only (use the task 'Get Digital Lab Resources' to get the available browsers)"
     },
     {
@@ -426,7 +426,7 @@
       "type": "string",
       "label": "Version",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "helpMarkDown": "Specify the browser version / tag (use the task 'Get Digital Lab Resources' to get the available browsers)"
     }
   ],

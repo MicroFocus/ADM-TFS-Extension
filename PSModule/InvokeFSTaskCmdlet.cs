@@ -117,11 +117,20 @@ namespace PSModule
             set
             {
                 foreach(IConfig config in value) {
-                    if (config is ParallelRunnerConfig prConfig) {
+                    if (config is ParallelRunnerConfig prConfig)
+                    {
                         _parallelRunnerConfig = prConfig;
-                    } else if (config is DeviceConfig dConfig) {
+                    }
+                    else if (config is ServerConfigEx srvConfigEx)
+                    {
+                        _dlServerConfig = srvConfigEx;
+                    }
+                    else if (config is DeviceConfig dConfig)
+                    {
                         _deviceConfig = dConfig;
-                    } else if (config is CloudBrowserConfig cbConfig) {
+                    }
+                    else if (config is CloudBrowserConfig cbConfig)
+                    {
                         _cloudBrowserConfig = cbConfig;
                     }
                 }
@@ -211,10 +220,9 @@ namespace PSModule
                     }
                 }
             }
-            if (_deviceConfig != null)
-            {
-                builder.SetMobileConfig(_deviceConfig);
-            }
+            builder.SetDigitalLabSrvConfig(_dlServerConfig);
+            builder.SetMobileConfig(_deviceConfig);
+            builder.SetCloudBrowserConfig(_cloudBrowserConfig);
 
             return builder.GetProperties();
         }
@@ -226,19 +234,19 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
-            if (_deviceConfig != null)
+            if (_dlServerConfig != null)
             {
                 InitRestClientAndLogin().Wait();
                 if (!IsValidTenantId().Result)
                 {
-                    ThrowTerminatingError($"{NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID}: {_deviceConfig.TenantId}", nameof(IsValidTenantId), ErrorCategory.InvalidData, nameof(IsValidTenantId));
+                    ThrowTerminatingError($"{NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID}: {_dlServerConfig.TenantId}", nameof(IsValidTenantId), ErrorCategory.InvalidData, nameof(IsValidTenantId));
                 }
 
-                if (_deviceConfig.UseProxy)
+                if (_dlServerConfig.UseProxy)
                 {
                     try
                     {
-                        CheckProxy(_deviceConfig.ProxyConfig).Wait();
+                        CheckProxy(_dlServerConfig.ProxyConfig).Wait();
                     }
                     catch (WebException wex)
                     {
@@ -266,26 +274,33 @@ namespace PSModule
                 }
                 else if (!_isParallelRunnerMode)
                 {
-                    var device = ValidateDeviceLine().Result;
-                    ValidateAndSetApps();
-                    var app = _deviceConfig.App;
-                    var extraApps = _deviceConfig.ExtraApps;
-                    string hdr = GetHeaderJson();
-                    Job job = GetOrCreateTempJob().Result;
-                    List<Device> jobDevices = job.Devices ?? new();
-                    if (device != null) // it means that the deviceId was provided
+                    if (_deviceConfig != null)
                     {
-                        if (jobDevices.Count != 1 || !jobDevices[0].DeviceId.EqualsIgnoreCase(device.DeviceId))
+                        var device = ValidateDeviceLine().Result;
+                        ValidateAndSetApps();
+                        var app = _deviceConfig.App;
+                        var extraApps = _deviceConfig.ExtraApps;
+                        string hdr = GetHeaderJson();
+                        Job job = GetOrCreateTempJob().Result;
+                        List<Device> jobDevices = job.Devices ?? [];
+                        if (device != null) // it means that the deviceId was provided
                         {
-                            UpdateJobDevice(job.Id, device.DeviceId, hdr).Wait();
+                            if (jobDevices.Count != 1 || !jobDevices[0].DeviceId.EqualsIgnoreCase(device.DeviceId))
+                            {
+                                UpdateJobDevice(job.Id, device.DeviceId, hdr).Wait();
+                            }
+                            _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, device, app: app, extraApps: extraApps, hdr: hdr)}";
                         }
-                        _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, device, app: app, extraApps: extraApps, hdr: hdr)}";
+                        else // deviceId was not provided, but other device properties
+                        {
+                            var cdfDetails = (CapableDeviceFilterDetails)_deviceConfig.Device;
+                            UpdateJobCDFDetails(job.Id, cdfDetails, hdr).Wait();
+                            _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, cdfDetails: cdfDetails, app: app, extraApps: extraApps, hdr: hdr)}";
+                        }
                     }
-                    else // deviceId was not provided, but other device properties
+                    else if (_cloudBrowserConfig != null)
                     {
-                        var cdfDetails = (CapableDeviceFilterDetails)_deviceConfig.Device;
-                        UpdateJobCDFDetails(job.Id, cdfDetails, hdr).Wait();
-                        _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, cdfDetails: cdfDetails, app: app, extraApps: extraApps, hdr: hdr)}";
+                        ValidateCloudBrowser();
                     }
                 }
             }
@@ -359,10 +374,34 @@ namespace PSModule
             await client.DownloadStringTaskAsync(GOOGLE);
         }
 
+        private void ValidateCloudBrowser()
+        {
+            WriteDebug("Validating the cloud browser fields ....");
+            CloudBrowsers res = GetCloudBrowsers().Result;
+
+            if (res == null)
+                ThrowTerminatingError($"Unexpected error during cloud browser validation", nameof(ValidateCloudBrowser), ErrorCategory.InvalidData, nameof(ValidateCloudBrowser));
+            else
+            {
+                if (!res.Browsers.Any(b => b.Type.EqualsIgnoreCase(_cloudBrowserConfig.Browser) && b.IsValidVersionOrTag(_cloudBrowserConfig.Version)))
+                {
+                    ThrowTerminatingError($"Invalid Cloud Browser: \"{_cloudBrowserConfig.Browser}\" with Version/Tag: \"{_cloudBrowserConfig.Version}\"", nameof(ValidateCloudBrowser), ErrorCategory.InvalidData, nameof(ValidateCloudBrowser));
+                }
+                if (!_cloudBrowserConfig.OS.In(res.OS, true))
+                {
+                    ThrowTerminatingError($"Invalid Cloud Browser OS: \"{_cloudBrowserConfig.OS}\"", nameof(ValidateCloudBrowser), ErrorCategory.InvalidData, nameof(ValidateCloudBrowser));
+                }
+                if (!_cloudBrowserConfig.Region.In(res.Regions, true))
+                {
+                    ThrowTerminatingError($"Invalid Cloud Browser Region: \"{_cloudBrowserConfig.Region}\"", nameof(ValidateCloudBrowser), ErrorCategory.InvalidData, nameof(ValidateCloudBrowser));
+                }
+            }
+        }
+
         private async Task<List<string>> ValidateDeviceLines()
         {
             WriteDebug("Validating the devices....");
-            List<string> warnings = new();
+            List<string> warnings = [];
             GetGroupedDevices(out IList<Device> idDevices, out IList<Device> noIdDevices);
             var devicesWithIdAndOtherProps = idDevices.Where(d => d.HasSecondaryProperties());
             if (devicesWithIdAndOtherProps.Any())
@@ -475,9 +514,9 @@ namespace PSModule
         private async Task InitRestClientAndLogin()
         {
             bool isDebug = (ActionPreference)GetVariableValue(DEBUG_PREFERENCE) != ActionPreference.SilentlyContinue;
-            Credentials cred = new(_deviceConfig.UsernameOrClientId, _deviceConfig.PasswordOrSecret, _deviceConfig.TenantId);
-            _client = new RestClient(_deviceConfig.ServerUrl, cred, new ConsoleLogger(isDebug), _deviceConfig.AuthType);
-            _auth = _deviceConfig.AuthType == AuthType.Basic ? new BasicAuthenticator() : new OAuth2Authenticator();
+            Credentials cred = new(_dlServerConfig.UsernameOrClientId, _dlServerConfig.PasswordOrSecret, _dlServerConfig.TenantId);
+            _client = new RestClient(_dlServerConfig.ServerUrl, cred, new ConsoleLogger(isDebug), _dlServerConfig.AuthType);
+            _auth = _dlServerConfig.AuthType == AuthType.Basic ? new BasicAuthenticator() : new OAuth2Authenticator();
             bool ok = await _auth.Login(_client);
             if (ok)
             {
@@ -639,7 +678,7 @@ namespace PSModule
 
         private async Task<bool> IsValidTenantId()
         {
-            int tenantId = _deviceConfig.TenantId;
+            int tenantId = _dlServerConfig.TenantId;
             if (tenantId == 0)
                 return true;
             var project = await GetProject(tenantId);
@@ -712,6 +751,27 @@ namespace PSModule
         {
             Header hdr = new() { DeviceMetrics = _deviceConfig.DeviceMetrics, AppAction = _deviceConfig.AppAction };
             return hdr.ToJson(indented: false);
+        }
+
+        private async Task<CloudBrowsers> GetCloudBrowsers()
+        {
+            var res = await _client.HttpGet<CloudBrowsers>(C.BROWSERS_ENDPOINT, query: C.TOOL_VERSION, resType: ResType.Object);
+            if (res.IsOK)
+            {
+                var data = res.Entity;
+                if (data?.Browsers?.Length > 0)
+                {
+                    return data;
+                }
+                else
+                {
+                    ThrowTerminatingError(C.NO_BROWSER_FOUND, nameof(ValidateCloudBrowser), ErrorCategory.InvalidData, nameof(ValidateCloudBrowser));
+                }
+            }
+            else
+                ThrowTerminatingError(res.Error, nameof(ValidateCloudBrowser), ErrorCategory.DeviceError, nameof(ValidateCloudBrowser));
+
+            return null;
         }
     }
 }
