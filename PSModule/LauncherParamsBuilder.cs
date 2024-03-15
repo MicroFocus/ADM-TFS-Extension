@@ -36,9 +36,53 @@ namespace PSModule
     using C = Constants;
     public class LauncherParamsBuilder
     {
-        private const string secretkey = "EncriptionPass4Java";
-        private readonly List<string> requiredParameters = new List<string> { "almRunHost", "almUserName", "almPassword" };
-        private readonly Dictionary<string, string> properties = new Dictionary<string, string>();
+        private const string UPLOADARTIFACT = "uploadArtifact";
+        private const string ARTIFACTTYPE = "artifactType";
+        private const string BUILDNUMBER = "buildNumber";
+        private const string CANCELRUNONFAILURE = "cancelRunOnFailure";
+        private const string ENABLEFAILEDTESTSREPORT = "enableFailedTestsReport";
+        private const string PARALLELRUNNERMODE = "parallelRunnerMode";
+        private const string ENVTYPE = "envType";
+        private const string REPORTNAME = "reportName";
+        private const string ARCHIVENAME = "archiveName";
+        private const string STORAGEACCOUNT = "storageAccount";
+        private const string CONTAINER = "container";
+        private const string RUNTYPE = "runType";
+        private const string ALMSERVERURL = "almServerUrl";
+        private const string ALMUSERNAME = "almUsername";
+        private const string ALMPASSWORD = "almPassword";
+        private const string ALMDOMAIN = "almDomain";
+        private const string ALMPROJECT = "almProject";
+        private const string SSOENABLED = "SSOEnabled";
+        private const string ALMCLIENTID = "almClientID";
+        private const string ALMAPIKEYSECRET = "almApiKeySecret";
+        private const string ALMRUNMODE = "almRunMode";
+        private const string ALMTIMEOUT = "almTimeout";
+        private const string TIMESLOTDURATION = "timeslotDuration";
+        private const string TESTSETID = "TestSetID";
+        private const string RUNTESTTYPE = "RunTestType";
+        private const string ALMTESTSETS = "almTestSets";
+        private const string ALMRUNHOST = "almRunHost";
+        private const string PERSCENARIOTIMEOUT = "PerScenarioTimeOut";
+        private const string MOBILEHOSTADDRESS = "MobileHostAddress";
+        private const string MOBILEUSERNAME = "MobileUserName";
+        private const string MOBILEPASSWORD = "MobilePassword";
+        private const string MOBILECLIENTID = "MobileClientId";
+        private const string MOBILESECRETKEY = "MobileSecretKey";
+        private const string MOBILEUSESSL = "MobileUseSSL";
+        private const string MOBILETENANTID = "MobileTenantId";
+        private const string MOBILEUSEPROXY = "MobileUseProxy";
+        private const string MOBILEPROXYTYPE = "MobileProxyType";
+        private const string MOBILEPROXYSETTING_ADDRESS = "MobileProxySetting_Address";
+        private const string MOBILEPROXYSETTING_AUTHENTICATION = "MobileProxySetting_Authentication";
+        private const string MOBILEPROXYSETTING_USERNAME = "MobileProxySetting_UserName";
+        private const string MOBILEPROXYSETTING_PASSWORD = "MobileProxySetting_Password";
+        private const string MOBILEINFO = "mobileinfo";
+        private const string CLOUDBROWSER = "cloudBrowser";
+
+        private readonly static string _secretkey = "EncriptionPass4Java";
+        private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
+        private readonly Dictionary<string, string> properties = [];
 
         public Dictionary<string, string> GetProperties()
         {
@@ -47,27 +91,27 @@ namespace PSModule
 
         public void SetUploadArtifact(string uploadArtifact)
         {
-            SetParamValue("uploadArtifact", uploadArtifact);
+            SetParamValue(UPLOADARTIFACT, uploadArtifact);
         }
 
         public void SetArtifactType(ArtifactType artifactType)
         {
-            SetParamValue("artifactType", artifactType.ToString());
+            SetParamValue(ARTIFACTTYPE, artifactType.ToString());
         }
 
         public void SetBuildNumber(string buildNumber)
         {
-            SetParamValue("buildNumber", buildNumber);
+            SetParamValue(BUILDNUMBER, buildNumber);
         }
 
         public void SetCancelRunOnFailure(bool cancelRunOnFailure)
         {
-            SetParamValue("cancelRunOnFailure", cancelRunOnFailure ? C.YES : C.NO);
+            SetParamValue(CANCELRUNONFAILURE, cancelRunOnFailure ? C.YES : C.NO);
         }
 
         public void SetEnableFailedTestsReport(bool enableFailedTestsRpt)
         {
-            SetParamValue("enableFailedTestsReport", enableFailedTestsRpt ? C.YES : C.NO);
+            SetParamValue(ENABLEFAILEDTESTSREPORT, enableFailedTestsRpt ? C.YES : C.NO);
         }
 
         public void SetParallelTestEnv(int testIdx, int envIdx, string device)
@@ -77,47 +121,47 @@ namespace PSModule
 
         public void SetUseParallelRunner(bool useParallelRunner)
         {
-            SetParamValue("parallelRunnerMode", $"{useParallelRunner}");
+            SetParamValue(PARALLELRUNNERMODE, $"{useParallelRunner}");
         }
 
         public void SetParallelRunnerEnvType(EnvType envType)
         {
-            SetParamValue("envType", $"{envType}");
+            SetParamValue(ENVTYPE, $"{envType}");
         }
 
         public void SetReportName(string reportName)
         {
-            SetParamValue("reportName", reportName);
+            SetParamValue(REPORTNAME, reportName);
         }
 
         public void SetArchiveName(string archiveName)
         {
-            SetParamValue("archiveName", archiveName);
+            SetParamValue(ARCHIVENAME, archiveName);
         }
 
         public void SetStorageAccount(string storageAccount)
         {
-            SetParamValue("storageAccount", storageAccount);
+            SetParamValue(STORAGEACCOUNT, storageAccount);
         }
 
         public void SetContainer(string container)
         {
-            SetParamValue("container", container);
+            SetParamValue(CONTAINER, container);
         }
 
         public void SetRunType(RunType runType)
         {
-            SetParamValue("runType", runType.ToString());
+            SetParamValue(RUNTYPE, runType.ToString());
         }
 
         public void SetAlmServerUrl(string almServerUrl)
         {
-            SetParamValue("almServerUrl", almServerUrl);
+            SetParamValue(ALMSERVERURL, almServerUrl);
         }
 
         public void SetAlmUserName(string almUserName)
         {
-            SetParamValue("almUsername", almUserName);
+            SetParamValue(ALMUSERNAME, almUserName);
         }
 
         public void SetAlmPassword(string almPassword)
@@ -126,7 +170,7 @@ namespace PSModule
             try
             {
                 encAlmPass = EncryptParameter(almPassword);
-                SetParamValue("almPassword", encAlmPass);
+                SetParamValue(ALMPASSWORD, encAlmPass);
             }
             catch
             {
@@ -136,33 +180,33 @@ namespace PSModule
 
         public void SetAlmDomain(string almDomain)
         {
-            SetParamValue("almDomain", almDomain);
+            SetParamValue(ALMDOMAIN, almDomain);
         }
 
         public void SetAlmProject(string almProject)
         {
-            SetParamValue("almProject", almProject);
+            SetParamValue(ALMPROJECT, almProject);
         }
 
         public void SetSSOEnabled(bool ssoEnabled)
         {
-            SetParamValue("SSOEnabled", $"{ssoEnabled}".ToLower());
+            SetParamValue(SSOENABLED, $"{ssoEnabled}".ToLower());
         }
 
         public void SetClientID(string clientID)
         {
-            SetParamValue("almClientID", clientID);
+            SetParamValue(ALMCLIENTID, clientID);
         }
 
         public void SetApiKeySecret(string apiKeySecret)
         {
             string encAlmApiKey = EncryptParameter(apiKeySecret);
-            SetParamValue("almApiKeySecret", encAlmApiKey);
+            SetParamValue(ALMAPIKEYSECRET, encAlmApiKey);
         }
 
         public void SetAlmRunMode(AlmRunMode almRunMode)
         {
-            properties.Add("almRunMode", almRunMode != AlmRunMode.RUN_NONE ? almRunMode.ToString() : string.Empty);
+            properties.Add(ALMRUNMODE, almRunMode != AlmRunMode.RUN_NONE ? almRunMode.ToString() : string.Empty);
         }
 
         public void SetAlmTimeout(string almTimeout)
@@ -172,42 +216,42 @@ namespace PSModule
             {
                 paramToSet = almTimeout;
             }
-            SetParamValue("almTimeout", paramToSet);
+            SetParamValue(ALMTIMEOUT, paramToSet);
         }
 
         public void SetTimeslotDuration(string timeslotDuration)
         {
-           SetParamValue("timeslotDuration", timeslotDuration);
+           SetParamValue(TIMESLOTDURATION, timeslotDuration);
         }
 
         public void SetTestSet(int index, string testSet)
         {
-            SetParamValue("TestSet" + index, testSet);
+            SetParamValue($"TestSet{index}", testSet);
         }
 
         public void SetTestSetID(string testID)
         {
-            SetParamValue("TestSetID", testID);
+            SetParamValue(TESTSETID, testID);
         }
 
         public void SetTestRunType(RunTestType testType)
         {
-            properties.Add("RunTestType", testType.ToString());
+            properties.Add(RUNTESTTYPE, testType.ToString());
         }
 
         public void SetAlmTestSet(string testSets)
         {
-            SetParamValue("almTestSets", testSets);
+            SetParamValue(ALMTESTSETS, testSets);
         }
 
         public void SetAlmRunHost(string host)
         {
-            SetParamValue("almRunHost", host);
+            SetParamValue(ALMRUNHOST, host);
         }
 
         public void SetTest(int index, string test)
         {
-            SetParamValue("Test" + index, test);
+            SetParamValue($"Test{index}", test);
         }
 
         public void SetPerScenarioTimeOut(string perScenarioTimeOut)
@@ -217,60 +261,60 @@ namespace PSModule
             {
                 paramToSet = perScenarioTimeOut;
             }
-            SetParamValue("PerScenarioTimeOut", paramToSet);
+            SetParamValue(PERSCENARIOTIMEOUT, paramToSet);
         }
 
         public void SetDigitalLabSrvConfig(ServerConfigEx config)
         {
             if (config == null) return;
-            SetParamValue("MobileHostAddress", config.ServerUrl);
+            SetParamValue(MOBILEHOSTADDRESS, config.ServerUrl);
             if (config.AuthType == UftMobile.SDK.Enums.AuthType.Basic)
             {
-                SetParamValue("MobileUserName", config.UsernameOrClientId);
-                SetParamValue("MobilePassword", EncryptParameter(config.PasswordOrSecret));
+                SetParamValue(MOBILEUSERNAME, config.UsernameOrClientId);
+                SetParamValue(MOBILEPASSWORD, EncryptParameter(config.PasswordOrSecret));
             }
             else
             {
-                SetParamValue("MobileClientId", config.UsernameOrClientId);
-                SetParamValue("MobileSecretKey", EncryptParameter(config.PasswordOrSecret));
+                SetParamValue(MOBILECLIENTID, config.UsernameOrClientId);
+                SetParamValue(MOBILESECRETKEY, EncryptParameter(config.PasswordOrSecret));
             }
             if (config.ServerUrl.StartsWith(C.HTTPS, StringComparison.OrdinalIgnoreCase))
             {
-                SetParamValue("MobileUseSSL", C.ONE);
+                SetParamValue(MOBILEUSESSL, C.ONE);
             }
-            SetParamValue("MobileTenantId", config.TenantId != 0 ? $"{config.TenantId}" : string.Empty);
+            SetParamValue(MOBILETENANTID, config.TenantId != 0 ? $"{config.TenantId}" : string.Empty);
             if (config.UseProxy)
             {
                 var proxy = config.ProxyConfig;
-                SetParamValue("MobileUseProxy", C.ONE);
-                SetParamValue("MobileProxyType", C.TWO);
-                SetParamValue("MobileProxySetting_Address", proxy.ServerUrl);
+                SetParamValue(MOBILEUSEPROXY, C.ONE);
+                SetParamValue(MOBILEPROXYTYPE, C.TWO);
+                SetParamValue(MOBILEPROXYSETTING_ADDRESS, proxy.ServerUrl);
                 if (proxy.UseCredentials)
                 {
-                    SetParamValue("MobileProxySetting_Authentication", C.ONE);
-                    SetParamValue("MobileProxySetting_UserName", proxy.UsernameOrClientId);
-                    SetParamValue("MobileProxySetting_Password", EncryptParameter(proxy.PasswordOrSecret));
+                    SetParamValue(MOBILEPROXYSETTING_AUTHENTICATION, C.ONE);
+                    SetParamValue(MOBILEPROXYSETTING_USERNAME, proxy.UsernameOrClientId);
+                    SetParamValue(MOBILEPROXYSETTING_PASSWORD, EncryptParameter(proxy.PasswordOrSecret));
                 }
             }
         }
         public void SetMobileConfig(DeviceConfig config)
         {
             if (config == null) return;
-            SetParamValue("mobileinfo", config.MobileInfo);
+            SetParamValue(MOBILEINFO, config.MobileInfo);
         }
 
         public void SetCloudBrowserConfig(CloudBrowserConfig config)
         {
             if (config == null) return;
             string cb = $@"""url={config.Url};os={config.OS};type={config.Browser};version={config.Version};region={config.Region}""";
-            SetParamValue("cloudBrowser", cb);
+            SetParamValue(CLOUDBROWSER, cb);
         }
 
         private void SetParamValue(string paramName, string paramValue)
         {
             if (string.IsNullOrEmpty(paramValue))
             {
-                if (!requiredParameters.Contains(paramName))
+                if (!requiredParams.Contains(paramName))
                     properties.Remove(paramName);
                 else
                     properties.Add(paramName, string.Empty);
@@ -283,13 +327,15 @@ namespace PSModule
 
         private string EncryptParameter(string parameter)
         {
-            RijndaelManaged rijndaelCipher = new RijndaelManaged();
-            rijndaelCipher.Mode = CipherMode.CBC;
-            rijndaelCipher.Padding = PaddingMode.PKCS7;
+            RijndaelManaged rijndaelCipher = new()
+            {
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7,
 
-            rijndaelCipher.KeySize = 0x80;
-            rijndaelCipher.BlockSize = 0x80;
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(secretkey);
+                KeySize = 0x80,
+                BlockSize = 0x80
+            };
+            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretkey);
             byte[] keyBytes = new byte[0x10];
             int len = pwdBytes.Length;
             if (len > keyBytes.Length)
@@ -303,7 +349,5 @@ namespace PSModule
             byte[] plainText = Encoding.UTF8.GetBytes(parameter);
             return Convert.ToBase64String(transform.TransformFinalBlock(plainText, 0, plainText.Length));
         }
-
-
     }
 }
