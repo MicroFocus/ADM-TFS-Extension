@@ -238,7 +238,7 @@
       "name": "useCloudBrowser",
       "groupName": "digitalLab",
       "type": "boolean",
-      "label": "Use Cloud Browser",
+      "label": "Use Cloud Browser Lab",
       "defaultValue": false,
       "required": false,
       "helpMarkDown": "Choose whether to use a cloud browser"
