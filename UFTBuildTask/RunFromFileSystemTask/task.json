@@ -229,7 +229,7 @@
       "name": "useMcDevice",
       "groupName": "digitalLab",
       "type": "boolean",
-      "label": "Use Mobile Device",
+      "label": "Use Device Lab",
       "defaultValue": false,
       "required": false,
       "helpMarkDown": "Choose whether to use a mobile device (applicable for mobile tests only)"
