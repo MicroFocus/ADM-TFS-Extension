@@ -1,5 +1,5 @@
 ﻿{
-  "id": "33EE3299-D0B4-4E23-B5F1-580E758D5407",
+  "id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
   "name": "GetMobileDevicesTask",
   "friendlyName": "Get Digital Lab Resources",
   "description": "Use this build step to retrieve resources from a Digital Lab server",
@@ -10,7 +10,7 @@
   ],
   "author": "OpenText",
   "version": {
-    "Major": 7,
+    "Major": 5,
     "Minor": 0,
     "Patch": 0
   },
