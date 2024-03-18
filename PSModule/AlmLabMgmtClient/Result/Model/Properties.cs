@@ -31,6 +31,6 @@ namespace PSModule.AlmLabMgmtClient.Result.Model
     public class Properties
     {
         [XmlElement(ElementName = "property")]
-        public List<Property> ListOfProps { get; set; } = new List<Property>();
+        public List<Property> ListOfProps { get; set; } = [];
     }
 }

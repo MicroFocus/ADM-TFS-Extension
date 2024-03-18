@@ -207,7 +207,7 @@ namespace PSModule
                                     RunConverter(converterPath, outputFileReport);
                                     if (File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0 && nrOfTests[H.FAIL] > 0)
                                     {
-                                        H.ReadReportFromXMLFile(outputFileReport, true, out List<KeyValuePair<string, IList<ReportMetaData>>> failedSteps);
+                                        H.ReadReportFromXMLFile(outputFileReport, true, out IList<KeyValuePair<string, IList<ReportMetaData>>> failedSteps);
                                         H.CreateFailedStepsReport(failedSteps, resdir);
                                     }
                                 }
@@ -266,7 +266,7 @@ namespace PSModule
                 {
                     throw new FileNotFoundException($"The file [{paramFile}] does not exist!");
                 }
-                ProcessStartInfo info = new ProcessStartInfo
+                ProcessStartInfo info = new()
                 {
                     UseShellExecute = false,
                     Arguments = $" -paramfile \"{paramFile}\"",
@@ -324,7 +324,7 @@ namespace PSModule
         {
             try
             {
-                var info = new ProcessStartInfo
+                ProcessStartInfo info = new()
                 {
                     UseShellExecute = false,
                     Arguments = $" -j \"{outputfile}\" --aggregate",
@@ -519,7 +519,7 @@ namespace PSModule
             {
                 return null;
             }
-            var results = new List<Tuple<string, string>>();
+            List<Tuple<string, string>> results = [];
             try
             {
                 //report link example: td://Automation.AUTOMATION.mydph0271.hpswlabs.adapps.hp.com:8080/qcbin/TestLabModule-000000003649890581?EntityType=IRun&amp;EntityID=1195091

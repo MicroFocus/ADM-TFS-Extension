@@ -113,16 +113,16 @@ namespace PSModule
             public string ArchiveName => _archiveName;
         }
 
-        public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out List<KeyValuePair<string, IList<ReportMetaData>>> failedSteps, bool addParallelTestRuns = false)
+        public static IList<ReportMetaData> ReadReportFromXMLFile(string reportPath, bool isJUnitReport, out IList<KeyValuePair<string, IList<ReportMetaData>>> failedSteps, bool addParallelTestRuns = false)
         {
-            failedSteps = new();
-            List<ReportMetaData> listReport = new();
+            failedSteps = [];
+            IList<ReportMetaData> listReport = [];
             XmlDocument xmlDoc = new();
             xmlDoc.Load(reportPath);
 
             foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes) //inside <testsuite> node 
             {
-                var failedTestSteps = new List<ReportMetaData>();
+                IList<ReportMetaData> failedTestSteps = [];
                 string testName = string.Empty;
                 if (isJUnitReport)
                 {

@@ -44,7 +44,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Request
 
         private string GetXmlData()
         {
-            StringBuilder builder = new StringBuilder("<Entity><Fields>");
+            StringBuilder builder = new("<Entity><Fields>");
             foreach (KeyValuePair<string, string> pair in DataFields)
             {
                 builder.Append($"<Field Name=\"{pair.Key}\"><Value>{pair.Value}</Value></Field>");
@@ -52,6 +52,6 @@ namespace PSModule.AlmLabMgmtClient.SDK.Request
             return builder.Append("</Fields></Entity>").ToString();
         }
 
-        protected virtual IList<KeyValuePair<string, string>> DataFields => new List<KeyValuePair<string, string>>();
+        protected virtual IList<KeyValuePair<string, string>> DataFields => [];
     }
 }

@@ -47,8 +47,6 @@ namespace PSModule.UftMobile.SDK.Interface
 
         Credentials Credentials { get; }
 
-        IDictionary<string, string> Cookies { get; }
-
         ILogger Logger { get; }
 
         bool IsLoggedIn { set; get; }

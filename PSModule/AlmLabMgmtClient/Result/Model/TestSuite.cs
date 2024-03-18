@@ -48,7 +48,7 @@ namespace PSModule.AlmLabMgmtClient.Result.Model
         public Properties Properties { get; set; }
 
         [XmlElement(ElementName = "testcase")]
-        public List<TestCase> ListOfTestCases { get; set; } = new List<TestCase>();
+        public List<TestCase> ListOfTestCases { get; set; } = [];
 
         [XmlElement(ElementName = "system-out")]
         public string SystemOut { get; set; }

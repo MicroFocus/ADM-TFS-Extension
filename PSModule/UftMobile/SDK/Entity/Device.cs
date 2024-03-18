@@ -82,7 +82,7 @@ namespace PSModule.UftMobile.SDK.Entity
 
         public bool IsAvailable(IQueryable<Device> devices, out string msg)
         {
-            IList<string> props = new List<string>();
+            IList<string> props = [];
             if (!Manufacturer.IsNullOrWhiteSpace())
             {
                 devices = devices.Where(d => d.Manufacturer.EqualsIgnoreCase(Manufacturer));
@@ -168,8 +168,8 @@ namespace PSModule.UftMobile.SDK.Entity
 
         public static void ParseLines(string strDevices, out List<Device> devices, out List<string> invalidLines)
         {
-            devices = new();
-            invalidLines = new();
+            devices = [];
+            invalidLines = [];
             var lines = strDevices.Split(C.LF_).Where(line => !line.IsNullOrWhiteSpace());
             if (lines.Any())
             {

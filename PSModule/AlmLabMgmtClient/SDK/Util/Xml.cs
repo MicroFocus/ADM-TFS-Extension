@@ -49,14 +49,14 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
         }
         public static IList<IDictionary<string, string>> ToEntities(string xml)
         {
-            var list = new List<IDictionary<string, string>>();
+            IList<IDictionary<string, string>> list = [];
             try
             {
                 var doc = XDocument.Parse(xml);
                 var entities = doc.Root.Elements(ENTITY);
                 foreach (var entity in entities)
                 {
-                    var newEntity = new Dictionary<string, string>();
+                    Dictionary<string, string> newEntity = [];
                     var fields = entity.Element(FIELDS).Elements(FIELD);
                     foreach (var field in fields)
                         if (field.HasAttributes)
@@ -99,7 +99,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Util
         internal static IList<int> GetTestSetIds(string xml)
         {
             var doc = XDocument.Parse(xml);
-            var ids = new List<int>();
+            IList<int> ids = [];
 
             doc.Root?.Elements("Entity")?.Elements("Fields")?.Elements("Field")?.
                 Where(el => el?.Attribute("Name")?.Value == "cycle-id")?.Elements("Value")?.

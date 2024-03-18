@@ -49,8 +49,6 @@ namespace PSModule.AlmLabMgmtClient.SDK.Interface
         string ClientType { get; }
         Credentials Credentials { get; }
 
-        IDictionary<string, string> Cookies { get; }
-
         string XsrfTokenValue { get; }
 
         ILogger Logger { get; }

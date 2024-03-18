@@ -237,10 +237,11 @@ namespace PSModule
             if (_dlServerConfig != null)
             {
                 InitRestClientAndLogin().Wait();
-                if (!IsValidTenantId().Result)
+                //if DL server type is ValueEdge then GET project fails
+                /*if (!IsValidTenantId().Result)
                 {
                     ThrowTerminatingError($"{NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID}: {_dlServerConfig.TenantId}", nameof(IsValidTenantId), ErrorCategory.InvalidData, nameof(IsValidTenantId));
-                }
+                }*/
 
                 if (_dlServerConfig.UseProxy)
                 {
@@ -547,7 +548,7 @@ namespace PSModule
             else
                 ThrowTerminatingError(res.Error, nameof(ValidateDeviceLines), ErrorCategory.DeviceError, nameof(ValidateDeviceLines));
 
-            return new List<Device>();
+            return [];
         }
 
         private async Task<Device> GetDevice(string id)
@@ -667,7 +668,7 @@ namespace PSModule
             }
             else
             {
-                return new Project[0];
+                return [];
             }
         }
         private async Task<Project> GetProject(int tenantId)
@@ -743,7 +744,7 @@ namespace PSModule
 
         private string GetExtraAppsJson4JobUpdate()
         {
-            List<string> list = new();
+            List<string> list = [];
             _deviceConfig.ExtraApps.ForEach(a => list.Add(a.Json4JobUpdate));
             return $"[{string.Join(C.COMMA, list)}]";
         }

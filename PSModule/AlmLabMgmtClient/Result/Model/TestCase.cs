@@ -45,16 +45,16 @@ namespace PSModule.AlmLabMgmtClient.Result.Model
         public string Skipped { get; set; }
 
         [XmlElement(ElementName = "error")]
-        public List<Error> ListOfErrors { get; set; } = new List<Error>();
+        public List<Error> ListOfErrors { get; set; } = [];
 
         [XmlElement(ElementName = "failure")]
-        public List<Failure> ListOfFailures { get; set; } = new List<Failure>();
+        public List<Failure> ListOfFailures { get; set; } = [];
 
         [XmlElement(ElementName = "system-out")]
-        public List<string> ListOfSystemOuts { get; set; } = new List<string>();
+        public List<string> ListOfSystemOuts { get; set; } = [];
 
         [XmlElement(ElementName = "system-err")]
-        public List<string> ListOfSystemErrs { get; set; } = new List<string>();
+        public List<string> ListOfSystemErrs { get; set; } = [];
 
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }

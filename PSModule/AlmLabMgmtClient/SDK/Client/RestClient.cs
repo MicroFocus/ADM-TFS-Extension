@@ -29,7 +29,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
         private const string XSRF_TOKEN = "XSRF-TOKEN";
 
         protected readonly Uri _serverUrl; // Example : http://myd-vm21045.swinfra.net:8080/qcbin
-        protected IDictionary<string, string> _cookies = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _cookies = [];
         private readonly Uri _restPrefix;
         private readonly Uri _webuiPrefix;
         private readonly string _clientType;
@@ -61,8 +61,6 @@ namespace PSModule.AlmLabMgmtClient.SDK
         public string ClientType => _clientType;
 
         public Credentials Credentials => _credentials;
-
-        public IDictionary<string, string> Cookies => _cookies;
 
         public string XsrfTokenValue => _xsrfTokenValue;
 
@@ -122,7 +120,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
         public async Task<Response> HttpPost(string url, WebHeaderCollection headers = null, string body = null, ResourceAccessLevel resourceAccessLevel = ResourceAccessLevel.PUBLIC, bool logRequestUrl = true)
         {
             Response res;
-            using var client = new WebClient { Headers = headers };
+            using WebClient client = new() { Headers = headers };
             try
             {
                 if (logRequestUrl)
@@ -133,7 +131,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 string data = await client.UploadStringTaskAsync(url, body);
                 //PrintHeaders(client);
 
-                res = new Response(data, client.ResponseHeaders, HttpStatusCode.OK);
+                res = new(data, client.ResponseHeaders, HttpStatusCode.OK);
                 UpdateCookies(client);
             }
             catch (ThreadInterruptedException)
@@ -145,15 +143,15 @@ namespace PSModule.AlmLabMgmtClient.SDK
                 await _logger.LogError(we.Message);
                 //PrintHeaders(client);
                 if (we.Response is HttpWebResponse resp)
-                    return new Response(we.Message, resp.StatusCode);
+                    return new(we.Message, resp.StatusCode);
                 else
-                    return new Response(we.Message);
+                    return new(we.Message);
             }
             catch (Exception e)
             {
                 await _logger.LogError(e.Message);
                 //PrintHeaders(client);
-                res = new Response(e.Message);
+                res = new(e.Message);
             }
             return res;
         }

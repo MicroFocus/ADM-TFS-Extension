@@ -37,7 +37,7 @@ namespace PSModule.AlmLabMgmtClient.Result.Model
     public class TestSuites
     {
         [XmlElement(ElementName = "testsuite")]
-        public List<TestSuite> ListOfTestSuites { get; set; } = new List<TestSuite>();
+        public List<TestSuite> ListOfTestSuites { get; set; } = [];
 
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }

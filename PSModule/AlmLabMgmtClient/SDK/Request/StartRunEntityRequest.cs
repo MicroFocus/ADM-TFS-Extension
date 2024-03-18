@@ -37,15 +37,15 @@ namespace PSModule.AlmLabMgmtClient.SDK.Request
 
         private IList<KeyValuePair<string, string>> GetDataFields()
         {
-            var fields = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>(DURATION, _duration),
-                new KeyValuePair<string, string>(VUDS_MODE, bool.FalseString.ToLower()),
-                new KeyValuePair<string, string>(RESERVATION_ID, MINUS_ONE),
-            };
+            List<KeyValuePair<string, string>> fields =
+            [
+                new(DURATION, _duration),
+                new(VUDS_MODE, bool.FalseString.ToLower()),
+                new(RESERVATION_ID, MINUS_ONE)
+            ];
             if (!_envConfigId.IsNullOrWhiteSpace())
             {
-                fields.Add(new KeyValuePair<string, string>(VALUE_SET_ID, _envConfigId));
+                fields.Add(new(VALUE_SET_ID, _envConfigId));
             }
 
             return fields;

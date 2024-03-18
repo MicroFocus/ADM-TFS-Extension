@@ -55,7 +55,7 @@ namespace AlmLabMgmtClient.SDK.Util
 
         private IDictionary<string, TestSuite> BuildTestSets(IList<IDictionary<string, string>> testInstanceRuns, string bvsName, string url, string domain, string project)
         {
-            var testSets = new Dictionary<string, TestSuite>();
+            Dictionary<string, TestSuite> testSets = [];
             foreach (var entity in testInstanceRuns)
             {
                 entity.TryGetValue(TESTCYCL_ID, out string testSetId);

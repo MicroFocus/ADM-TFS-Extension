@@ -26,20 +26,20 @@ using System.Threading.Tasks;
 namespace PSModule.UftMobile.SDK
 {
     using C = Constants;
-    public class RestClient : IClient
+    public class RestClient(string serverUrl, Credentials credentials, ILogger logger, AuthType authType) : IClient
     {
         private const string X_HP4MSECRET = "x-hp4msecret";
         private const string JSESSIONID = "JSESSIONID";
         private const string SET_COOKIE = "Set-Cookie";
         private const string PUT = "PUT";
 
-        protected readonly Uri _serverUrl; // Example : http://myd-vm21045.swinfra.net:8080/qcbin
-        protected IDictionary<string, string> _cookies = new Dictionary<string, string>();
-        private readonly Credentials _credentials;
-        private readonly ILogger _logger;
+        private readonly Uri _serverUrl = new(serverUrl); // Example : http://myd-vm21045.swinfra.net:8080/qcbin
+        private readonly Dictionary<string, string> _cookies = [];
+        private readonly Credentials _credentials = credentials;
+        private readonly ILogger _logger = logger;
         private string _rawCookies => GetCookiesAsString();
         private string _hp4msecret;
-        private readonly AuthType _authType;
+        private readonly AuthType _authType = authType;
         private AccessToken _accessToken;
         private bool _isLoggedIn;
 
@@ -48,21 +48,9 @@ namespace PSModule.UftMobile.SDK
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RestClient(string serverUrl, Credentials credentials, ILogger logger, AuthType authType)
-        {
-            _serverUrl = new Uri(serverUrl);
-            _credentials = credentials;
-            _logger = logger;
-            //_xsrfTokenValue = Guid.NewGuid().ToString();
-            _authType = authType;
-            //_cookies.Add(XSRF_TOKEN, _xsrfTokenValue);
-        }
-
         public Uri ServerUrl => _serverUrl;
 
         public Credentials Credentials => _credentials;
-
-        public IDictionary<string, string> Cookies => _cookies;
 
         public ILogger Logger => _logger;
         public AuthType AuthType => _authType;
@@ -76,10 +64,10 @@ namespace PSModule.UftMobile.SDK
             {
                 if (logError || _logger.IsDebug)
                     await _logger.LogError(err);
-                return new Response<T>(err);
+                return new(err);
             }
 
-            using (var client = new WebClient { Headers = headers })
+            using (WebClient client = new() { Headers = headers })
             {
                 try
                 {
@@ -94,7 +82,7 @@ namespace PSModule.UftMobile.SDK
                     if (_logger.IsDebug)
                         PrintHeaders(client);
 
-                    res = new Response<T>(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
+                    res = new(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
                     UpdateCookies(client);
                 }
                 catch (ThreadInterruptedException)
@@ -108,9 +96,9 @@ namespace PSModule.UftMobile.SDK
                     if (_logger.IsDebug)
                         PrintHeaders(client);
                     if (we.Response is HttpWebResponse resp)
-                        return new Response<T>(we.Message, resp.StatusCode);
+                        return new(we.Message, resp.StatusCode);
                     else
-                        return new Response<T>(we.Message);
+                        return new(we.Message);
                 }
                 catch (Exception e)
                 {
@@ -118,7 +106,7 @@ namespace PSModule.UftMobile.SDK
                         await _logger.LogError(e.Message);
                     if (_logger.IsDebug)
                         PrintHeaders(client);
-                    res = new Response<T>(e.Message);
+                    res = new(e.Message);
                 }
             }
             return res;
@@ -131,9 +119,9 @@ namespace PSModule.UftMobile.SDK
             {
                 if (_logger.IsDebug)
                     await _logger.LogError(err);
-                return new Response(err);
+                return new(err);
             }
-            using var client = new WebClient { Headers = headers };
+            using WebClient client = new() { Headers = headers };
             try
             {
                 await _logger.LogDebug($"POST {endpoint}");
@@ -142,7 +130,7 @@ namespace PSModule.UftMobile.SDK
                 if (_logger.IsDebug)
                     PrintHeaders(client);
 
-                res = new Response(data, client.ResponseHeaders, HttpStatusCode.OK);
+                res = new(data, client.ResponseHeaders, HttpStatusCode.OK);
                 UpdateCookies(client);
             }
             catch (ThreadInterruptedException)
@@ -157,9 +145,9 @@ namespace PSModule.UftMobile.SDK
                     await _logger.LogDebug(body);
                 }
                 if (we.Response is HttpWebResponse resp)
-                    return new Response(we.Message, resp.StatusCode);
+                    return new(we.Message, resp.StatusCode);
                 else
-                    return new Response(we.Message);
+                    return new(we.Message);
             }
             catch (Exception e)
             {
@@ -168,7 +156,7 @@ namespace PSModule.UftMobile.SDK
                     PrintHeaders(client);
                     await _logger.LogDebug(body);
                 }
-                res = new Response(e.Message);
+                res = new(e.Message);
             }
             return res;
         }
@@ -180,10 +168,10 @@ namespace PSModule.UftMobile.SDK
             {
                 if (_logger.IsDebug)
                     await _logger.LogError(err);
-                return new Response<T>(err);
+                return new(err);
             }
 
-            using var client = new WebClient { Headers = headers };
+            using WebClient client = new() { Headers = headers };
             try
             {
                 await _logger.LogDebug($"POST {endpoint}");
@@ -193,7 +181,7 @@ namespace PSModule.UftMobile.SDK
                 if (_logger.IsDebug)
                     PrintHeaders(client);
 
-                res = new Response<T>(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
+                res = new(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
                 UpdateCookies(client);
             }
             catch (WebException we)
@@ -204,9 +192,9 @@ namespace PSModule.UftMobile.SDK
                     await _logger.LogDebug(body);
                 }
                 if (we.Response is HttpWebResponse resp)
-                    return new Response<T>(we.Message, resp.StatusCode);
+                    return new(we.Message, resp.StatusCode);
                 else
-                    return new Response<T>(we.Message);
+                    return new(we.Message);
             }
             catch (Exception e)
             {
@@ -215,7 +203,7 @@ namespace PSModule.UftMobile.SDK
                     PrintHeaders(client);
                     await _logger.LogDebug(body);
                 }
-                res = new Response<T>(e.Message);
+                res = new(e.Message);
             }
 
             return res;
@@ -228,9 +216,9 @@ namespace PSModule.UftMobile.SDK
             {
                 if (_logger.IsDebug)
                     await _logger.LogError(err);
-                return new Response(err);
+                return new(err);
             }
-            using var client = new WebClient { Headers = headers };
+            using WebClient client = new() { Headers = headers };
             try
             {
                 await _logger.LogDebug($"PUT {endpoint}");
@@ -239,7 +227,7 @@ namespace PSModule.UftMobile.SDK
                 if (_logger.IsDebug)
                     PrintHeaders(client);
 
-                res = new Response(data, client.ResponseHeaders, HttpStatusCode.OK);
+                res = new(data, client.ResponseHeaders, HttpStatusCode.OK);
                 UpdateCookies(client);
             }
             catch (ThreadInterruptedException)
@@ -254,9 +242,9 @@ namespace PSModule.UftMobile.SDK
                     await _logger.LogDebug(body);
                 }
                 if (we.Response is HttpWebResponse resp)
-                    return new Response(we.Message, resp.StatusCode);
+                    return new(we.Message, resp.StatusCode);
                 else
-                    return new Response(we.Message);
+                    return new(we.Message);
             }
             catch (Exception e)
             {
@@ -265,7 +253,7 @@ namespace PSModule.UftMobile.SDK
                     PrintHeaders(client);
                     await _logger.LogDebug(body);
                 }
-                res = new Response(e.Message);
+                res = new(e.Message);
             }
             return res;
         }
@@ -278,7 +266,7 @@ namespace PSModule.UftMobile.SDK
 
         private string GetCookiesAsString()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new();
             if (_cookies.Any())
             {
                 foreach (KeyValuePair<string, string> cookie in _cookies)
@@ -335,14 +323,11 @@ namespace PSModule.UftMobile.SDK
         {
             err = string.Empty;
             bool ok = false;
-            if (headers == null)
-            {
-                headers = new WebHeaderCollection
+            headers ??= new()
                 {
                     { HttpRequestHeader.Accept, C.APP_JSON },
                     { HttpRequestHeader.ContentType, C.APP_JSON_UTF8 }
                 };
-            }
 
             if (_isLoggedIn)
             {

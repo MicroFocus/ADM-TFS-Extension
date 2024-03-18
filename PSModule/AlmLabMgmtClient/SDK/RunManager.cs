@@ -239,7 +239,7 @@ namespace PSModule.AlmLabMgmtClient.SDK
         private async Task<IList<int>> GetBvsTestSetsIds()
         {
             Response res = await new GetBvsTestSetsRequest(_client, _args.EntityId).Execute();
-            IList<int> ids = new List<int>();
+            IList<int> ids = [];
 
             if (res == null || !res.IsOK || res.Data == null)
             {
