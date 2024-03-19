@@ -153,20 +153,6 @@
       "helpMarkDown": "The password for the user that will access this Digital Lab server during the build step run"
     },
     {
-      "name": "mcTenantId",
-      "groupName": "digitalLab",
-      "type": "int",
-      "label": "Tenant Id",
-      "defaultValue": "",
-      "required": false,
-      "visibleRule": "mcAuthType = basic",
-      "validation": {
-        "expression": "or(eq(value, ''), and(isMatch(value, '^\\d*$', 'IgnoreCase'), isInRange(value, 1, 2147483647)))",
-        "message": "This field must be a valid and positive number (maximum 2147483647)"
-      },
-      "helpMarkDown": "The tenant ID used to connect to the Digital Lab server with multi-tenant mode enabled"
-    },
-    {
       "name": "mcAccessKey",
       "groupName": "digitalLab",
       "type": "string",
@@ -333,7 +319,7 @@
       "defaultValue": false,
       "type": "boolean",
       "label": "Log device metrics",
-      "visibleRule": "mcTenantId = 2147483648"
+      "visibleRule": "mcSysApp = to_be_implemented"
     },
     {
       "name": "mcCPU",

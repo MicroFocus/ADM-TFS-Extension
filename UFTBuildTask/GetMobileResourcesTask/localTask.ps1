@@ -16,7 +16,6 @@ $mcServerUrl = Get-VstsInput -Name 'mcServerUrl' -Require
 $mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 $mcUsername = Get-VstsInput -Name 'mcUsername'
 $mcPassword = Get-VstsInput -Name 'mcPassword'
-[int]$mcTenantId = Get-VstsInput -Name 'mcTenantId' -AsInt
 $mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
 $mcResources = Get-VstsInput -Name 'mcResources' -Require
 [bool]$includeOfflineDevices = Get-VstsInput -Name 'includeOfflineDevices' -AsBool
@@ -39,9 +38,9 @@ $runStatusCodeFile = "$resDir\RunStatusCode.txt"
 Import-Module $uftworkdir\bin\PSModule.dll
 
 if ($mcAuthType -eq "basic") {
-	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
+	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
 } else {
-	$mcClientId = $mcSecret = $null
+	$mcClientId = $mcSecret = $mcTenantId = $null
 	$err = [ServerConfig]::ParseAccessKey($mcAccessKey, [ref]$mcClientId, [ref]$mcSecret, [ref]$mcTenantId)
 	if ($err) {
 		throw $err

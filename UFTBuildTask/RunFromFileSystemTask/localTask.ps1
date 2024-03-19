@@ -45,7 +45,6 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 	$mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 	$mcUsername = Get-VstsInput -Name 'mcUsername'
 	$mcPassword = Get-VstsInput -Name 'mcPassword'
-	[int]$mcTenantId = Get-VstsInput -Name 'mcTenantId' -AsInt
 	$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
 	[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 	[ProxyConfig]$proxyConfig = $null
@@ -71,9 +70,9 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
 	}
 	if ($isBasicAuth) {
-		$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword, $mcTenantId)
+		$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
 	} else {
-		$mcClientId = $mcSecret = $null
+		$mcClientId = $mcSecret = $mcTenantId = $null
 		$err = [ServerConfig]::ParseAccessKey($mcAccessKey, [ref]$mcClientId, [ref]$mcSecret, [ref]$mcTenantId)
 		if ($err) {
 			throw $err
