@@ -163,7 +163,6 @@
     <Compile Include="UftMobile\SDK\Entity\Device.cs" />
     <Compile Include="UftMobile\SDK\Entity\MobileInfo.cs" />
     <Compile Include="UftMobile\SDK\Entity\Job.cs" />
-    <Compile Include="UftMobile\SDK\Entity\Project.cs" />
     <Compile Include="UftMobile\SDK\Entity\Workspace.cs" />
     <Compile Include="UftMobile\SDK\Enums\AppType.cs" />
     <Compile Include="UftMobile\SDK\Enums\AuthType.cs" />

@@ -96,10 +96,10 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		[bool]$mcUninstall = $false
 		[bool]$mcRestart = Get-VstsInput -Name 'mcRestart' -AsBool
 
-		$mcDevice = (Get-VstsInput -Name 'mcDevice').Trim(' "')
+		$mcDevice = (Get-VstsInput -Name 'mcDevice').Trim()
 		$mcAppType = Get-VstsInput -Name 'mcAppType'
 		$mcSysApp = $null
-		$mcApp = (Get-VstsInput -Name 'mcApp').Trim(' "')
+		$mcApp = (Get-VstsInput -Name 'mcApp').Trim()
 		$mcExtraApps = (Get-VstsInput -Name 'mcExtraApps').Trim()
 
 		if ($mcDevice -eq "") {
@@ -141,7 +141,7 @@ if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
 		$appAction = [AppAction]::new($mcInstall, $mcUninstall, $mcRestart)
 		$appConfig = [AppConfig]::new($mcAppType, $mcSysApp, $app, $apps, $metrics, $appAction)
 		$deviceConfig = [DeviceConfig]::new($device, $appConfig, $workDir)
-``		$configs.Add($deviceConfig)
+		$configs.Add($deviceConfig)
 	}
 	if ($useCloudBrowser) {
 		$url = (Get-VstsInput -Name 'cbStartUrl').Trim(' "')

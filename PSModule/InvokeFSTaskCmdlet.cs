@@ -40,7 +40,6 @@ namespace PSModule
         private const string MISSING_OR_INVALID_DEVICE = "Missing or invalid device";
         private const string FAILED_TO_CREATE_TEMP_JOB = "Digital Lab server failed to create a temporary job";
         private const string NO_JOB_FOUND_BY_GIVEN_ID = "No job found by given ID";
-        private const string NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID = "No active tenant (project) found by given ID";
         private const string APPS_ENDPOINT = "rest/apps/getAplicationsLastVersion";
         private const string APPS_QUERY_PARAMS = "excludeIosAgents=false&multiWorkspace=true";
         private const string GET_APP_BY_ID_ENDPOINT = "rest/apps/getAppById";
@@ -50,7 +49,6 @@ namespace PSModule
         private const string CREATE_TEMP_JOB_ENDPOINT = "rest/job/createTempJob";
         //private const string JOB_UPDATE_DEVICES_ENDPOINT = "rest/job/updateDevices";
         private const string JOB_UPDATE_ENDPOINT = "rest/job/updateJob";
-        private const string GET_PROJECTS_ENPOINT = "rest/v1/project?includeManagement=false";
         private const string REGISTERED = "registered";
         private const string UNREGISTERED = "unregistered";
         private const string HEAD = "HEAD";
@@ -659,33 +657,6 @@ namespace PSModule
                 ThrowTerminatingError(res.Error, nameof(UpdateJobCDFDetails), ErrorCategory.NotSpecified, nameof(UpdateJobCDFDetails));
             }
         }
-        private async Task<Project[]> GetProjects()
-        {
-            var res = await _client.HttpGet<Project>($"{GET_PROJECTS_ENPOINT}", resType: ResType.Array);
-            if (res.IsOK)
-            {
-                return res.Entities;
-            }
-            else
-            {
-                return [];
-            }
-        }
-        private async Task<Project> GetProject(int tenantId)
-        {
-            var projects = await GetProjects();
-            return projects.FirstOrDefault(p => p.Id == tenantId);
-        }
-
-        private async Task<bool> IsValidTenantId()
-        {
-            int tenantId = _dlServerConfig.TenantId;
-            if (tenantId == 0)
-                return true;
-            var project = await GetProject(tenantId);
-            return project?.IsActive == true;
-        }
-
         private List<string> ValidateExtraAppLinesAndSetExtraApps(IEnumerable<App> allApps)
         {
             WriteDebug("Validating the extra apps ....");
