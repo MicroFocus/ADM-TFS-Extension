@@ -58,7 +58,7 @@ namespace PSModule
         private const string HTTPS_PREFIX = "https://";
         private const string JOB_ID = "job_id";
         private const string UPDATE_JOB_DEVICE_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{{}},""devices"":[{{""deviceID"":""{1}""}}],""application"":{2},""extraApps"":{3},""header"":""{4}""}}";
-        private const string UPDATE_JOB_CDFD_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{1},""application"":{2},""devices"":[],""extraApps"":{3},""header"":""{4}""}";
+        private const string UPDATE_JOB_CDFD_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{1},""application"":{2},""devices"":[],""extraApps"":{3},""header"":""{4}""}}";
         private const string MC_HOME = "MC.Home";
         private IClient _client;
         private IAuthenticator _auth;
@@ -114,7 +114,8 @@ namespace PSModule
         {
             set
             {
-                foreach(IConfig config in value) {
+                foreach (IConfig config in value)
+                {
                     if (config is ParallelRunnerConfig prConfig)
                     {
                         _parallelRunnerConfig = prConfig;
@@ -273,33 +274,44 @@ namespace PSModule
                 }
                 else if (!_isParallelRunnerMode)
                 {
-                    if (_deviceConfig != null)
+                    try
                     {
-                        var device = ValidateDeviceLine().Result;
-                        ValidateAndSetApps();
-                        var app = _deviceConfig.App;
-                        var extraApps = _deviceConfig.ExtraApps;
-                        string hdr = GetHeaderJson();
-                        Job job = GetOrCreateTempJob().Result;
-                        List<Device> jobDevices = job.Devices ?? [];
-                        if (device != null) // it means that the deviceId was provided
+                        if (_deviceConfig != null)
                         {
-                            if (jobDevices.Count != 1 || !jobDevices[0].DeviceId.EqualsIgnoreCase(device.DeviceId))
+                            var device = ValidateDeviceLine().Result;
+                            ValidateAndSetApps();
+                            var app = _deviceConfig.App;
+                            var extraApps = _deviceConfig.ExtraApps;
+                            string hdr = GetHeaderJson();
+                            Job job = GetOrCreateTempJob().Result;
+                            List<Device> jobDevices = job.Devices ?? [];
+                            if (device != null) // it means that the deviceId was provided
                             {
-                                UpdateJobDevice(job.Id, device.DeviceId, hdr).Wait();
+                                if (jobDevices.Count != 1 || !jobDevices[0].DeviceId.EqualsIgnoreCase(device.DeviceId))
+                                {
+                                    UpdateJobDevice(job.Id, device.DeviceId, hdr).Wait();
+                                }
+                                _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, device, app: app, extraApps: extraApps, hdr: hdr)}";
                             }
-                            _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, device, app: app, extraApps: extraApps, hdr: hdr)}";
+                            else // deviceId was not provided, but other device properties
+                            {
+                                var cdfDetails = (CapableDeviceFilterDetails)_deviceConfig.Device;
+                                UpdateJobCDFDetails(job.Id, cdfDetails, hdr).Wait();
+                                _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, cdfDetails: cdfDetails, app: app, extraApps: extraApps, hdr: hdr)}";
+                            }
                         }
-                        else // deviceId was not provided, but other device properties
+                        else if (_cloudBrowserConfig != null)
                         {
-                            var cdfDetails = (CapableDeviceFilterDetails)_deviceConfig.Device;
-                            UpdateJobCDFDetails(job.Id, cdfDetails, hdr).Wait();
-                            _deviceConfig.MobileInfo = $"{new MobileInfo(job.Id, cdfDetails: cdfDetails, app: app, extraApps: extraApps, hdr: hdr)}";
+                            ValidateCloudBrowser();
                         }
                     }
-                    else if (_cloudBrowserConfig != null)
+                    catch (Exception ex)
                     {
-                        ValidateCloudBrowser();
+                        ex = ex.InnerException ?? ex;
+                        string err = ex is WebException wex ? GetErrorFromWebException(wex) : $"Error: {ex.Message}";
+                        WriteDebug($"{ex.GetType().Name}: {ex.Message}");
+                        WriteDebug(ex.StackTrace);
+                        ThrowTerminatingError(err, nameof(ProcessRecord), ErrorCategory.NotSpecified, nameof(ProcessRecord));
                     }
                 }
             }
@@ -649,9 +661,12 @@ namespace PSModule
 
         private async Task UpdateJobCDFDetails(string jobId, CapableDeviceFilterDetails details, string hdr)
         {
-            string jsonApp = _deviceConfig.App.Json4JobUpdate;
+            string jsonApp = _deviceConfig.App?.Json4JobUpdate;
             string jsonExtraApps = GetExtraAppsJson4JobUpdate();
-            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, details.ToJson(false, true), jsonApp, jsonExtraApps, hdr.EscapeDblQuotes()));
+            string jsonDetails = details?.ToJson(false);
+
+            string body = string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, jsonDetails, jsonApp, jsonExtraApps, hdr?.EscapeDblQuotes());
+            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, body);
             if (!res.IsOK)
             {
                 ThrowTerminatingError(res.Error, nameof(UpdateJobCDFDetails), ErrorCategory.NotSpecified, nameof(UpdateJobCDFDetails));
