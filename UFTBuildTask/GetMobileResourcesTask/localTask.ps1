@@ -12,11 +12,11 @@
 using namespace PSModule.UftMobile.SDK.UI
 
 param()
-$mcServerUrl = Get-VstsInput -Name 'mcServerUrl' -Require
+$mcServerUrl = (Get-VstsInput -Name 'mcServerUrl' -Require).Trim()
 $mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
-$mcUsername = Get-VstsInput -Name 'mcUsername'
+$mcUsername = (Get-VstsInput -Name 'mcUsername').Trim()
 $mcPassword = Get-VstsInput -Name 'mcPassword'
-$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
+$mcAccessKey = (Get-VstsInput -Name 'mcAccessKey').Trim(' "')
 $mcResources = Get-VstsInput -Name 'mcResources' -Require
 [bool]$includeOfflineDevices = Get-VstsInput -Name 'includeOfflineDevices' -AsBool
 

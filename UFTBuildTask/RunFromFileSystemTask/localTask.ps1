@@ -14,16 +14,16 @@ using namespace PSModule.UftMobile.SDK.Entity
 using namespace System.Collections.Generic
 
 param()
-$testPathInput = Get-VstsInput -Name 'testPathInput' -Require
-$timeOutIn = Get-VstsInput -Name 'timeOutIn'
+$testPathInput = (Get-VstsInput -Name 'testPathInput' -Require).Trim()
+$timeOutIn = (Get-VstsInput -Name 'timeOutIn').Trim()
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
-$rptFileName = Get-VstsInput -Name 'reportFileName'
+$rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 
-$mcServerUrl = Get-VstsInput -Name 'mcServerUrl'
+$mcServerUrl = (Get-VstsInput -Name 'mcServerUrl').Trim()
 
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
@@ -41,29 +41,29 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$rerunType = "attempt"
 }
 
-if (![string]::IsNullOrWhiteSpace($mcServerUrl)) {
+if ($mcServerUrl -ne "") {
 	$mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
-	$mcUsername = Get-VstsInput -Name 'mcUsername'
+	$mcUsername = (Get-VstsInput -Name 'mcUsername').Trim()
 	$mcPassword = Get-VstsInput -Name 'mcPassword'
-	$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
+	$mcAccessKey = (Get-VstsInput -Name 'mcAccessKey').Trim(' "')
 	[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 	[ProxyConfig]$proxyConfig = $null
 	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
 
-	if ($isBasicAuth -and [string]::IsNullOrWhiteSpace($mcUsername)) {
+	if ($isBasicAuth -and ($mcUsername -eq "")) {
 		throw "Digital Lab Username is empty."
-	} elseif (!$isBasicAuth -and [string]::IsNullOrWhiteSpace($mcAccessKey)) {
+	} elseif (!$isBasicAuth -and ($mcAccessKey -eq "")) {
 		throw "Digital Lab AccessKey is empty."
 	} 
 	if ($useMcProxy) {
-		$mcProxyUrl = Get-VstsInput -Name 'mcProxyUrl'
+		$mcProxyUrl = (Get-VstsInput -Name 'mcProxyUrl').Trim()
 		[bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
-		$mcProxyUsername = Get-VstsInput -Name 'mcProxyUsername'
+		$mcProxyUsername = (Get-VstsInput -Name 'mcProxyUsername').Trim()
 		$mcProxyPassword = Get-VstsInput -Name 'mcProxyPassword'
 
-		if ([string]::IsNullOrWhiteSpace($mcProxyUrl)) {
+		if ($mcProxyUrl -eq "") {
 			throw "Proxy Server is empty."
-		} elseif ($useMcProxyCredentials -and [string]::IsNullOrWhiteSpace($mcProxyUsername)) {
+		} elseif ($useMcProxyCredentials -and ($mcProxyUsername -eq "")) {
 			throw "Proxy Username is empty."
 		}
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)

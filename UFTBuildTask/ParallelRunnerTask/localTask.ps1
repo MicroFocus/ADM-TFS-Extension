@@ -45,9 +45,9 @@ if ($envType -eq "") {
 	$mcServerUrl = (Get-VstsInput -Name 'mcServerUrl').Trim()
 	$mcDevices = (Get-VstsInput -Name 'mcDevices').Trim()
 	$mcAuthType = Get-VstsInput -Name 'mcAuthType'
-	$mcUsername = Get-VstsInput -Name 'mcUsername'
+	$mcUsername = (Get-VstsInput -Name 'mcUsername').Trim()
 	$mcPassword = Get-VstsInput -Name 'mcPassword'
-	$mcAccessKey = Get-VstsInput -Name 'mcAccessKey'
+	$mcAccessKey = (Get-VstsInput -Name 'mcAccessKey').Trim(' "')
 
 	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
 
@@ -55,9 +55,9 @@ if ($envType -eq "") {
 		throw "The Devices field is required."
 	} elseif ($mcServerUrl -eq "") {
 		throw "Digital Lab Server is empty."
-	} elseif ($isBasicAuth -and [string]::IsNullOrWhiteSpace($mcUsername)) {
+	} elseif ($isBasicAuth -and ($mcUsername -eq "")) {
 		throw "Digital Lab Username is empty."
-	} elseif (!$isBasicAuth -and [string]::IsNullOrWhiteSpace($mcAccessKey)) {
+	} elseif (!$isBasicAuth -and ($mcAccessKey -eq "")) {
 		throw "Digital Lab AccessKey is empty."
 	}
 
