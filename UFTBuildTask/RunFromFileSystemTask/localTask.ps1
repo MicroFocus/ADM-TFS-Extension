@@ -22,8 +22,7 @@ $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
-
-$mcServerUrl = (Get-VstsInput -Name 'mcServerUrl').Trim()
+[bool]$useDigitalLab = Get-VstsInput -Name 'useDigitalLab' -AsBool
 
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
@@ -41,7 +40,11 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$rerunType = "attempt"
 }
 
-if ($mcServerUrl -ne "") {
+if ($useDigitalLab) {
+	$mcServerUrl = (Get-VstsInput -Name 'mcServerUrl').Trim()
+	if ($mcServerUrl -eq "") {
+		throw "The Digital Lab Server URL is missing."
+	}
 	$mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 	$mcUsername = (Get-VstsInput -Name 'mcUsername').Trim()
 	$mcPassword = Get-VstsInput -Name 'mcPassword'
@@ -52,6 +55,8 @@ if ($mcServerUrl -ne "") {
 
 	if ($isBasicAuth -and ($mcUsername -eq "")) {
 		throw "Digital Lab Username is empty."
+	} elseif ($isBasicAuth -and ($mcPassword.Trim() -eq "")) {
+		throw "Digital Lab Password is empty."
 	} elseif (!$isBasicAuth -and ($mcAccessKey -eq "")) {
 		throw "Digital Lab AccessKey is empty."
 	} 
@@ -65,6 +70,8 @@ if ($mcServerUrl -ne "") {
 			throw "Proxy Server is empty."
 		} elseif ($useMcProxyCredentials -and ($mcProxyUsername -eq "")) {
 			throw "Proxy Username is empty."
+		} elseif ($useMcProxyCredentials -and ($mcProxyPassword.Trim() -eq "")) {
+			throw "Proxy Password is empty."
 		}
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
@@ -84,6 +91,10 @@ if ($mcServerUrl -ne "") {
 
 	[bool]$useMcDevice = Get-VstsInput -Name 'useMcDevice' -AsBool
 	[bool]$useCloudBrowser = Get-VstsInput -Name 'useCloudBrowser' -AsBool
+
+	if (!$useMcDevice -and !$useCloudBrowser) {
+		throw 'Please select at least one of the options: "Use Device Lab" or "Use Cloud Browser Lab".'
+	}
 
 	if ($useMcDevice) {
 		[Device]$device = $null

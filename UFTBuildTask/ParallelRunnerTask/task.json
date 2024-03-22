@@ -163,7 +163,7 @@
       "type": "string",
       "label": "Password",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "visibleRule": "envType = mobile && mcAuthType = basic",
       "helpMarkDown": "The password for the user that will access this Digital Lab server during the build step run"
     },
@@ -217,7 +217,7 @@
       "type": "string",
       "label": "Proxy Password",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "visibleRule": "envType = mobile && useMcProxy = true && useMcProxyCredentials = true",
       "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
     },

@@ -57,6 +57,8 @@ if ($envType -eq "") {
 		throw "Digital Lab Server is empty."
 	} elseif ($isBasicAuth -and ($mcUsername -eq "")) {
 		throw "Digital Lab Username is empty."
+	} elseif ($isBasicAuth -and ($mcPassword.Trim() -eq "")) {
+		throw "Digital Lab Password is empty."
 	} elseif (!$isBasicAuth -and ($mcAccessKey -eq "")) {
 		throw "Digital Lab AccessKey is empty."
 	}
@@ -84,6 +86,8 @@ if ($envType -eq "") {
 			throw "Proxy Server is empty."
 		} elseif ($useMcProxyCredentials -and ($mcProxyUsername -eq "")) {
 			throw "Proxy Username is empty."
+		} elseif ($useMcProxyCredentials -and ($mcProxyPassword.Trim() -eq "")) {
+			throw "Proxy Password is empty."
 		}
 		$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
 		$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)

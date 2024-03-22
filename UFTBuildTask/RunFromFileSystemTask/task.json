@@ -20,7 +20,8 @@
     {
       "name": "digitalLab",
       "displayName": "Digital Lab",
-      "isExpanded": false
+      "isExpanded": false,
+      "visibleRule": "useDigitalLab = true"
     },
     {
       "name": "deviceLab",
@@ -59,6 +60,14 @@
       "defaultValue": "",
       "required": false,
       "helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
+    },
+    {
+      "name": "useDigitalLab",
+      "type": "boolean",
+      "label": "Use Digital Lab",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Choose whether to display the Digitial Lab fields. Required for Mobile or Cloud Browser tests."
     },
     {
       "name": "cancelRunOnFailure",
@@ -116,7 +125,7 @@
       "type": "string",
       "label": "Server",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "helpMarkDown": "The address of your Digital Lab server, in the format http[s]://(server name):(port)"
     },
     {
@@ -148,7 +157,7 @@
       "type": "string",
       "label": "Password",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "visibleRule": "mcAuthType = basic",
       "helpMarkDown": "The password for the user that will access this Digital Lab server during the build step run"
     },
@@ -207,7 +216,7 @@
       "type": "string",
       "label": "Proxy Password",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
       "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
     },
