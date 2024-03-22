@@ -21,19 +21,19 @@
       "name": "digitalLab",
       "displayName": "Digital Lab",
       "isExpanded": false,
-      "visibleRule": "useDigitalLab = true"
+      "visibleRule": "useDigitalLab == true"
     },
     {
       "name": "deviceLab",
       "displayName": "Device Lab",
       "isExpanded": true,
-      "visibleRule":  "useMcDevice = true"
+      "visibleRule": "useDigitalLab == true && useMcDevice == true"
     },
     {
       "name": "browserLab",
       "displayName": "Cloud Browser Lab",
       "isExpanded": true,
-      "visibleRule": "useCloudBrowser = true"
+      "visibleRule": "useDigitalLab == true && useCloudBrowser == true"
     }
   ],
   "inputs": [
