@@ -9,6 +9,7 @@
 # The information contained herein is subject to change without notice.
 # 
 
+using namespace PSModule.Common;
 using namespace PSModule.UftMobile.SDK.UI
 using namespace PSModule.UftMobile.SDK.Entity
 using namespace System.Collections.Generic
@@ -27,6 +28,7 @@ $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
 $configs = [List[IConfig]]::new()
+$configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE))
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
@@ -326,7 +328,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern -Verbose 
 } catch {
 	Write-Error $_
 } finally {

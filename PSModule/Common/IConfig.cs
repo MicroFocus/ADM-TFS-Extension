@@ -1,5 +1,5 @@
 ﻿
-namespace PSModule.UftMobile.SDK.UI
+namespace PSModule.Common
 {
     public interface IConfig
     {

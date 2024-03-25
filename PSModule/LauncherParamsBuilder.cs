@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.ComponentModel;
 
 namespace PSModule
 {
@@ -47,6 +48,7 @@ namespace PSModule
         private const string ARCHIVENAME = "archiveName";
         private const string STORAGEACCOUNT = "storageAccount";
         private const string CONTAINER = "container";
+        private const string LEAVE_UFT_OPEN_IF_VISIBLE = "leaveUftOpenIfVisible";
         private const string RUNTYPE = "runType";
         private const string ALMSERVERURL = "almServerUrl";
         private const string ALMUSERNAME = "almUsername";
@@ -139,16 +141,12 @@ namespace PSModule
             SetParamValue(ARCHIVENAME, archiveName);
         }
 
-        public void SetStorageAccount(string storageAccount)
+        public void SetEnvVars(EnvVarsConfig envVars)
         {
-            SetParamValue(STORAGEACCOUNT, storageAccount);
+            SetParamValue(STORAGEACCOUNT, envVars.StorageAccount);
+            SetParamValue(CONTAINER, envVars.Container);
+            SetParamValue(LEAVE_UFT_OPEN_IF_VISIBLE, envVars.LeaveUftOpenIfVisible);
         }
-
-        public void SetContainer(string container)
-        {
-            SetParamValue(CONTAINER, container);
-        }
-
         public void SetRunType(RunType runType)
         {
             SetParamValue(RUNTYPE, runType.ToString());

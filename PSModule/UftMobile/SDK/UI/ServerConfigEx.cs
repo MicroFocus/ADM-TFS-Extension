@@ -9,6 +9,7 @@
  * The information contained herein is subject to change without notice.
  */
 
+using PSModule.Common;
 using PSModule.UftMobile.SDK.Enums;
 
 namespace PSModule.UftMobile.SDK.UI

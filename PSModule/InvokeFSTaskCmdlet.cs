@@ -9,6 +9,7 @@
  * The information contained herein is subject to change without notice.
  */
 
+using PSModule.Common;
 using PSModule.UftMobile.SDK;
 using PSModule.UftMobile.SDK.Auth;
 using PSModule.UftMobile.SDK.Client;
@@ -63,6 +64,7 @@ namespace PSModule
         private IClient _client;
         private IAuthenticator _auth;
         private bool _isLoggedIn;
+        private EnvVarsConfig _envVarsConfig;
 
         [Parameter(Position = 0, Mandatory = true)]
         public string TestsPath { get; set; }
@@ -77,21 +79,15 @@ namespace PSModule
         public ArtifactType ArtType { get; set; }
 
         [Parameter(Position = 4)]
-        public string StorageAccount { get; set; }
-
-        [Parameter(Position = 5)]
-        public string Container { get; set; }
-
-        [Parameter(Position = 6)]
         public string ReportFileName { get; set; }
 
-        [Parameter(Position = 7)]
+        [Parameter(Position = 5)]
         public string ArchiveName { get; set; }
 
-        [Parameter(Position = 8)]
+        [Parameter(Position = 6)]
         public string BuildNumber { get; set; }
 
-        [Parameter(Position = 9)]
+        [Parameter(Position = 7)]
         public bool EnableFailedTestsReport
         {
             set
@@ -100,7 +96,7 @@ namespace PSModule
             }
         }
 
-        [Parameter(Position = 10)]
+        [Parameter(Position = 8)]
         public bool UseParallelRunner
         {
             set
@@ -109,7 +105,7 @@ namespace PSModule
             }
         }
 
-        [Parameter(Position = 11)]
+        [Parameter(Position = 9)]
         public List<IConfig> Configs
         {
             set
@@ -132,11 +128,15 @@ namespace PSModule
                     {
                         _cloudBrowserConfig = cbConfig;
                     }
+                    else if (config is EnvVarsConfig evConfig)
+                    {
+                        _envVarsConfig = evConfig;
+                    }
                 }
             }
         }
 
-        [Parameter(Position = 12)]
+        [Parameter(Position = 10)]
         public List<string> ReportPaths
         {
             set
@@ -145,10 +145,10 @@ namespace PSModule
             }
         }
 
-        [Parameter(Position = 13)]
+        [Parameter(Position = 11)]
         public bool CancelRunOnFailure { get; set; }
 
-        [Parameter(Position = 14)]
+        [Parameter(Position = 12)]
         public string TimestampPattern
         {
             set
@@ -181,8 +181,7 @@ namespace PSModule
             builder.SetArtifactType(ArtType);
             builder.SetReportName(ReportFileName);
             builder.SetArchiveName(ArchiveName);
-            builder.SetStorageAccount(StorageAccount);
-            builder.SetContainer(Container);
+            builder.SetEnvVars(_envVarsConfig);
             builder.SetBuildNumber(BuildNumber);
             builder.SetCancelRunOnFailure(CancelRunOnFailure);
             builder.SetEnableFailedTestsReport(_enableFailedTestsReport);

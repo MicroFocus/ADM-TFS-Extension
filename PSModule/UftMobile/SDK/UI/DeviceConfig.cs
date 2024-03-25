@@ -9,6 +9,7 @@
  * The information contained herein is subject to change without notice.
  */
 
+using PSModule.Common;
 using PSModule.UftMobile.SDK.Entity;
 using PSModule.UftMobile.SDK.Enums;
 using System.Collections.Generic;

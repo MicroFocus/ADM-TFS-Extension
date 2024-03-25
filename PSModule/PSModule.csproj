@@ -114,6 +114,7 @@
     <Compile Include="AlmLabMgmtClient\SDK\Util\Credentials.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\JUnitParser.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ResourceAccessLevel.cs" />
+    <Compile Include="Common\EnvVarsConfig.cs" />
     <Compile Include="Common\StringValue.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\Xml.cs" />
     <Compile Include="AsyncCmdlet.cs" />
@@ -176,7 +177,7 @@
     <Compile Include="UftMobile\SDK\UI\AppConfig.cs" />
     <Compile Include="UftMobile\SDK\Entity\DeviceMetrics.cs" />
     <Compile Include="UftMobile\SDK\UI\CloudBrowserConfig.cs" />
-    <Compile Include="UftMobile\SDK\UI\IConfig.cs" />
+    <Compile Include="Common\IConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\ServerConfigEx.cs" />
     <Compile Include="UftMobile\SDK\UI\DeviceConfig.cs" />
     <Compile Include="UftMobile\SDK\UI\LabResxConfig.cs" />

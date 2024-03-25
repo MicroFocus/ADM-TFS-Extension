@@ -9,6 +9,8 @@
  * The information contained herein is subject to change without notice.
  */
 
+using PSModule.Common;
+
 namespace PSModule.UftMobile.SDK.UI
 {
     public class CloudBrowserConfig(string url, string region, string os, string browser, string version) : IConfig

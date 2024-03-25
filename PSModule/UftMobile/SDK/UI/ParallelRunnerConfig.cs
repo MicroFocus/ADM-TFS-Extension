@@ -9,6 +9,7 @@
  * The information contained herein is subject to change without notice.
  */
 
+using PSModule.Common;
 using PSModule.UftMobile.SDK.Entity;
 using System;
 using System.Collections.Generic;
@@ -28,8 +29,8 @@ namespace PSModule.UftMobile.SDK.UI
         public ParallelRunnerConfig(string envType, List<Device> devices, List<string> browsers)
         {
             Enum.TryParse(envType, true, out _envType);
-            _devices = devices ?? new();
-            _browsers = browsers ?? new();
+            _devices = devices ?? [];
+            _browsers = browsers ?? [];
         }
     }
 }

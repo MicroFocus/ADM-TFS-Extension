@@ -9,6 +9,7 @@
 # The information contained herein is subject to change without notice.
 # 
 
+using namespace PSModule.Common;
 using namespace PSModule.UftMobile.SDK.UI
 using namespace PSModule.UftMobile.SDK.Entity
 using namespace System.Collections.Generic
@@ -37,6 +38,7 @@ $envType = Get-VstsInput -Name 'envType'
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module $uftworkdir\bin\PSModule.dll
 $configs = [List[IConfig]]::new()
+$configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER))
 
 [List[Device]]$devices = $null
 if ($envType -eq "") {
@@ -305,7 +307,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $env:STORAGE_ACCOUNT $env:CONTAINER $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $configs $rptFolders $false $tsPattern -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $configs $rptFolders $false $tsPattern -Verbose 
 } catch {
 	Write-Error $_
 } finally {
