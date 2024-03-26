@@ -37,6 +37,26 @@ $runStatusCodeFile = "$resDir\RunStatusCode.txt"
 
 Import-Module $uftworkdir\bin\PSModule.dll
 
+[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
+[ProxyConfig]$proxyConfig = $null
+
+if ($useMcProxy) {
+	$mcProxyUrl = (Get-VstsInput -Name 'mcProxyUrl').Trim()
+	[bool]$useMcProxyCredentials = Get-VstsInput -Name 'useMcProxyCredentials' -AsBool
+	$mcProxyUsername = (Get-VstsInput -Name 'mcProxyUsername').Trim()
+	$mcProxyPassword = Get-VstsInput -Name 'mcProxyPassword'
+
+	if ($mcProxyUrl -eq "") {
+		throw "Proxy Server is empty."
+	} elseif ($useMcProxyCredentials -and ($mcProxyUsername -eq "")) {
+		throw "Proxy Username is empty."
+	} elseif ($useMcProxyCredentials -and ($mcProxyPassword.Trim() -eq "")) {
+		throw "Proxy Password is empty."
+	}
+	$proxySrvConfig = [ServerConfig]::new($mcProxyUrl, $mcProxyUsername, $mcProxyPassword)
+	$proxyConfig = [ProxyConfig]::new($proxySrvConfig, $useMcProxyCredentials)
+}
+
 if ($mcAuthType -eq "basic") {
 	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcUsername, $mcPassword)
 } else {
@@ -47,7 +67,8 @@ if ($mcAuthType -eq "basic") {
 	}
 	$srvConfig = [ServerConfig]::new($mcServerUrl, $mcClientId, $mcSecret, $mcTenantId, $false)
 }
-$config = [LabResxConfig]::new($srvConfig, $mcResources, $includeOfflineDevices)
+$dlServerConfig = [ServerConfigEx]::new($srvConfig, $useMcProxy, $proxyConfig)
+$config = [LabResxConfig]::new($dlServerConfig, $mcResources, $includeOfflineDevices)
 
 #---------------------------------------------------------------------------------------------------
 

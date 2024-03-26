@@ -13,7 +13,6 @@ using PSModule.UftMobile.SDK.Entity;
 using PSModule.UftMobile.SDK.Enums;
 using PSModule.UftMobile.SDK.Util;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 

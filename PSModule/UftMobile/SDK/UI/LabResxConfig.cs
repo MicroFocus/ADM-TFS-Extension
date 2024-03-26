@@ -16,7 +16,7 @@ namespace PSModule.UftMobile.SDK.UI
 {
     public class LabResxConfig
     {
-        private readonly ServerConfig _srvConfig;
+        private readonly ServerConfigEx _srvConfig;
         private readonly Resx _resx;
         private readonly bool _includeOfflineDevices;
 
@@ -27,8 +27,10 @@ namespace PSModule.UftMobile.SDK.UI
         public string UsernameOrClientId => _srvConfig.UsernameOrClientId;
         public string PasswordOrSecret => _srvConfig.PasswordOrSecret;
         public int TenantId => _srvConfig.TenantId;
+        public bool UseProxy => _srvConfig.UseProxy;
+        public ProxyConfig ProxyConfig => _srvConfig.ProxyConfig;
 
-        public LabResxConfig(ServerConfig srvConfig, string resx, bool includeOfflineDevices)
+        public LabResxConfig(ServerConfigEx srvConfig, string resx, bool includeOfflineDevices)
         {
             Enum.TryParse(resx, true, out _resx);
             _includeOfflineDevices = includeOfflineDevices;

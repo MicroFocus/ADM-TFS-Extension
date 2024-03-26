@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace PSModule.UftMobile.SDK
 {
     using C = Constants;
-    public class RestClient(string serverUrl, Credentials credentials, ILogger logger, AuthType authType) : IClient
+    public class RestClient(string serverUrl, Credentials credentials, ILogger logger, AuthType authType, IWebProxy proxy) : IClient
     {
         private const string X_HP4MSECRET = "x-hp4msecret";
         private const string JSESSIONID = "JSESSIONID";
@@ -40,6 +40,7 @@ namespace PSModule.UftMobile.SDK
         private string _rawCookies => GetCookiesAsString();
         private string _hp4msecret;
         private readonly AuthType _authType = authType;
+        private readonly IWebProxy _proxy = proxy;
         private AccessToken _accessToken;
         private bool _isLoggedIn;
 
@@ -67,47 +68,48 @@ namespace PSModule.UftMobile.SDK
                 return new(err);
             }
 
-            using (WebClient client = new() { Headers = headers })
+            using WebClient client = new() { Headers = headers };
+            try
             {
-                try
-                {
-                    if (!query.IsNullOrWhiteSpace())
-                        endpoint += $"?{query}";
+                if (_proxy != null)
+                    client.Proxy = _proxy;
 
-                    await _logger.LogDebug($"GET {endpoint}");
+                if (!query.IsNullOrWhiteSpace())
+                    endpoint += $"?{query}";
 
-                    DecorateRequestHeaders(client);
-                    string data = await client.DownloadStringTaskAsync(ServerUrl.AppendSuffix(endpoint));
-                    await _logger.LogDebug($"{data}");
-                    if (_logger.IsDebug)
-                        PrintHeaders(client);
+                await _logger.LogDebug($"GET {endpoint}");
 
-                    res = new(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
-                    UpdateCookies(client);
-                }
-                catch (ThreadInterruptedException)
-                {
-                    throw;
-                }
-                catch (WebException we)
-                {
-                    if (logError || _logger.IsDebug)
-                        await _logger.LogError(we.Message);
-                    if (_logger.IsDebug)
-                        PrintHeaders(client);
-                    if (we.Response is HttpWebResponse resp)
-                        return new(we.Message, resp.StatusCode);
-                    else
-                        return new(we.Message);
-                }
-                catch (Exception e)
-                {
-                    if (logError || _logger.IsDebug)
-                        await _logger.LogError(e.Message);
-                    if (_logger.IsDebug)
-                        PrintHeaders(client);
-                    res = new(e.Message);
-                }
+                DecorateRequestHeaders(client);
+                string data = await client.DownloadStringTaskAsync(ServerUrl.AppendSuffix(endpoint));
+                await _logger.LogDebug($"{data}");
+                if (_logger.IsDebug)
+                    PrintHeaders(client);
+
+                res = new(data, client.ResponseHeaders, HttpStatusCode.OK, resType);
+                UpdateCookies(client);
+            }
+            catch (ThreadInterruptedException)
+            {
+                throw;
+            }
+            catch (WebException we)
+            {
+                if (logError || _logger.IsDebug)
+                    await _logger.LogError(we.Message);
+                if (_logger.IsDebug)
+                    PrintHeaders(client);
+                if (we.Response is HttpWebResponse resp)
+                    return new(we.Message, resp.StatusCode);
+                else
+                    return new(we.Message);
+            }
+            catch (Exception e)
+            {
+                if (logError || _logger.IsDebug)
+                    await _logger.LogError(e.Message);
+                if (_logger.IsDebug)
+                    PrintHeaders(client);
+                res = new(e.Message);
             }
             return res;
         }
@@ -124,6 +126,9 @@ namespace PSModule.UftMobile.SDK
             using WebClient client = new() { Headers = headers };
             try
             {
+                if (_proxy != null)
+                    client.Proxy = _proxy;
+
                 await _logger.LogDebug($"POST {endpoint}");
                 DecorateRequestHeaders(client);
                 string data = await client.UploadStringTaskAsync(ServerUrl.AppendSuffix(endpoint), body);
@@ -174,6 +179,9 @@ namespace PSModule.UftMobile.SDK
             using WebClient client = new() { Headers = headers };
             try
             {
+                if (_proxy != null)
+                    client.Proxy = _proxy;
+
                 await _logger.LogDebug($"POST {endpoint}");
 
                 DecorateRequestHeaders(client);
@@ -221,6 +229,9 @@ namespace PSModule.UftMobile.SDK
             using WebClient client = new() { Headers = headers };
             try
             {
+                if (_proxy != null)
+                    client.Proxy = _proxy;
+
                 await _logger.LogDebug($"PUT {endpoint}");
                 DecorateRequestHeaders(client);
                 string data = await client.UploadStringTaskAsync(ServerUrl.AppendSuffix(endpoint), PUT, body);

@@ -234,31 +234,28 @@ namespace PSModule
         {
             if (_dlServerConfig != null)
             {
-                InitRestClientAndLogin().Wait();
-                //if DL server type is ValueEdge then GET project fails
-                /*if (!IsValidTenantId().Result)
-                {
-                    ThrowTerminatingError($"{NO_ACTIVE_TENANT_FOUND_BY_GIVEN_ID}: {_dlServerConfig.TenantId}", nameof(IsValidTenantId), ErrorCategory.InvalidData, nameof(IsValidTenantId));
-                }*/
-
+                IWebProxy proxy = null;
                 if (_dlServerConfig.UseProxy)
                 {
                     try
                     {
-                        CheckProxy(_dlServerConfig.ProxyConfig).Wait();
+                        proxy = CheckAndGetProxy().Result;
                     }
                     catch (WebException wex)
                     {
-                        ThrowTerminatingError(GetErrorFromWebException(wex), nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy));
+                        ThrowTerminatingError(GetErrorFromWebException(wex), nameof(CheckAndGetProxy), ErrorCategory.AuthenticationError, nameof(CheckAndGetProxy));
                     }
                     catch (Exception ex)
                     {
                         ex = ex.InnerException ?? ex;
                         string err = ex is WebException wex ? GetErrorFromWebException(wex) : $"Proxy Error: {ex.Message}";
                         WriteDebug($"{ex.GetType().Name}: {ex.Message}");
-                        ThrowTerminatingError(err, nameof(CheckProxy), ErrorCategory.AuthenticationError, nameof(CheckProxy));
+                        ThrowTerminatingError(err, nameof(CheckAndGetProxy), ErrorCategory.AuthenticationError, nameof(CheckAndGetProxy));
                     }
                 }
+
+                InitRestClientAndLogin(proxy).Wait();
+
                 if (_isParallelRunnerMode && _parallelRunnerConfig.EnvType == EnvType.Mobile && _parallelRunnerConfig.Devices.Any())
                 {
                     List<string> warns = ValidateDeviceLines().Result;
@@ -346,11 +343,12 @@ namespace PSModule
             return err;
         }
 
-        private async Task CheckProxy(ProxyConfig config)
+        private async Task<IWebProxy> CheckAndGetProxy()
         {
-            await CheckProxy(config.ServerUrl, config.UseCredentials, config.UsernameOrClientId, config.PasswordOrSecret);
+            ProxyConfig config = _dlServerConfig.ProxyConfig;
+            return await CheckAndGetProxy(config.ServerUrl, config.UseCredentials, config.UsernameOrClientId, config.PasswordOrSecret);
         }
-        private async Task CheckProxy(string server, bool useCredentials, string username, string password)
+        private async Task<IWebProxy> CheckAndGetProxy(string server, bool useCredentials, string username, string password)
         {
             if (server.StartsWith(HTTP_PREFIX) || server.StartsWith(HTTPS_PREFIX))
             {
@@ -382,6 +380,7 @@ namespace PSModule
 
             using ExWebClient client = new() { Proxy = proxy, Method = HEAD };
             await client.DownloadStringTaskAsync(GOOGLE);
+            return proxy; 
         }
 
         private void ValidateCloudBrowser()
@@ -521,11 +520,11 @@ namespace PSModule
             idDevices = devices.FirstOrDefault(g => !g.Key)?.ToList() ?? new();
         }
 
-        private async Task InitRestClientAndLogin()
+        private async Task InitRestClientAndLogin(IWebProxy proxy)
         {
             bool isDebug = (ActionPreference)GetVariableValue(DEBUG_PREFERENCE) != ActionPreference.SilentlyContinue;
             Credentials cred = new(_dlServerConfig.UsernameOrClientId, _dlServerConfig.PasswordOrSecret, _dlServerConfig.TenantId);
-            _client = new RestClient(_dlServerConfig.ServerUrl, cred, new ConsoleLogger(isDebug), _dlServerConfig.AuthType);
+            _client = new RestClient(_dlServerConfig.ServerUrl, cred, new ConsoleLogger(isDebug), _dlServerConfig.AuthType, proxy);
             _auth = _dlServerConfig.AuthType == AuthType.Basic ? new BasicAuthenticator() : new OAuth2Authenticator();
             bool ok = await _auth.Login(_client);
             if (ok)

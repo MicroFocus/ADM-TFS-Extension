@@ -11,6 +11,7 @@
 
 using PSModule.UftMobile.SDK;
 using PSModule.UftMobile.SDK.Auth;
+using PSModule.UftMobile.SDK.Client;
 using PSModule.UftMobile.SDK.Entity;
 using PSModule.UftMobile.SDK.Enums;
 using PSModule.UftMobile.SDK.Interface;
@@ -21,6 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,6 +53,11 @@ namespace PSModule
         private const string CLOUD_BROWSERS_HEAD = "================================== Cloud Browsers ==============================";
         private const string SECTION_BOTTOM = "------------------------------------------------------------------------------";
         private const string RESOURCES_BOTTOM = "==============================================================================";
+        private const string GOOGLE = "https://www.google.com";
+        private const string HTTP_PREFIX = "http://";
+        private const string HTTPS_PREFIX = "https://";
+        private const string HEAD = "HEAD";
+        private const string MISSING_OR_INVALID_CREDENTIALS = "Missing or Invalid Credentials";
 
         private LabResxConfig _config;
 
@@ -77,9 +84,29 @@ namespace PSModule
 
                 RunStatus runStatus = RunStatus.FAILED, runStatusDevices = RunStatus.PASSED, runStatusApps = RunStatus.PASSED;
 
+                IWebProxy proxy = null;
+                if (_config.UseProxy)
+                {
+                    try
+                    {
+                        proxy = await CheckAndGetProxy();
+                    }
+                    catch (WebException wex)
+                    {
+                        ThrowTerminatingError(new(new(GetErrorFromWebException(wex)), nameof(CheckAndGetProxy), ErrorCategory.AuthenticationError, nameof(CheckAndGetProxy)));
+                    }
+                    catch (Exception ex)
+                    {
+                        ex = ex.InnerException ?? ex;
+                        string err = ex is WebException wex ? GetErrorFromWebException(wex) : $"Proxy Error: {ex.Message}";
+                        WriteDebug($"{ex.GetType().Name}: {ex.Message}");
+                        ThrowTerminatingError(new(new(err), nameof(CheckAndGetProxy), ErrorCategory.AuthenticationError, nameof(CheckAndGetProxy)));
+                    }
+                }
+
                 IAuthenticator auth = _config.AuthType == AuthType.Basic ? new BasicAuthenticator() : new OAuth2Authenticator();
                 Credentials cred = new(_config.UsernameOrClientId, _config.PasswordOrSecret, _config.TenantId);
-                IClient client = new RestClient(_config.ServerUrl, cred, new ConsoleLogger(isDebug), _config.AuthType);
+                IClient client = new RestClient(_config.ServerUrl, cred, new ConsoleLogger(isDebug), _config.AuthType, proxy);
                 bool ok = await auth.Login(client);
                 if (ok)
                 {
@@ -241,7 +268,7 @@ namespace PSModule
             string retCodeFilename = Path.Combine(resdir, fileName);
             try
             {
-                using StreamWriter file = new StreamWriter(retCodeFilename, true);
+                using StreamWriter file = new(retCodeFilename, true);
                 await file.WriteLineAsync($"{(int)runStatus}");
             }
             catch (ThreadInterruptedException)
@@ -254,9 +281,78 @@ namespace PSModule
             }
         }
 
+        private async Task<IWebProxy> CheckAndGetProxy()
+        {
+            ProxyConfig config = _config.ProxyConfig;
+            return await CheckAndGetProxy(config.ServerUrl, config.UseCredentials, config.UsernameOrClientId, config.PasswordOrSecret);
+        }
+        private async Task<IWebProxy> CheckAndGetProxy(string server, bool useCredentials, string username, string password)
+        {
+            if (server.StartsWith(HTTP_PREFIX) || server.StartsWith(HTTPS_PREFIX))
+            {
+                throw new ArgumentException(@$"Invalid server name format ""{server}"". The prefix ""http(s)://"" is not expected here.");
+            }
+            string[] tokens = server.Split(C.COLON);
+            if (tokens.Length == 1)
+            {
+                throw new ArgumentException("Port number is missing. The expected format is [server name or IP]:[port]");
+            }
+            else if (tokens.Length > 2)
+            {
+                throw new ArgumentException("Invalid server name format. The expected format is [server name or IP]:[port]");
+            }
+            else if (!int.TryParse(tokens[1], out int _))
+            {
+                throw new ArgumentException($"Invalid port value [{tokens[1]}]. A numeric value is expected.");
+            }
+            var proxy = new WebProxy
+            {
+                Address = new Uri($"{HTTP_PREFIX}{server}"),
+                BypassProxyOnLocal = false
+            };
+            if (useCredentials)
+            {
+                proxy.UseDefaultCredentials = false;
+                proxy.Credentials = new NetworkCredential(userName: username, password: password);
+            }
+
+            using ExWebClient client = new() { Proxy = proxy, Method = HEAD };
+            await client.DownloadStringTaskAsync(GOOGLE);
+            return proxy;
+        }
+
         protected void LogError(Exception ex, ErrorCategory categ = ErrorCategory.NotSpecified, [CallerMemberName] string methodName = "")
         {
             WriteError(new ErrorRecord(ex, $"{ex.GetType()}", categ, methodName));
+        }
+
+        private string GetErrorFromWebException(WebException wex)
+        {
+            string err;
+            if (wex.Status == WebExceptionStatus.ProtocolError)
+            {
+                if (wex.Response is HttpWebResponse res)
+                {
+                    err = res.StatusCode switch
+                    {
+                        HttpStatusCode.ProxyAuthenticationRequired => MISSING_OR_INVALID_CREDENTIALS,
+                        _ => wex.Message,
+                    };
+                    err = $"Proxy Error: {err}";
+                    WriteDebug($"{res.StatusCode}: {wex.Message}");
+                }
+                else
+                {
+                    err = $"Proxy Error: {wex.Message}";
+                    WriteDebug($"{wex.Status}: {wex.Message}");
+                }
+            }
+            else
+            {
+                err = $"Proxy Error: {wex.Message}";
+                WriteDebug($"{wex.Status}: {wex.Message}");
+            }
+            return err;
         }
     }
 }
