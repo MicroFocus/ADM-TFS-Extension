@@ -15,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.ComponentModel;
 
 namespace PSModule
 {
@@ -80,7 +79,7 @@ namespace PSModule
         private const string MOBILEPROXYSETTING_USERNAME = "MobileProxySetting_UserName";
         private const string MOBILEPROXYSETTING_PASSWORD = "MobileProxySetting_Password";
         private const string MOBILEINFO = "mobileinfo";
-        private const string CLOUDBROWSER = "cloudBrowser";
+        private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
 
         private readonly static string _secretkey = "EncriptionPass4Java";
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
@@ -209,12 +208,7 @@ namespace PSModule
 
         public void SetAlmTimeout(string almTimeout)
         {
-            string paramToSet = "-1";
-            if (!string.IsNullOrEmpty(almTimeout))
-            {
-                paramToSet = almTimeout;
-            }
-            SetParamValue(ALMTIMEOUT, paramToSet);
+            SetParamValue(ALMTIMEOUT, almTimeout.IsNullOrWhiteSpace() ? C.MINUS_ONE : almTimeout);
         }
 
         public void SetTimeslotDuration(string timeslotDuration)
@@ -254,12 +248,7 @@ namespace PSModule
 
         public void SetPerScenarioTimeOut(string perScenarioTimeOut)
         {
-            string paramToSet = "-1";
-            if (!string.IsNullOrEmpty(perScenarioTimeOut))
-            {
-                paramToSet = perScenarioTimeOut;
-            }
-            SetParamValue(PERSCENARIOTIMEOUT, paramToSet);
+            SetParamValue(PERSCENARIOTIMEOUT, perScenarioTimeOut.IsNullOrWhiteSpace() ? C.MINUS_ONE : perScenarioTimeOut);
         }
 
         public void SetDigitalLabSrvConfig(ServerConfigEx config)
@@ -305,12 +294,12 @@ namespace PSModule
         {
             if (config == null) return;
             string cb = $@"""url={config.Url};os={config.OS};type={config.Browser};version={config.Version};region={config.Region}""";
-            SetParamValue(CLOUDBROWSER, cb);
+            SetParamValue(CLOUDBROWSERINFO, cb);
         }
 
         private void SetParamValue(string paramName, string paramValue)
         {
-            if (string.IsNullOrEmpty(paramValue))
+            if (paramValue.IsNullOrEmpty())
             {
                 if (!requiredParams.Contains(paramName))
                     properties.Remove(paramName);

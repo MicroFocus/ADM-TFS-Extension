@@ -23,6 +23,7 @@ namespace PSModule.Common
         public const string BVS = "BVS";
         public const string BUILD_VERIFICATION_SUITE = "Build Verification Suite";
         public const string NO_RUN_ID = "No Run ID";
+        public const string MINUS_ONE = "-1";
         public const string ZERO = "0";
         public const string ONE = "1";
         public const string TWO = "2";
