@@ -2,7 +2,7 @@
 	"manifestVersion": 1,
 	"id": "UFT-Azure-extension",
 	"name": "UFT One Azure DevOps extension",
-	"version": "23.4.0",
+	"version": "24.2.0",
 	"publisher": "uftpublisher",
 	"targets": [{
 		"id": "Microsoft.VisualStudio.Services",
