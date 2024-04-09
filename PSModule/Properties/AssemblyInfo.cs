@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PSModule")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("ADM-TFS-Extension main library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("OpenText")]
 [assembly: AssemblyProduct("PSModule")]
@@ -42,5 +42,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2024.2.0.0")]
+[assembly: AssemblyVersion("2024.2.0.1")]
 //[assembly: AssemblyFileVersion("2.0.0.0")]

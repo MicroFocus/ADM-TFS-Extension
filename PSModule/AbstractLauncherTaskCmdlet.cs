@@ -34,8 +34,7 @@ namespace PSModule
     {
         #region - Private Constants
 
-        private const string HpToolsLauncher_EXE = "HpToolsLauncher.exe";
-        private const string HpToolsAborter_EXE = "HpToolsAborter.exe";
+        private const string FTToolsLauncher_EXE = "FTToolsLauncher.exe";
         private const string ReportConverter_EXE = "ReportConverter.exe";
         protected const string UFT_LAUNCHER = "UFT_LAUNCHER";
         protected const string PROPS = "props";
@@ -75,7 +74,7 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
-            string launcherPath, aborterPath = string.Empty, converterPath, paramFileName = string.Empty, resultsFileName;
+            string launcherPath, converterPath, paramFileName = string.Empty, resultsFileName;
             try
             {
                 Dictionary<string, string> properties;
@@ -96,8 +95,7 @@ namespace PSModule
 
                 string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
 
-                launcherPath = Path.GetFullPath(Path.Combine(ufttfsdir, HpToolsLauncher_EXE));
-                aborterPath = Path.GetFullPath(Path.Combine(ufttfsdir, HpToolsAborter_EXE));
+                launcherPath = Path.GetFullPath(Path.Combine(ufttfsdir, FTToolsLauncher_EXE));
                 converterPath = Path.GetFullPath(Path.Combine(ufttfsdir, ReportConverter_EXE));
 
                 string propdir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
