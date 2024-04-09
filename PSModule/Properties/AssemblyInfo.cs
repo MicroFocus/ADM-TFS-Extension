@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PSModule")]
-[assembly: AssemblyDescription("ADM-TFS-Extension main library")]
+[assembly: AssemblyDescription("UFT One Azure Extension's main library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("OpenText")]
 [assembly: AssemblyProduct("PSModule")]
