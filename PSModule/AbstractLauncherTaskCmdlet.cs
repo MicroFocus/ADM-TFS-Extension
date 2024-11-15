@@ -54,8 +54,7 @@ namespace PSModule
         #endregion
 
         private readonly StringBuilder _launcherConsole = new();
-        private readonly ConcurrentQueue<string> outputToProcess = new();
-        private readonly ConcurrentQueue<string> errorToProcess = new();
+        private readonly ConcurrentQueue<string> _errorToProcess = new();
 
         protected bool _enableFailedTestsReport;
         protected bool _isParallelRunnerMode;
@@ -130,7 +129,7 @@ namespace PSModule
                 if (!hasResults)
                 {
                     ErrorCategory categ = exitCode == LauncherExitCode.AlmNotConnected ? ErrorCategory.ConnectionError : ErrorCategory.InvalidData;
-                    if (errorToProcess.TryDequeue(out string error))
+                    if (_errorToProcess.TryDequeue(out string error))
                     {
                         ThrowTerminatingError(new ErrorRecord(new Exception(error), nameof(ProcessRecord), categ, nameof(ProcessRecord)));
                     }
@@ -212,7 +211,7 @@ namespace PSModule
                             }
                         }
                     }
-                    if (errorToProcess.TryDequeue(out string error) && !error.StartsWith(C.LAUNCHER_EXITED_WITH_CODE))
+                    if (_errorToProcess.TryDequeue(out string error) && !error.StartsWith(C.LAUNCHER_EXITED_WITH_CODE))
                     {
                         ThrowTerminatingError(new ErrorRecord(new Exception(error), nameof(ProcessRecord), ErrorCategory.InvalidData, nameof(ProcessRecord)));
                     }
@@ -252,7 +251,8 @@ namespace PSModule
 
         private LauncherExitCode? Run(string launcherPath, string paramFile)
         {
-            Console.WriteLine($"{launcherPath} -paramfile {paramFile}");
+            string args = $" -paramfile \"{paramFile}\"";
+            Console.WriteLine($"{launcherPath}{args}");
             _launcherConsole.Clear();
             try
             {
@@ -267,36 +267,42 @@ namespace PSModule
                 ProcessStartInfo info = new()
                 {
                     UseShellExecute = false,
-                    Arguments = $" -paramfile \"{paramFile}\"",
+                    Arguments = args,
                     FileName = launcherPath,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 };
 
-                Process launcher = new() { StartInfo = info };
+                using Process launcher = new() { StartInfo = info };
+                using ManualResetEvent exitEvent = new(false);
 
-                launcher.OutputDataReceived += Proc_OutDataReceived;
-                launcher.ErrorDataReceived += Proc_ErrDataReceived;
+                launcher.OutputDataReceived += (sender, e) =>
+                {
+                    if (!e.Data.IsNullOrWhiteSpace())
+                    {
+                        _launcherConsole.Append(e.Data);
+                        Console.WriteLine(e.Data);
+                    }
+                };
+                launcher.ErrorDataReceived += (sender, e) =>
+                {
+                    if (!e.Data.IsNullOrWhiteSpace())
+                    {
+                        Console.WriteLine($"Error: {e.Data}");
+                        _errorToProcess.Enqueue(e.Data);
+                    }
+                };
 
+                launcher.Exited += (sender, e) => exitEvent.Set();
+                // Start process and begin reading output asynchronously
+                launcher.EnableRaisingEvents = true;
                 launcher.Start();
 
                 launcher.BeginOutputReadLine();
                 launcher.BeginErrorReadLine();
 
-                while (!launcher.HasExited)
-                {
-                    if (outputToProcess.TryDequeue(out string line))
-                    {
-                        _launcherConsole.Append(line);
-                        WriteObject(line);
-                    }
-                }
-
-                launcher.OutputDataReceived -= Proc_OutDataReceived;
-                launcher.ErrorDataReceived -= Proc_ErrDataReceived;
-
-                launcher.WaitForExit();
-                
+                // Wait for the process to exit without polling
+                exitEvent.WaitOne();
                 return (LauncherExitCode?)launcher.ExitCode;
             }
             catch (ThreadInterruptedException)
@@ -322,41 +328,36 @@ namespace PSModule
         {
             try
             {
+                string args = $" -j \"{outputfile}\" --aggregate";
+                foreach (var reportFolder in _rptPaths)
+                {
+                    args += $" \"{reportFolder}\"";
+                }
+                Console.WriteLine($"{converterPath}{args}");
+
                 ProcessStartInfo info = new()
                 {
                     UseShellExecute = false,
-                    Arguments = $" -j \"{outputfile}\" --aggregate",
+                    Arguments = args,
                     FileName = converterPath,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 };
-                foreach (var reportFolder in _rptPaths)
-                {
-                    info.Arguments += $" \"{reportFolder}\"";
-                }
 
-                Process converter = new() { StartInfo = info };
+                using Process converter = new() { StartInfo = info };
+                using ManualResetEvent exitEvent = new(false);
 
-                converter.OutputDataReceived += Proc_OutDataReceived;
-                converter.ErrorDataReceived += Conv_ErrDataReceived;
-
+                converter.OutputDataReceived += (sender, e) => { if (!e.Data.IsNullOrWhiteSpace()) { Console.WriteLine(e.Data); } };
+                converter.ErrorDataReceived += (sender, e) => { if (!e.Data.IsNullOrWhiteSpace()) { Console.WriteLine($"Error: {e.Data}"); } };
+                converter.Exited += (sender, e) => exitEvent.Set();
+                // Start process and begin reading output asynchronously
+                converter.EnableRaisingEvents = true;
                 converter.Start();
 
                 converter.BeginOutputReadLine();
                 converter.BeginErrorReadLine();
 
-                while (!converter.HasExited)
-                {
-                    if (outputToProcess.TryDequeue(out string line))
-                    {
-                        WriteObject(line);
-                    }
-                }
-
-                converter.OutputDataReceived -= Proc_OutDataReceived;
-                converter.ErrorDataReceived -= Conv_ErrDataReceived;
-
-                converter.WaitForExit();
+                exitEvent.WaitOne();
             }
             catch (ThreadInterruptedException)
             {
@@ -366,28 +367,6 @@ namespace PSModule
             {
                 LogError(e, ErrorCategory.InvalidData);
             }
-        }
-
-        private void Conv_ErrDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (!e.Data.IsNullOrWhiteSpace())
-            {
-                Console.WriteLine($"Report Converter error: {e.Data}");
-            }
-        }
-
-        private void Proc_ErrDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (!e.Data.IsNullOrWhiteSpace())
-            {
-                Console.WriteLine($"Error: {e.Data}");
-                errorToProcess.Enqueue(e.Data);
-            }
-        }
-
-        private void Proc_OutDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            outputToProcess.Enqueue(e.Data);
         }
 
         protected abstract string GetRetCodeFileName();
