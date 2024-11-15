@@ -64,7 +64,7 @@ namespace PSModule
         private const string RUNTESTTYPE = "RunTestType";
         private const string ALMTESTSETS = "almTestSets";
         private const string ALMRUNHOST = "almRunHost";
-        private const string PERSCENARIOTIMEOUT = "PerScenarioTimeOut";
+        private const string FSTIMEOUT = "fsTimeout";
         private const string MOBILEHOSTADDRESS = "MobileHostAddress";
         private const string MOBILEUSERNAME = "MobileUserName";
         private const string MOBILEPASSWORD = "MobilePassword";
@@ -246,9 +246,9 @@ namespace PSModule
             SetParamValue($"Test{index}", test);
         }
 
-        public void SetPerScenarioTimeOut(string perScenarioTimeOut)
+        public void SetFsTimeOut(string fsTimeOut)
         {
-            SetParamValue(PERSCENARIOTIMEOUT, perScenarioTimeOut.IsNullOrWhiteSpace() ? C.MINUS_ONE : perScenarioTimeOut);
+            SetParamValue(FSTIMEOUT, fsTimeOut.IsNullOrWhiteSpace() ? C.MINUS_ONE : fsTimeOut);
         }
 
         public void SetDigitalLabSrvConfig(ServerConfigEx config)

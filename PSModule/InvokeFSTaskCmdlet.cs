@@ -167,7 +167,7 @@ namespace PSModule
             LauncherParamsBuilder builder = new();
 
             builder.SetRunType(RunType.FileSystem);
-            builder.SetPerScenarioTimeOut(Timeout);
+            builder.SetFsTimeOut(Timeout);
 
             var tests = TestsPath.Split("\n".ToArray());
 
