@@ -15,11 +15,11 @@ using namespace PSModule.UftMobile.SDK.Entity
 using namespace System.Collections.Generic
 
 param()
-$testPathInput = Get-VstsInput -Name 'testPathInput' -Require
-$timeOutIn = Get-VstsInput -Name 'timeOutIn'
+$testPathInput = (Get-VstsInput -Name 'testPathInput' -Require).Trim()
+$timeOutIn = (Get-VstsInput -Name 'timeOutIn').Trim()
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
-$rptFileName = Get-VstsInput -Name 'reportFileName'
+$rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 
