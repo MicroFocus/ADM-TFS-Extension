@@ -245,7 +245,8 @@ namespace PSModule
                 ServerUrl = ALMServerPath,
                 Duration = TimeslotDuration,
                 EntityId = ALMEntityId,
-                RunType = TestRunType
+                RunType = TestRunType,
+                EnvironmentConfigurationId = EnvironmentConfigurationID
             };
             var cred = new Credentials(IsSSO, IsSSO ? ClientID : ALMUserName, IsSSO ? ApiKeySecret : ALMPassword);
             bool isDebug = (ActionPreference)GetVariableValue("DebugPreference") != ActionPreference.SilentlyContinue;
