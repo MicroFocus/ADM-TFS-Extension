@@ -20,6 +20,7 @@ $varProject = Get-VstsInput -Name 'varProject' -Require
 $varRunType = Get-VstsInput -Name 'varRunType'
 $varDescription = Get-VstsInput -Name 'varDescription'
 $varTimeslotDuration = Get-VstsInput -Name 'varTimeslotDuration' -Require
+$varEnvironmentConfigurationID = Get-VstsInput -Name 'varEnvironmentConfigurationID'
 $varClientType = Get-VstsInput -Name 'varClientType'
 $varReportName = Get-VstsInput -Name 'varReportName'
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
