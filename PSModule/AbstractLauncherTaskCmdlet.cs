@@ -1,7 +1,7 @@
 ﻿/*
  * MIT License https://github.com/MicroFocus/ADM-TFS-Extension/blob/master/LICENSE
  *
- * Copyright 2016-2024 Open Text
+ * Copyright 2016-2025 Open Text
  *
  * The only warranties for products and services of Open Text and its affiliates and licensors ("Open Text") are as may be set forth in the express warranty statements accompanying such products and services.
  * Nothing herein should be construed as constituting an additional warranty.
@@ -197,12 +197,12 @@ namespace PSModule
                                         }
                                     }
                                 }
-                                if (runStatus != RunStatus.CANCELED && _rptPaths.Any() && _enableFailedTestsReport)
+                                if (runStatus != RunStatus.CANCELED && _rptPaths.Any())
                                 {
                                     //run junit report converter
                                     string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
                                     RunConverter(converterPath, outputFileReport);
-                                    if (File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0 && nrOfTests[H.FAIL] > 0)
+                                    if (_enableFailedTestsReport && nrOfTests[H.FAIL] > 0 && File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0)
                                     {
                                         H.ReadReportFromXMLFile(outputFileReport, true, out IList<KeyValuePair<string, IList<ReportMetaData>>> failedSteps);
                                         H.CreateFailedStepsReport(failedSteps, resdir);
