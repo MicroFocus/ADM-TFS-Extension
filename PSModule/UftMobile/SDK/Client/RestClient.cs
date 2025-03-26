@@ -361,7 +361,7 @@ namespace PSModule.UftMobile.SDK
                     else
                     {
                         headers.Add(HttpRequestHeader.Authorization, $"Bearer {_accessToken.Value}");
-                        //TODO add tenant-id header, required when using shared spaces (multitenancy) with Digital Lab
+                        //TODO add tenant-id header, required when using shared spaces (multitenancy) with Functional Testing Lab
                         ok = true;
                     }
                 }

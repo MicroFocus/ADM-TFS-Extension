@@ -45,7 +45,7 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 if ($useDigitalLab) {
 	$mcServerUrl = (Get-VstsInput -Name 'mcServerUrl').Trim()
 	if ($mcServerUrl -eq "") {
-		throw "The Digital Lab Server URL is missing."
+		throw "The Server URL is missing."
 	}
 	$mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 	$mcUsername = (Get-VstsInput -Name 'mcUsername').Trim()
@@ -56,11 +56,11 @@ if ($useDigitalLab) {
 	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
 
 	if ($isBasicAuth -and ($mcUsername -eq "")) {
-		throw "Digital Lab Username is empty."
+		throw "Username is empty."
 	} elseif ($isBasicAuth -and ($mcPassword.Trim() -eq "")) {
-		throw "Digital Lab Password is empty."
+		throw "Password is empty."
 	} elseif (!$isBasicAuth -and ($mcAccessKey -eq "")) {
-		throw "Digital Lab AccessKey is empty."
+		throw "AccessKey is empty."
 	} 
 	if ($useMcProxy) {
 		$mcProxyUrl = (Get-VstsInput -Name 'mcProxyUrl').Trim()
@@ -121,7 +121,7 @@ if ($useDigitalLab) {
 		} elseif ($mcAppType -eq "custom") {
 			[bool]$isOK = [AppLine]::TryParse($mcApp, [ref]$app)
 			if (!$isOK) {
-				throw "The Main Digital Lab Application is invalid. The expected pattern is Identifier:""value"", Packaged:""Yes/No"" (Identifier is required, Packaged is optional)."
+				throw "The Main Functional Testing Lab Application is invalid. The expected pattern is Identifier:""value"", Packaged:""Yes/No"" (Identifier is required, Packaged is optional)."
 			}
 		} elseif ($mcAppType -eq "system") {
 			$mcSysApp = Get-VstsInput -Name 'mcSysApp'

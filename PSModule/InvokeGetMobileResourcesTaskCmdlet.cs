@@ -43,10 +43,10 @@ namespace PSModule
         private const string DEBUG_PREFERENCE = "DebugPreference";
         private const string UFT_LAUNCHER = "UFT_LAUNCHER";
         private const string RUN_STATUS_CODE_TXT = "RunStatusCode.txt";
-        private const string NO_DEVICE_FOUND = "No device has been retrieved from the Digital Lab server";
-        private const string NO_AVAILABLE_DEVICE_FOUND = "No available device has been retrieved from the Digital Lab server";
-        private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Digital Lab server";
-        private const string NO_APP_FOUND = "No application has been retrieved from the Digital Lab server";
+        private const string NO_DEVICE_FOUND = "No device has been retrieved from the Functional Testing Lab server";
+        private const string NO_AVAILABLE_DEVICE_FOUND = "No available device has been retrieved from the Functional Testing Lab server";
+        private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Functional Testing Lab server";
+        private const string NO_APP_FOUND = "No application has been retrieved from the Functional Testing Lab server";
         private const string LOGIN_FAILED = "Login failed";
         private const string DEVICES_HEAD = "================================== Devices ===================================";
         private const string APPS_HEAD = "================================== Applications ==============================";

@@ -56,13 +56,13 @@ if ($envType -eq "") {
 	if ($mcDevices -eq "") {
 		throw "The Devices field is required."
 	} elseif ($mcServerUrl -eq "") {
-		throw "Digital Lab Server is empty."
+		throw "Functional Testing Lab Server is empty."
 	} elseif ($isBasicAuth -and ($mcUsername -eq "")) {
-		throw "Digital Lab Username is empty."
+		throw "Functional Testing Lab Username is empty."
 	} elseif ($isBasicAuth -and ($mcPassword.Trim() -eq "")) {
-		throw "Digital Lab Password is empty."
+		throw "Functional Testing Lab Password is empty."
 	} elseif (!$isBasicAuth -and ($mcAccessKey -eq "")) {
-		throw "Digital Lab AccessKey is empty."
+		throw "Functional Testing Lab AccessKey is empty."
 	}
 
 	if ($isBasicAuth) {
@@ -339,7 +339,7 @@ try {
 		$html = [System.Text.StringBuilder]""
 		$html.Append("<div class=`"margin-right-8 margin-left-8 padding-8 depth-8`"><div class=`"body-xl`">Run Sumary</div>")
 		$html.AppendLine((Get-Content -Path $runSummary))
-		$html.AppendLine("</div><div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">UFT Report</div>")
+		$html.AppendLine("</div><div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">Functional Testing Report</div>")
 		$html.AppendLine((Get-Content -Path $uftReport))
 		$html.AppendLine("</div>")
 		if (Test-Path $failedTests) {

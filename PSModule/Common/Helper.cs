@@ -63,8 +63,8 @@ namespace PSModule
         private const string NO_OF_TESTS = "No. of tests";
         private const string PASSING_RATE = "Percentage of tests";
         private const string STYLE = "style";
-        private const string UFT_REPORT_COL_CAPTION = "UFT report";
-        private const string UFT_REPORT_ARCHIVE = "UFT report archive";
+        private const string UFT_REPORT_COL_CAPTION = "Functional Testing report";
+        private const string UFT_REPORT_ARCHIVE = "Functional Testing report archive";
         private const string VIEW_REPORT = "View report";
         private const string DOWNLOAD = "Download";
 
@@ -79,7 +79,7 @@ namespace PSModule
         private const string FONT_WEIGHT_BOLD_UNDERLINE = "font-weight:bold; text-decoration:underline;";
         private const string BUILD_STATUS_IMG_STYLE = "width:50%;vertical-align:middle;";
 
-        private const string UFT_REPORT_CAPTION = "UFT Report";
+        private const string UFT_REPORT_CAPTION = "Functional Testing Report";
         private const string RUN_SUMMARY = "Run Summary";
         private const string FAILED_TESTS = "Failed Tests";
         private const string HYPHEN = "&ndash;";

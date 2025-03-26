@@ -1,5 +1,5 @@
-# Integration with UFT One
-This extension enables you to run UFT One tests as part of your Azure DevOps build process. In a build step, run UFT One tests stored in the local file system or on an ALM server.    
+# Integration with OpenText Functional Testing
+This extension enables you to run Functional Testing tests as part of your Azure DevOps build process. In a build step, run Functional Testing tests stored in the local file system or on an ALM server.    
 • When running test stored in the local file system, you can also run mobile tests. In addition, Parallel execution is available for mobile and web tests.    
 • When running tests from ALM Lab Management, you can also include a build step that prepares the test environment before running the tests.    
 After the build is complete, you can view comprehensive test results. 
@@ -49,7 +49,7 @@ This plugin update includes the following:
 #### Prerequisites
 - UFT One (version  >=**14.00**)
 - Powershell (version >=**5.1**)
-- JRE installed (required only if use the "UFT One ALM Lab Environment Preparation" task)
+- JRE installed (required only if use the "OpenText Functional Testing ALM Lab Environment Preparation" task)
 - Azure Powershell (for extension version >=**2.0.0**)
 
 #### Setup
@@ -66,7 +66,7 @@ This plugin update includes the following:
 6.2. Connect to [Azure Portal][azure-connect]
 
 # Extension Functionality
-##### UFT One File System Run
+##### OpenText Functional Testing File System Run
 - Use this task to run tests located in your file system by specifying the tests' names, folders that contain tests, or an MTBX file (code sample below).
 ``` xml 
 <Mtbx>
@@ -78,31 +78,31 @@ This plugin update includes the following:
 ```
 - More information is available [here][fs-docs]
 
-##### UFT One ALM Run
+##### OpenText Functional Testing ALM Run
 - Use this task to run tests located on an ALM server, to which you can connect using SSO or a username and password.
 - More information is available [here][alm-docs]
 
-##### UFT One ALM Lab Management Run
+##### OpenText Functional Testing ALM Lab Management Run
 - Use this task to run ALM server-side functional test setssuites.
 - More information is available [here][alm-lab-docs]
 
-##### UFT One ALM Lab Environment Preparation
+##### OpenText Functional Testing ALM Lab Environment Preparation
 - Use this task to assign values to AUT Environment Configurations located in ALM.
 - More information is available [here][alm-env-docs]
 
-##### UFT One Parallel Test Run
+##### OpenText Functional Testing Parallel Test Run
 - Use this task to  to trigger a parallel testing task to run GUI Web or GUI Mobile tests in parallel from Azure DevOps Server (formerly known as TFS).
 - More information is available [here][parallel-docs]
 
-##### Get Digital Lab Resources
-- Use this task to configure a task that retrieves device and application information from Digital Lab (formerly UFT Mobile).
+##### Get OpenText Functional Testing Lab Resources
+- Use this task to configure a task that retrieves device and application information from Functional Testing Lab (Digital Lab).
 - More information is available [here][get-digital-lab-resources]
 
 # Additional Resources
 For assistance or more information on configuring and using this extension, please consult the following resources:
 - [GitHub repository][repository]
 - [Help Center][docs]
-- [UFT One Forum][forum]
+- [Functional Testing Forum][forum]
 - [Support][support]
 
 [//]: # (References)

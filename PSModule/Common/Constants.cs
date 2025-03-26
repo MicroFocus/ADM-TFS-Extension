@@ -71,7 +71,7 @@ namespace PSModule.Common
         public const string DEFAULT_DT_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
         public const string BROWSERS_ENDPOINT = "rest/v2/browser-lab/uftone/templates";
-        public const string NO_BROWSER_FOUND = "No browser has been retrieved from the Digital Lab server";
+        public const string NO_BROWSER_FOUND = "No browser has been retrieved from the Functional Testing Lab server";
         public const string TOOL_VERSION = "toolVersion=2023";
     }
 }
