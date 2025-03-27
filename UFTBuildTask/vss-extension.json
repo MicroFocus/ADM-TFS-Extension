@@ -2,13 +2,13 @@
 	"manifestVersion": 1,
 	"id": "UFT-Azure-extension",
 	"name": "UFT One Azure DevOps extension",
-	"version": "24.2.0",
+	"version": "25.2.0",
 	"publisher": "uftpublisher",
 	"targets": [{
 		"id": "Microsoft.VisualStudio.Services",
 		"version": "[15.0,)"
 	}],
-	"description": "Enables you to run UFT One tests as a build in an Azure DevOps build process. This extension includes 6 tasks.",
+	"description": "Enables you to run Functional Testing tests as a build in an Azure DevOps build process. This extension includes 6 tasks.",
 	"categories": [
 		"Azure Pipelines"
 	],

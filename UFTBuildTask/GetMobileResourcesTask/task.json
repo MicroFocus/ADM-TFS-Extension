@@ -74,7 +74,7 @@
         {
             "name": "mcProxyUrl",
             "type": "string",
-            "label": "Proxy Sever",
+            "label": "Proxy Server",
             "defaultValue": "",
             "required": true,
             "visibleRule": "useMcProxy = true",
