@@ -83,7 +83,7 @@
             "label": "Generate JUnit report",
             "defaultValue": true,
             "required": false,
-            "helpMarkDown": "Choose whether to generate a report which provides information on your tests."
+            "helpMarkDown": "Choose whether to generate a report which provides information on your tests. The results are saved in junit_results.xml in res\Report_<buildnumber>."
         },
         {
             "name": "enableFailedTestsReport",
