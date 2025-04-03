@@ -57,6 +57,7 @@ namespace PSModule
         private readonly ConcurrentQueue<string> _errorToProcess = new();
 
         protected bool _enableFailedTestsReport;
+        protected bool _generateJUnitReport;
         protected bool _isParallelRunnerMode;
         protected List<string> _rptPaths; // this field is instanciated in RunFromFileSystemTask\localTask.ps1 or ParallelRunnerTask\localTask.ps1 and passed to / filled in InvokeFSTaskCmdlet, then read in localTask.ps1
         protected ServerConfigEx _dlServerConfig;
@@ -200,12 +201,17 @@ namespace PSModule
                                 if (runStatus != RunStatus.CANCELED && _rptPaths.Any())
                                 {
                                     //run junit report converter
-                                    string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
-                                    RunConverter(converterPath, outputFileReport);
-                                    if (_enableFailedTestsReport && nrOfTests[H.FAIL] > 0 && File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0)
+                                    if (_generateJUnitReport)
                                     {
-                                        H.ReadReportFromXMLFile(outputFileReport, true, out IList<KeyValuePair<string, IList<ReportMetaData>>> failedSteps);
-                                        H.CreateFailedStepsReport(failedSteps, resdir);
+                                        string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
+                                        RunConverter(converterPath, outputFileReport);
+                                        if (_enableFailedTestsReport && nrOfTests[H.FAIL] > 0 &&
+                                            File.Exists(outputFileReport) && new FileInfo(outputFileReport).Length > 0)
+                                        {
+                                            H.ReadReportFromXMLFile(outputFileReport, true,
+                                                out IList<KeyValuePair<string, IList<ReportMetaData>>> failedSteps);
+                                            H.CreateFailedStepsReport(failedSteps, resdir);
+                                        }
                                     }
                                 }
                             }

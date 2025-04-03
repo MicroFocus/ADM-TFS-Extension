@@ -41,6 +41,7 @@ namespace PSModule
         private const string BUILDNUMBER = "buildNumber";
         private const string CANCELRUNONFAILURE = "cancelRunOnFailure";
         private const string ENABLEFAILEDTESTSREPORT = "enableFailedTestsReport";
+        private const string GENERATEJUNITREPORT = "generateJUnitReport";
         private const string PARALLELRUNNERMODE = "parallelRunnerMode";
         private const string ENVTYPE = "envType";
         private const string REPORTNAME = "reportName";
@@ -113,6 +114,11 @@ namespace PSModule
         public void SetEnableFailedTestsReport(bool enableFailedTestsRpt)
         {
             SetParamValue(ENABLEFAILEDTESTSREPORT, enableFailedTestsRpt ? C.YES : C.NO);
+        }
+
+        public void SetGenerateJUnitReport(bool generateJUnitReport)
+        {
+            SetParamValue(GENERATEJUNITREPORT, generateJUnitReport ? C.YES : C.NO);
         }
 
         public void SetParallelTestEnv(int testIdx, int envIdx, string device)

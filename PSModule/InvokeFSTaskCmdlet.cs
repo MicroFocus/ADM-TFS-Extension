@@ -97,6 +97,15 @@ namespace PSModule
         }
 
         [Parameter(Position = 8)]
+        public bool GenerateJUnitReport
+        {
+            set
+            {
+                _generateJUnitReport = value;
+            }
+        }
+
+        [Parameter(Position = 9)]
         public bool UseParallelRunner
         {
             set
@@ -105,7 +114,7 @@ namespace PSModule
             }
         }
 
-        [Parameter(Position = 9)]
+        [Parameter(Position = 10)]
         public List<IConfig> Configs
         {
             set
@@ -136,7 +145,7 @@ namespace PSModule
             }
         }
 
-        [Parameter(Position = 10)]
+        [Parameter(Position = 11)]
         public List<string> ReportPaths
         {
             set
@@ -145,10 +154,10 @@ namespace PSModule
             }
         }
 
-        [Parameter(Position = 11)]
+        [Parameter(Position = 12)]
         public bool CancelRunOnFailure { get; set; }
 
-        [Parameter(Position = 12)]
+        [Parameter(Position = 13)]
         public string TimestampPattern
         {
             set
@@ -185,6 +194,7 @@ namespace PSModule
             builder.SetBuildNumber(BuildNumber);
             builder.SetCancelRunOnFailure(CancelRunOnFailure);
             builder.SetEnableFailedTestsReport(_enableFailedTestsReport);
+            builder.SetGenerateJUnitReport(_generateJUnitReport);
             builder.SetUseParallelRunner(_isParallelRunnerMode);
             if (_isParallelRunnerMode)
             {

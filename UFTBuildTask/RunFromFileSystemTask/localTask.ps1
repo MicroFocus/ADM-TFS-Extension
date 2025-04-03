@@ -23,6 +23,7 @@ $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
+[bool]$generateJUnitRpt = Get-VstsInput -Name 'generateJUnitReport' -AsBool
 [bool]$useDigitalLab = Get-VstsInput -Name 'useDigitalLab' -AsBool
 
 $uftworkdir = $env:UFT_LAUNCHER
@@ -328,7 +329,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern -Verbose 
 } catch {
 	Write-Error $_
 } finally {

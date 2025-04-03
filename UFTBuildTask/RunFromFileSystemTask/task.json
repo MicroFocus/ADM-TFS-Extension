@@ -78,12 +78,21 @@
             "helpMarkDown": "Choose whether to cancel the run when a test fails, so that the subsequent tests will be skipped"
         },
         {
+            "name": "generateJUnitReport",
+            "type": "boolean",
+            "label": "Generate JUnit report",
+            "defaultValue": true,
+            "required": false,
+            "helpMarkDown": "Choose whether to generate a report which provides information on your tests."
+        },
+        {
             "name": "enableFailedTestsReport",
             "type": "boolean",
             "label": "Generate 'Failed Tests' report",
             "defaultValue": true,
             "required": false,
-            "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps. You can view these results in the Extensions tab."
+            "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps. You can view these results in the Extensions tab.",
+            "visibleRule": "generateJUnitReport = true"
         },
         {
             "name": "uploadArtifact",
