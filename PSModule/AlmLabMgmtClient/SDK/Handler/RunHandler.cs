@@ -29,11 +29,6 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
             return await new StartRunEntityRequest(_client, StartSuffix, _entityId, duration, envConfigId).Execute();
         }
 
-        public async Task<Response> Stop()
-        {
-            return await new StopEntityRequest(_client, _runId).Execute();
-        }
-
         public async Task<string> ReportUrl(Args args)
         {
             return await new AlmRunReportUrlBuilder().Build(_client, args.Domain, args.Project, _runId);

@@ -75,6 +75,7 @@
     <Compile Include="AlmLabMgmtClient\SDK\Client\RestClient.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Factory\PollHandlerFactory.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Factory\RunHandlerFactory.cs" />
+    <Compile Include="AlmLabMgmtClient\SDK\Handler\StopRunHandler.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Handler\BvsRunHandler.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Handler\EventLogHandler.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Handler\HandlerBase.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="AlmLabMgmtClient\SDK\Util\JUnitParser.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ResourceAccessLevel.cs" />
     <Compile Include="Common\EnvVarsConfig.cs" />
+    <Compile Include="Common\JavaProperties.cs" />
     <Compile Include="Common\StringValue.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\Xml.cs" />
     <Compile Include="AsyncCmdlet.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Common\GlobalSuppressions.cs" />
     <Compile Include="Common\Helper.cs" />
     <Compile Include="Common\Enums.cs" />
+    <Compile Include="InvokeAlmLabManagementStopTaskCmdlet.cs" />
     <Compile Include="InvokeAlmLabManagementTaskCmdlet.cs" />
     <Compile Include="InvokeGetMobileResourcesTaskCmdlet.cs" />
     <Compile Include="InvokeAlmTaskCmdlet.cs" />

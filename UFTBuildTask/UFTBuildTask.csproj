@@ -47,10 +47,6 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AlmLabEnvPrepareTask\icon.png" />
-    <Content Include="AlmLabManagementTask\task.json" />
-    <Content Include="AlmLabEnvPrepareTask\task.json" />
-    <Content Include="GetMobileResourcesTask\icon.png" />
     <Content Include="images\failed.png" />
     <Content Include="images\passed.png" />
     <Content Include="images\tfs.png" />
@@ -59,21 +55,29 @@
     <None Include=".bin\git.cmd" />
     <None Include=".bin\node.cmd" />
     <Content Include="AlmLabEnvPrepareTask\localTask.ps1" />
+    <Content Include="AlmLabEnvPrepareTask\task.json" />
+    <Content Include="AlmLabEnvPrepareTask\icon.png" />
     <Content Include="AlmLabManagementTask\localTask.ps1" />
+    <Content Include="AlmLabManagementTask\task.json" />
     <Content Include="AlmLabManagementTask\icon.png" />
+    <Content Include="AlmLabManagementStopTask\localTask.ps1" />
+    <Content Include="AlmLabManagementStopTask\task.json" />
+    <Content Include="AlmLabManagementStopTask\icon.png" />
     <Content Include="RunFromFileSystemTask\task.json" />
     <Content Include="RunFromFileSystemTask\localTask.ps1" />
     <Content Include="RunFromFileSystemTask\icon.png" />
     <Content Include="RunFromALMTask\localTask.ps1" />
     <Content Include="RunFromALMTask\task.json" />
+    <Content Include="RunFromALMTask\icon.png" />
     <Content Include="ParallelRunnerTask\localTask.ps1" />
     <Content Include="ParallelRunnerTask\task.json" />
     <Content Include="ParallelRunnerTask\icon.png" />
+    <Content Include="GetMobileResourcesTask\localTask.ps1" />
+    <Content Include="GetMobileResourcesTask\task.json" />
+    <Content Include="GetMobileResourcesTask\icon.png" />
     <Content Include="LICENSE" />
     <Content Include="README.md" />
     <Content Include="overview.md" />
-    <Content Include="GetMobileResourcesTask\localTask.ps1" />
-    <Content Include="GetMobileResourcesTask\task.json" />
     <None Include="vss-extension.json" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="web.config">

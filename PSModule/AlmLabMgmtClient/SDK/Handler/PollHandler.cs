@@ -12,8 +12,6 @@
  */
 
 using PSModule.AlmLabMgmtClient.SDK.Interface;
-using PSModule.AlmLabMgmtClient.SDK.Util;
-using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,12 +19,12 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
 {
     public abstract class PollHandler : HandlerBase
     {
-        private readonly int _interval = 5000; // millisecond
+        private readonly int _interval = 5000; // milliseconds
         protected PollHandler(IClient client, string entityId) : base(client, entityId)
         {
         }
 
-        protected PollHandler(IClient client, string entityId, int interval) : base(client, entityId)
+/*      protected PollHandler(IClient client, string entityId, int interval) : base(client, entityId)
         {
             // NOTE: this constructor is not used at this moment, but for safety, restrict the polling interval between 1 and 60 seconds
             if (interval < 1000 || interval > 60000)
@@ -36,7 +34,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
 
         protected PollHandler(IClient client, string entityId, string runId) : base(client, entityId, runId)
         {
-        }
+        }*/
 
         public async Task<bool> Poll()
         {
@@ -73,7 +71,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
                     LogPollingError(res);
                     ++failures;
                 }
-                Sleep();
+                Thread.Sleep(_interval);
             }
 
             return ok;
@@ -86,19 +84,6 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
         protected abstract bool IsFinished(Response response);
 
         protected abstract Task<Response> GetResponse(bool logRequestUrl);
-
-        protected void Sleep()
-        {
-            try
-            {
-                Thread.Sleep(_interval);
-            }
-            catch (ThreadInterruptedException)
-            {
-                _logger.LogError("Interrupted while polling");
-                throw;
-            }
-        }
 
         protected void LogPollingError(Response res)
         {

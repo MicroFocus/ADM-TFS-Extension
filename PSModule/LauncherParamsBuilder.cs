@@ -50,14 +50,15 @@ namespace PSModule
         private const string CONTAINER = "container";
         private const string LEAVE_UFT_OPEN_IF_VISIBLE = "leaveUftOpenIfVisible";
         private const string RUNTYPE = "runType";
-        private const string ALMSERVERURL = "almServerUrl";
-        private const string ALMUSERNAME = "almUsername";
-        private const string ALMPASSWORD = "almPassword";
-        private const string ALMDOMAIN = "almDomain";
-        private const string ALMPROJECT = "almProject";
-        private const string SSOENABLED = "SSOEnabled";
-        private const string ALMCLIENTID = "almClientID";
-        private const string ALMAPIKEYSECRET = "almApiKeySecret";
+        public const string ALMSERVERURL = "almServerUrl";
+        public const string ALMUSERNAME = "almUsername";
+        public const string ALMPASSWORD = "almPassword";
+        public const string ALMDOMAIN = "almDomain";
+        public const string ALMPROJECT = "almProject";
+        public const string SSOENABLED = "SSOEnabled";
+        public const string ALMCLIENTID = "almClientID";
+        public const string ALMAPIKEYSECRET = "almApiKeySecret";
+        public const string CLIENTTYPE = "clientType";
         private const string ALMRUNMODE = "almRunMode";
         private const string ALMTIMEOUT = "almTimeout";
         private const string TIMESLOTDURATION = "timeslotDuration";
@@ -82,7 +83,7 @@ namespace PSModule
         private const string MOBILEINFO = "mobileinfo";
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
 
-        private readonly static string _secretkey = "EncriptionPass4Java";
+        private readonly static string _secretKey = "EncriptionPass4Java"; // TODO improve the encryption mechanism
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
         private readonly Dictionary<string, string> properties = [];
 
@@ -172,7 +173,7 @@ namespace PSModule
             string encAlmPass;
             try
             {
-                encAlmPass = EncryptParameter(almPassword);
+                encAlmPass = EncryptParam(almPassword);
                 SetParamValue(ALMPASSWORD, encAlmPass);
             }
             catch
@@ -203,7 +204,7 @@ namespace PSModule
 
         public void SetApiKeySecret(string apiKeySecret)
         {
-            string encAlmApiKey = EncryptParameter(apiKeySecret);
+            string encAlmApiKey = EncryptParam(apiKeySecret);
             SetParamValue(ALMAPIKEYSECRET, encAlmApiKey);
         }
 
@@ -220,6 +221,11 @@ namespace PSModule
         public void SetTimeslotDuration(string timeslotDuration)
         {
            SetParamValue(TIMESLOTDURATION, timeslotDuration);
+        }
+
+        public void SetClientType(string clientType)
+        {
+            SetParamValue(CLIENTTYPE, clientType);
         }
 
         public void SetTestSet(int index, string testSet)
@@ -264,12 +270,12 @@ namespace PSModule
             if (config.AuthType == UftMobile.SDK.Enums.AuthType.Basic)
             {
                 SetParamValue(MOBILEUSERNAME, config.UsernameOrClientId);
-                SetParamValue(MOBILEPASSWORD, EncryptParameter(config.PasswordOrSecret));
+                SetParamValue(MOBILEPASSWORD, EncryptParam(config.PasswordOrSecret));
             }
             else
             {
                 SetParamValue(MOBILECLIENTID, config.UsernameOrClientId);
-                SetParamValue(MOBILESECRETKEY, EncryptParameter(config.PasswordOrSecret));
+                SetParamValue(MOBILESECRETKEY, EncryptParam(config.PasswordOrSecret));
             }
             if (config.ServerUrl.StartsWith(C.HTTPS, StringComparison.OrdinalIgnoreCase))
             {
@@ -286,7 +292,7 @@ namespace PSModule
                 {
                     SetParamValue(MOBILEPROXYSETTING_AUTHENTICATION, C.ONE);
                     SetParamValue(MOBILEPROXYSETTING_USERNAME, proxy.UsernameOrClientId);
-                    SetParamValue(MOBILEPROXYSETTING_PASSWORD, EncryptParameter(proxy.PasswordOrSecret));
+                    SetParamValue(MOBILEPROXYSETTING_PASSWORD, EncryptParam(proxy.PasswordOrSecret));
                 }
             }
         }
@@ -303,22 +309,22 @@ namespace PSModule
             SetParamValue(CLOUDBROWSERINFO, cb);
         }
 
-        private void SetParamValue(string paramName, string paramValue)
+        private void SetParamValue(string key, string val)
         {
-            if (paramValue.IsNullOrEmpty())
+            if (val.IsNullOrEmpty())
             {
-                if (!requiredParams.Contains(paramName))
-                    properties.Remove(paramName);
+                if (!requiredParams.Contains(key))
+                    properties.Remove(key);
                 else
-                    properties.Add(paramName, string.Empty);
+                    properties.Add(key, string.Empty);
             }
             else
             {
-                properties.Add(paramName, paramValue);
+                properties.Add(key, val);
             }
         }
 
-        private string EncryptParameter(string parameter)
+        private string EncryptParam(string text)
         {
             RijndaelManaged rijndaelCipher = new()
             {
@@ -328,7 +334,7 @@ namespace PSModule
                 KeySize = 0x80,
                 BlockSize = 0x80
             };
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretkey);
+            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretKey);
             byte[] keyBytes = new byte[0x10];
             int len = pwdBytes.Length;
             if (len > keyBytes.Length)
@@ -339,8 +345,33 @@ namespace PSModule
             rijndaelCipher.Key = keyBytes;
             rijndaelCipher.IV = keyBytes;
             ICryptoTransform transform = rijndaelCipher.CreateEncryptor();
-            byte[] plainText = Encoding.UTF8.GetBytes(parameter);
+            byte[] plainText = Encoding.UTF8.GetBytes(text);
             return Convert.ToBase64String(transform.TransformFinalBlock(plainText, 0, plainText.Length));
+        }
+
+        public static string DecryptParam(string encryptedText)
+        {
+            RijndaelManaged rijndaelCipher = new()
+            {
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7,
+
+                KeySize = 0x80,
+                BlockSize = 0x80
+            };
+            byte[] encryptedData = Convert.FromBase64String(encryptedText);
+            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretKey);
+            byte[] keyBytes = new byte[0x10];
+            int len = pwdBytes.Length;
+            if (len > keyBytes.Length)
+            {
+                len = keyBytes.Length;
+            }
+            Array.Copy(pwdBytes, keyBytes, len);
+            rijndaelCipher.Key = keyBytes;
+            rijndaelCipher.IV = keyBytes;
+            byte[] plainText = rijndaelCipher.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+            return Encoding.UTF8.GetString(plainText);
         }
     }
 }

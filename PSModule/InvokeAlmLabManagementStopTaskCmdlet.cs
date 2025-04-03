@@ -1,0 +1,189 @@
+﻿/*
+ * MIT License https://github.com/MicroFocus/ADM-TFS-Extension/blob/master/LICENSE
+ *
+ * Copyright 2016-2025 Open Text
+ *
+ * The only warranties for products and services of Open Text and its affiliates and licensors ("Open Text") are as may be set forth in the express warranty statements accompanying such products and services.
+ * Nothing herein should be construed as constituting an additional warranty.
+ * Open Text shall not be liable for technical or editorial errors or omissions contained herein. 
+ * The information contained herein is subject to change without notice.
+ */
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Management.Automation;
+using System.Web.UI.WebControls;
+using PSModule.AlmLabMgmtClient.SDK;
+using PSModule.AlmLabMgmtClient.SDK.Util;
+using PSModule.Common;
+
+namespace PSModule
+{
+    using C = Constants;
+    using L = LauncherParamsBuilder;
+
+    [Cmdlet(VerbsLifecycle.Invoke, "AlmLabManagementStopTask")]
+    public class InvokeAlmLabManagementStopTaskCmdlet : AbstractLauncherTaskCmdlet
+    {
+        [Parameter(Position = 0)]
+        public string BuildNumber { get; set; }
+
+        protected override string GetRetCodeFileName()
+        {
+            return "StopRunReturnCode.txt";
+        }
+
+        protected override void ProcessRecord()
+        {
+            try
+            {
+                RunStatus runStatus = RunStatus.FAILED;
+                string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
+                string resDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{BuildNumber}"));
+                string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"props"));
+                if (Directory.Exists(resDir))
+                {
+                    string lastRunId = GetLastRunId(resDir);
+                    string jobStatus = Environment.GetEnvironmentVariable("AGENT_JOBSTATUS");
+                    WriteVerbose($"AGENT_JOBSTATUS = {jobStatus}");
+                    if (jobStatus.EqualsIgnoreCase(C.Canceled))
+                    {
+                        if (lastRunId.IsNullOrEmpty())
+                        {
+                            WriteWarning($"Last Run ID file not found.");
+                            runStatus = RunStatus.UNDEFINED;
+                        }
+                        else
+                        {
+                            string propsFileNameSuffix = GetLastTimestamp(Path.Combine(resDir, C.LastTimestamp));
+                            string propsFilePath = Path.Combine(propsDir, $"Props{propsFileNameSuffix}.txt");
+                            if (File.Exists(propsFilePath))
+                            {
+                                JavaProperties ciParams = [];
+                                ciParams.Load(propsFilePath);
+                                if (DoStopLastRun(lastRunId, ciParams))
+                                {
+                                    string runIdFilePath = Path.Combine(resDir, $"{lastRunId}.runid");
+                                    DeleteRunIdFile(runIdFilePath);
+                                    runStatus = RunStatus.PASSED;
+                                }
+                            }
+                            else
+                            {
+                                WriteWarning($"Properties file not found: {propsFilePath}");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    WriteDebug($"Results directory not found: {resDir}");
+                }
+                CollateRetCode(resDir, (int)runStatus);
+            }
+            catch (AlmException ae)
+            {
+                LogError(ae, ae.Category);
+            }
+            catch (IOException ioe)
+            {
+                LogError(ioe, ErrorCategory.ResourceExists);
+            }
+        }
+
+        private string GetLastTimestamp(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                return File.ReadAllText(filePath).Trim();
+            }
+            WriteWarning($"File not found: {filePath}");
+            return null;
+        }
+
+        private string GetLastRunId(string resDir)
+        {
+            string runIdFile = Directory.EnumerateFiles(resDir, "*.runid").Select(Path.GetFileNameWithoutExtension).FirstOrDefault();
+            if (!runIdFile.IsNullOrEmpty())
+            {
+                string runId = Path.GetFileNameWithoutExtension(runIdFile);
+                WriteVerbose($"Retrieved run ID: {runId}");
+                return runId;
+            }
+            return null;
+        }
+
+        private bool DoStopLastRun(string runId, JavaProperties ciParams)
+        {
+            WriteVerbose($"Trying to stop the Run {runId} ...");
+            string serverUrl = ciParams.GetOrDefault(L.ALMSERVERURL);
+            string domain = ciParams.GetOrDefault(L.ALMDOMAIN);
+            string project = ciParams.GetOrDefault(L.ALMPROJECT);
+            bool.TryParse(ciParams.GetOrDefault(L.SSOENABLED), out bool isSSO);
+            string usernameOrClientId = isSSO ? ciParams.GetOrDefault(L.ALMCLIENTID) : ciParams.GetOrDefault(L.ALMUSERNAME);
+            string passwordOrApiKey = isSSO ? L.DecryptParam(ciParams.GetOrDefault(L.ALMAPIKEYSECRET)) : L.DecryptParam(ciParams.GetOrDefault(L.ALMPASSWORD));
+            string clientType = ciParams.GetOrDefault(L.CLIENTTYPE);
+            WriteDebug($"Server URL: {serverUrl}, Domain: {domain}, Project: {project}, isSSO: {isSSO}, Username / ClientId: {usernameOrClientId}, ClientType: {clientType}");
+            try
+            {
+                var runMgr = GetRunManager4Stop(runId, serverUrl, domain, project, isSSO, usernameOrClientId, passwordOrApiKey, clientType);
+                if (runMgr.Login4Stop())
+                {
+                    if (runMgr.Stop())
+                    {
+                        WriteVerbose("Stop request completed.");
+                        return true;
+                    }
+                }
+                else
+                {
+                    WriteWarning("Login failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteWarning($"Cleanup operation failed: {ex.Message}");
+            }
+            return false;
+        }
+
+        private void DeleteRunIdFile(string runIdFilePath)
+        {
+            if (File.Exists(runIdFilePath))
+            {
+                try
+                {
+                    WriteWarning($"Deleting run ID file: {runIdFilePath}");
+                    File.Delete(runIdFilePath);
+                }
+                catch (Exception ex)
+                {
+                    WriteWarning($"Error deleting run ID file: {ex.Message}");
+                }
+            }
+        }
+
+        private RunManager GetRunManager4Stop(string runId, string serverUrl, string domain, string project, bool isSSO, string usernameOrClientId, string passwordOrApiKey, string clientType)
+        {
+            var args = new Args
+            {
+                Domain = domain,
+                Project = project,
+                ServerUrl = serverUrl,
+                RunType = C.STOP_RUN,
+                EntityId = runId
+            };
+            var cred = new Credentials(isSSO, usernameOrClientId, passwordOrApiKey);
+            bool isDebug = (ActionPreference)GetVariableValue("DebugPreference") != ActionPreference.SilentlyContinue;
+            var client = new RestClient(args.ServerUrl, args.Domain, args.Project, clientType, cred, new ConsoleLogger(isDebug));
+            return new RunManager(client, args);
+        }
+
+        public override Dictionary<string, string> GetTaskProperties()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

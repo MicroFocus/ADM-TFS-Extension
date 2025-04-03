@@ -16,6 +16,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using PSModule.AlmLabMgmtClient.Result.Model;
 using PSModule.AlmLabMgmtClient.SDK;
 using PSModule.AlmLabMgmtClient.SDK.Util;
@@ -29,6 +30,9 @@ namespace PSModule
     [Cmdlet(VerbsLifecycle.Invoke, "AlmLabManagementTask")]
     public class InvokeAlmLabManagementTaskCmdlet : AbstractLauncherTaskCmdlet
     {
+        private string _resDir;
+        private string _runIdFilePath;
+
         [Parameter(Position = 0, Mandatory = true)]
         public string ALMServerPath { get; set; }
 
@@ -104,6 +108,7 @@ namespace PSModule
             builder.SetAlmPassword(ALMPassword);
             builder.SetAlmDomain(ALMDomain);
             builder.SetAlmProject(ALMProject);
+            builder.SetClientType(ClientType);
             builder.SetBuildNumber(BuildNumber);
 
             switch (TestRunType)
@@ -145,7 +150,6 @@ namespace PSModule
         protected override void ProcessRecord()
         {
             string paramFileName = string.Empty, resultsFileName;
-            RunManager runMgr = null;
             try
             {
                 Dictionary<string, string> properties;
@@ -169,15 +173,14 @@ namespace PSModule
                 if (!Directory.Exists(propdir))
                     Directory.CreateDirectory(propdir);
 
-                string resdir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{properties[BUILD_NUMBER]}"));
-
-                if (!Directory.Exists(resdir))
-                    Directory.CreateDirectory(resdir);
+                _resDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{properties[BUILD_NUMBER]}"));
+                if (!Directory.Exists(_resDir))
+                    Directory.CreateDirectory(_resDir);
 
                 string timeSign = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
 
                 paramFileName = Path.Combine(propdir, $"Props{timeSign}.txt");
-                resultsFileName = Path.Combine(resdir, $"Results{timeSign}.xml");
+                resultsFileName = Path.Combine(_resDir, $"Results{timeSign}.xml");
 
                 properties.Add(RESULTS_FILENAME, resultsFileName.Replace(@"\", @"\\")); // double backslashes are expected by HpToolsLauncher.exe (JavaProperties.cs, in LoadInternal method)
 
@@ -186,39 +189,98 @@ namespace PSModule
                     return;
                 }
 
+                DeleteOldRunIdFiles(_resDir);
+
+                string lastTimestamp = Path.Combine(_resDir, C.LastTimestamp);
+                SaveTimestamp(lastTimestamp, timeSign);
+
                 //run the build task
-                runMgr = GetRunManager(resdir);
+                var runMgr = GetRunManager(_resDir);
                 bool hasResults = Run(resultsFileName, runMgr).Result;
+
+                TryDeleteFile(_runIdFilePath);
+                TryDeleteFile(lastTimestamp);
 
                 RunStatus runStatus = RunStatus.FAILED;
                 if (hasResults)
                 {
                     var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
-                    H.CreateSummaryReport(resdir, RunType.AlmLabManagement, listReport, _timestampPattern);
+                    H.CreateSummaryReport(_resDir, RunType.AlmLabManagement, listReport, _timestampPattern);
                     //get task return code
                     runStatus = H.GetRunStatus(listReport);
                     int totalTests = H.GetNumberOfTests(listReport, out IDictionary<string, int> nrOfTests);
                     if (totalTests > 0)
                     {
-                        H.CreateRunSummary(runStatus, totalTests, nrOfTests, resdir);
+                        H.CreateRunSummary(runStatus, totalTests, nrOfTests, _resDir);
                     }
                 }
-                CollateRetCode(resdir, (int)runStatus);
+                CollateRetCode(_resDir, (int)runStatus);
             }
             catch (AlmException ae)
             {
                 LogError(ae, ae.Category);
-                runMgr?.Stop();
             }
             catch (IOException ioe)
             {
                 LogError(ioe, ErrorCategory.ResourceExists);
-                runMgr?.Stop();
             }
-            catch (ThreadInterruptedException e)
+        }
+
+        public void RunManager_RunIdGenerated(object sender, string runId)
+        {
+            if (string.IsNullOrEmpty(runId))
+                return;
+
+            _runIdFilePath = Path.Combine(_resDir, $"{runId}.runid");
+            try
             {
-                LogError(e, ErrorCategory.OperationStopped);
-                runMgr?.Stop();
+                // Create an empty file, named as ###.runid pattern
+                using (File.Create(_runIdFilePath)) { }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating the run ID file [{_runIdFilePath}]: {ex}");
+            }
+        }
+
+        private void SaveTimestamp(string filePath, string timestamp)
+        {
+            WriteDebug($"Saving timestamp {timestamp} to file: {filePath}");
+            try
+            {
+                File.WriteAllText(filePath, timestamp);
+            }
+            catch (Exception e)
+            {
+                LogError(e, ErrorCategory.WriteError);
+            }
+        }
+
+        private void TryDeleteFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    WriteDebug($"Deleting file: {filePath}");
+                    File.Delete(filePath);
+                }
+                catch (Exception ex)
+                {
+                    WriteWarning($"Error file {filePath}: {ex.Message}");
+                }
+            }
+        }
+
+        private void DeleteOldRunIdFiles(string folderPath)
+        {
+            try
+            {
+                Directory.EnumerateFiles(folderPath, "*.runid").ToList().ForEach(File.Delete);
+            }
+            catch (Exception ex)
+            {
+                WriteVerbose($"Error deleting .runid files: {ex.Message}");
             }
         }
 
@@ -251,7 +313,10 @@ namespace PSModule
             var cred = new Credentials(IsSSO, IsSSO ? ClientID : ALMUserName, IsSSO ? ApiKeySecret : ALMPassword);
             bool isDebug = (ActionPreference)GetVariableValue("DebugPreference") != ActionPreference.SilentlyContinue;
             var client = new RestClient(args.ServerUrl, args.Domain, args.Project, ClientType, cred, new ConsoleLogger(isDebug));
-            return new RunManager(client, args, Path.Combine(rptPath, GetReportFilename()));
+            // Create and setup RunManager
+            var runManager = new RunManager(client, args, Path.Combine(rptPath, GetReportFilename()));
+            runManager.RunIdGenerated += RunManager_RunIdGenerated;
+            return runManager;
         }
 
         private async Task<bool> SaveResults(string filePath, TestSuites testsuites)
@@ -274,7 +339,7 @@ namespace PSModule
                 }
                 try
                 {
-                    using StreamWriter file = new StreamWriter(filePath, true);
+                    using StreamWriter file = new(filePath, true);
                     await file.WriteAsync(xml);
                     return true;
                 }

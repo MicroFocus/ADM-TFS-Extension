@@ -31,7 +31,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Handler
         {
         }
 
-        public LabPollHandler(IClient client, string entityId, int interval) : base(client, entityId, interval) { }
+        //public LabPollHandler(IClient client, string entityId, int interval) : base(client, entityId, interval) { }
 
         protected override async Task<bool> DoPoll()
         {

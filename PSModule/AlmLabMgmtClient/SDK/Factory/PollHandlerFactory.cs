@@ -35,7 +35,7 @@ namespace PSModule.AlmLabMgmtClient.SDK.Factory
             return ret;
         }
 
-        public PollHandler Create(IClient client, string runType, string entityId, int interval)
+/*        public PollHandler Create(IClient client, string runType, string entityId, int interval)
         {
             PollHandler ret;
             if (runType.In(C.BVS, C.TEST_SET))
@@ -48,6 +48,6 @@ namespace PSModule.AlmLabMgmtClient.SDK.Factory
             }
 
             return ret;
-        }
+        }*/
     }
 }

@@ -31,7 +31,10 @@ namespace PSModule.AlmLabMgmtClient.SDK
     using C = Constants;
     public class RunManager
     {
+        public event EventHandler<string> RunIdGenerated;
+
         private readonly RunHandler _runHandler;
+        private readonly StopRunHandler _stopRunHandler;
         private readonly PollHandler _pollHandler;
         private bool _isRunning = false;
         private bool _isPolling = false;
@@ -45,15 +48,38 @@ namespace PSModule.AlmLabMgmtClient.SDK
         public bool IsRunning => _isRunning;
         public bool IsPolling => _isPolling;
 
-        public RunManager(RestClient client, Args args, string fullPathReportName)
+        public RunManager(RestClient client, Args args, string fullPathReportName = null)
         {
             _client = client;
             _logger = client.Logger;
             _args = args;
             _fullPathReportName = fullPathReportName;
-            _runHandler = new RunHandlerFactory().Create(client, args.RunType, args.EntityId);
-            _pollHandler = new PollHandlerFactory().Create(client, args.RunType, args.EntityId);
+            if (args.RunType == C.STOP_RUN)
+            {
+                _stopRunHandler = new StopRunHandler(client, args.EntityId);
+                _runHandler = null;
+                _pollHandler = null;
+            }
+            else
+            {
+                _runHandler = new RunHandlerFactory().Create(client, args.RunType, args.EntityId);
+                _pollHandler = new PollHandlerFactory().Create(client, args.RunType, args.EntityId);
+                _stopRunHandler = null;
+            }
         }
+
+        private void OnRunIdGenerated(string runId)
+        {
+            RunIdGenerated?.Invoke(this, runId);
+        }
+
+        public bool Login4Stop()
+        {
+            var authHandler = AuthManager.Instance;
+            _isLoggedIn = authHandler.Authenticate(_client).Result;
+            return _isLoggedIn;
+        }
+
         public async Task<TestSuites> Execute()
         {
             TestSuites res = null;
@@ -131,13 +157,14 @@ namespace PSModule.AlmLabMgmtClient.SDK
             string runId = runResponse.RunId;
             if (runId.IsNullOrWhiteSpace())
             {
-                _logger.LogError(C.NO_RUN_ID);
+                _logger.LogError(C.NO_RUN_ID).Wait();
                 throw new AlmException(C.NO_RUN_ID, ErrorCategory.InvalidResult);
             }
             else
             {
                 _runHandler.SetRunId(runId);
                 _pollHandler.SetRunId(runId);
+                OnRunIdGenerated(runId);
             }
         }
 
@@ -161,31 +188,34 @@ namespace PSModule.AlmLabMgmtClient.SDK
             return ok;
         }
 
-        public async Task Stop()
+        public bool Stop()
         {
-            if (_runHandler != null && _isRunning)
+            if (_stopRunHandler != null)
             {
                 try
                 {
-                    await _logger.LogInfo("Stopping run...");
+                    _logger.LogInfo("Stopping run...").Wait();
+                    var res = _stopRunHandler.Stop();
                     if (_isLoggedIn)
                     {
-                        await AuthManager.Instance.Logout(_client);
+                        _logger.LogInfo("Trying to logout...").Wait();
+                        AuthManager.Instance.Logout(_client).Wait();
                         _isLoggedIn = false;
                     }
-                    await _runHandler.Stop();
-                }
-                catch (ThreadInterruptedException)
-                {
-                    throw;
+                    if (res.IsOK)
+                    {
+                        return true;
+                    }
+                    _logger.LogError($"{res.StatusCode}: {res.Error}");
                 }
                 catch (Exception e)
                 {
-                    await _logger.LogError(e.Message);
+                    _logger.LogError(e.Message).Wait();
                 }
                 _isRunning = false;
                 _isPolling = false;
             }
+            return false;
         }
 
         private async Task<bool> HasTestInstances()

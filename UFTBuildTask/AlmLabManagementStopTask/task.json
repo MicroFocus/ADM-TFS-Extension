@@ -1,0 +1,29 @@
+﻿{
+  "id": "37008DAC-BEE4-3D0A-B7EE-79BE8C118D3C",
+  "name": "AlmLabManagementStopTask",
+  "friendlyName": "UFT One ALM Lab Management Stop Run",
+  "description": "Use this build step to stop run ALM server-side functional test sets",
+  "category": "Test",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "author": "OpenText",
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
+  "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-alm-lm.htm#mt-item-1",
+  "demands": [
+    "UFT_LAUNCHER"
+  ],
+  "instanceNameFormat": "Stop ALM Lab Management Run",
+  "execution": {
+    "PowerShell3": {
+      "target": "localTask.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
