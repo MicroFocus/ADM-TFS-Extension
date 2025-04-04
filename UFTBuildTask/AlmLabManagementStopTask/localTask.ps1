@@ -37,7 +37,7 @@ if (Test-Path $retcodefile) {
 		[int]$retcode = [convert]::ToInt32($arr[-1], 10)
 	
 		if ($retcode -eq 0) {
-			Write-Host "Test passed"
+			Write-Host "Task completed successfully."
 		}
 
 		if ($retcode -eq -3) {

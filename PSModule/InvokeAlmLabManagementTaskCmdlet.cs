@@ -168,10 +168,10 @@ namespace PSModule
                 }
 
                 string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
-                string propdir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
+                string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
 
-                if (!Directory.Exists(propdir))
-                    Directory.CreateDirectory(propdir);
+                if (!Directory.Exists(propsDir))
+                    Directory.CreateDirectory(propsDir);
 
                 _resDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{properties[BUILD_NUMBER]}"));
                 if (!Directory.Exists(_resDir))
@@ -179,8 +179,8 @@ namespace PSModule
 
                 string timeSign = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
 
-                paramFileName = Path.Combine(propdir, $"Props{timeSign}.txt");
-                resultsFileName = Path.Combine(_resDir, $"Results{timeSign}.xml");
+                paramFileName = Path.Combine(propsDir, $"{PROPS}{timeSign}.txt");
+                resultsFileName = Path.Combine(_resDir, $"{RESULTS}{timeSign}.xml");
 
                 properties.Add(RESULTS_FILENAME, resultsFileName.Replace(@"\", @"\\")); // double backslashes are expected by HpToolsLauncher.exe (JavaProperties.cs, in LoadInternal method)
 
@@ -253,22 +253,6 @@ namespace PSModule
             catch (Exception e)
             {
                 LogError(e, ErrorCategory.WriteError);
-            }
-        }
-
-        private void TryDeleteFile(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                try
-                {
-                    WriteDebug($"Deleting file: {filePath}");
-                    File.Delete(filePath);
-                }
-                catch (Exception ex)
-                {
-                    WriteWarning($"Error file {filePath}: {ex.Message}");
-                }
             }
         }
 

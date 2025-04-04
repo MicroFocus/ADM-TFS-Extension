@@ -1,5 +1,5 @@
 ﻿{
-    "id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
+	"id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
 	"name": "GetMobileDevicesTask",
 	"friendlyName": "Get Functional Testing Lab Resources",
 	"description": "Use this build step to retrieve resources from a Functional Testing Lab server",
@@ -10,9 +10,9 @@
 	],
 	"author": "OpenText",
 	"version": {
-        "Major": 5,
+		"Major": 5,
 		"Minor": 0,
-        "Patch": 1
+		"Patch": 1
 	},
 	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
 	"inputs": [

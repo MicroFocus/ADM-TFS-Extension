@@ -38,6 +38,7 @@ namespace PSModule
         private const string ReportConverter_EXE = "ReportConverter.exe";
         protected const string UFT_LAUNCHER = "UFT_LAUNCHER";
         protected const string PROPS = "props";
+        protected const string RESULTS = "Results";
         protected const string BUILD_NUMBER = "buildNumber";
         protected const string DDMMYYYYHHMMSSSSS = "ddMMyyyyHHmmssSSS";
         protected const string RESULTS_FILENAME = "resultsFilename";
@@ -98,10 +99,10 @@ namespace PSModule
                 launcherPath = Path.GetFullPath(Path.Combine(ufttfsdir, FTToolsLauncher_EXE));
                 converterPath = Path.GetFullPath(Path.Combine(ufttfsdir, ReportConverter_EXE));
 
-                string propdir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
+                string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
 
-                if (!Directory.Exists(propdir))
-                    Directory.CreateDirectory(propdir);
+                if (!Directory.Exists(propsDir))
+                    Directory.CreateDirectory(propsDir);
                 if (!properties.ContainsKey(BUILD_NUMBER))
                 {
                     LogError(new InvalidDataException("Missing buildNumber property!"), ErrorCategory.InvalidData);
@@ -114,8 +115,8 @@ namespace PSModule
 
                 string timeSign = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
 
-                paramFileName = Path.Combine(propdir, $"Props{timeSign}.txt");
-                resultsFileName = Path.Combine(resdir, $"Results{timeSign}.xml");
+                paramFileName = Path.Combine(propsDir, $"{PROPS}{timeSign}.txt");
+                resultsFileName = Path.Combine(resdir, $"{RESULTS}{timeSign}.xml");
 
                 properties.Add(RESULTS_FILENAME, resultsFileName.Replace(@"\", @"\\")); // double backslashes are expected by HpToolsLauncher.exe (JavaProperties.cs, in LoadInternal method)
 
@@ -538,5 +539,22 @@ namespace PSModule
         {
             WriteWarning(warning);
         }
+
+        protected void TryDeleteFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    WriteDebug($"Deleting file: {filePath}");
+                    File.Delete(filePath);
+                }
+                catch (Exception ex)
+                {
+                    WriteWarning($"Error deleting file {filePath}: {ex.Message}");
+                }
+            }
+        }
+
     }
 }

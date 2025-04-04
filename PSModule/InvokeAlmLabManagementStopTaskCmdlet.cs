@@ -42,11 +42,11 @@ namespace PSModule
                 RunStatus runStatus = RunStatus.FAILED;
                 string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
                 string resDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{BuildNumber}"));
-                string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"props"));
+                string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
                 if (Directory.Exists(resDir))
                 {
                     string lastRunId = GetLastRunId(resDir);
-                    string jobStatus = Environment.GetEnvironmentVariable("AGENT_JOBSTATUS");
+                    string jobStatus = Environment.GetEnvironmentVariable(C.AGENT_JOBSTATUS);
                     WriteVerbose($"AGENT_JOBSTATUS = {jobStatus}");
                     if (jobStatus.EqualsIgnoreCase(C.Canceled))
                     {
@@ -57,8 +57,8 @@ namespace PSModule
                         }
                         else
                         {
-                            string propsFileNameSuffix = GetLastTimestamp(Path.Combine(resDir, C.LastTimestamp));
-                            string propsFilePath = Path.Combine(propsDir, $"Props{propsFileNameSuffix}.txt");
+                            string lastTimestamp = GetLastTimestamp(Path.Combine(resDir, C.LastTimestamp));
+                            string propsFilePath = Path.Combine(propsDir, $"{PROPS}{lastTimestamp}.txt");
                             if (File.Exists(propsFilePath))
                             {
                                 JavaProperties ciParams = [];
@@ -66,7 +66,7 @@ namespace PSModule
                                 if (DoStopLastRun(lastRunId, ciParams))
                                 {
                                     string runIdFilePath = Path.Combine(resDir, $"{lastRunId}.runid");
-                                    DeleteRunIdFile(runIdFilePath);
+                                    TryDeleteFile(runIdFilePath);
                                     runStatus = RunStatus.PASSED;
                                 }
                             }
@@ -147,22 +147,6 @@ namespace PSModule
                 WriteWarning($"Cleanup operation failed: {ex.Message}");
             }
             return false;
-        }
-
-        private void DeleteRunIdFile(string runIdFilePath)
-        {
-            if (File.Exists(runIdFilePath))
-            {
-                try
-                {
-                    WriteWarning($"Deleting run ID file: {runIdFilePath}");
-                    File.Delete(runIdFilePath);
-                }
-                catch (Exception ex)
-                {
-                    WriteWarning($"Error deleting run ID file: {ex.Message}");
-                }
-            }
         }
 
         private RunManager GetRunManager4Stop(string runId, string serverUrl, string domain, string project, bool isSSO, string usernameOrClientId, string passwordOrApiKey, string clientType)

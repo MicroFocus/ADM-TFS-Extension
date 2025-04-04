@@ -4,10 +4,12 @@
 	"name": "UFT One Azure DevOps extension",
 	"version": "25.2.0",
 	"publisher": "uftpublisher",
-	"targets": [{
-		"id": "Microsoft.VisualStudio.Services",
-		"version": "[15.0,)"
-	}],
+	"targets": [
+		{
+			"id": "Microsoft.VisualStudio.Services",
+			"version": "[15.0,)"
+		}
+	],
 	"description": "Enables you to run Functional Testing tests as a build in an Azure DevOps build process. This extension includes 6 tasks.",
 	"categories": [
 		"Azure Pipelines"
@@ -26,8 +28,9 @@
 	"icons": {
 		"default": "images/tfs.png"
 	},
-	"demands": ["contribution/ms.vss-dashboards-web.widget-sdk-version-2", "contribution/ms.vss-web.charts-service"],
-	"screenshots ": [{
+	"demands": [ "contribution/ms.vss-dashboards-web.widget-sdk-version-2", "contribution/ms.vss-web.charts-service" ],
+	"screenshots ": [
+		{
 			"path": "resources/screenshots/AlmExecution.PNG"
 		},
 		{
@@ -173,7 +176,7 @@
 			],
 			"properties": {
 				"name": "AlmLabManagementStopTask"
-		}
+			}
 		}
 	],
 	"galleryFlags": [

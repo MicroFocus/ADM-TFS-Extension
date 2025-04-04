@@ -76,6 +76,7 @@ namespace PSModule.Common
 
         public const string Canceled = "Canceled";
         public const string LastTimestamp = "LastTimestamp";
+        public const string AGENT_JOBSTATUS = "AGENT_JOBSTATUS";
 
     }
 }
