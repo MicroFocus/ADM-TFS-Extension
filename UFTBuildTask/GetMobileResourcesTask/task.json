@@ -1,146 +1,146 @@
 ﻿{
     "id": "33EE3299-D0B4-4E23-B5F1-580E758D5406",
-    "name": "GetMobileDevicesTask",
-    "friendlyName": "Get Functional Testing Lab Resources",
-    "description": "Use this build step to retrieve resources from a Functional Testing Lab server",
-    "category": "Test",
-    "visibility": [
-        "Build",
-        "Release"
-    ],
-    "author": "OpenText",
-    "version": {
+	"name": "GetMobileDevicesTask",
+	"friendlyName": "Get Functional Testing Lab Resources",
+	"description": "Use this build step to retrieve resources from a Functional Testing Lab server",
+	"category": "Test",
+	"visibility": [
+		"Build",
+		"Release"
+	],
+	"author": "OpenText",
+	"version": {
         "Major": 5,
-        "Minor": 0,
+		"Minor": 0,
         "Patch": 1
-    },
-    "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
-    "inputs": [
-        {
-            "name": "mcServerUrl",
-            "type": "string",
-            "label": "Functional Testing Lab Server",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "The address of your Functional Testing Lab server, in the format http[s]://(server name):(port)"
-        },
-        {
-            "name": "mcAuthType",
-            "type": "radio",
-            "label": "Authentication type",
-            "defaultValue": "basic",
-            "required": true,
-            "options": {
-                "basic": "Basic authentication",
-                "key": "Access key authentication"
-            },
-            "helpMarkDown": "Select the authentication mode to use for connecting to Functional Testing Lab"
-        },
-        {
-            "name": "mcUsername",
-            "type": "string",
-            "label": "Username",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "mcAuthType = basic",
-            "helpMarkDown": "The username that will access this Functional Testing Lab server during the build step run"
-        },
-        {
-            "name": "mcPassword",
-            "type": "string",
-            "label": "Password",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "mcAuthType = basic",
-            "helpMarkDown": "The password for the user that will access this Functional Testing Lab server during the build step run"
-        },
-        {
-            "name": "mcAccessKey",
-            "type": "string",
-            "label": "Access Key",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "mcAuthType = key",
-            "helpMarkDown": "The Access Key will provide access to this Functional Testing Lab server during the build step run"
-        },
-        {
-            "name": "useMcProxy",
-            "type": "boolean",
-            "label": "Use proxy settings",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to use a proxy for connecting to the Functional Testing Lab server"
-        },
-        {
-            "name": "mcProxyUrl",
-            "type": "string",
-            "label": "Proxy Server",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "useMcProxy = true",
-            "helpMarkDown": "The address of your proxy server, in the format (proxy server name):(port)"
-        },
-        {
-            "name": "useMcProxyCredentials",
-            "type": "boolean",
-            "label": "Use proxy credentials",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to specify credentials for connecting to the proxy server",
-            "visibleRule": "useMcProxy = true"
-        },
-        {
-            "name": "mcProxyUsername",
-            "type": "string",
-            "label": "Proxy Username",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
-            "helpMarkDown": "The username that will access this proxy server during the build step run"
-        },
-        {
-            "name": "mcProxyPassword",
-            "type": "string",
-            "label": "Proxy Password",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
-            "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
-        },
-        {
-            "name": "mcResources",
-            "type": "pickList",
-            "label": "Resources to retrieve",
-            "defaultValue": "onlyDevices",
-            "required": false,
-            "helpMarkDown": "Choose what resources will be retrieved from the Functional Testing Lab server",
-            "options": {
-                "onlyDevices": "Only devices",
-                "onlyApps": "Only applications",
-                "bothDevicesAndApps": "Both devices and applications",
-                "cloudBrowsers": "Cloud browsers"
-            }
-        },
-        {
-            "name": "includeOfflineDevices",
-            "type": "boolean",
-            "label": "Include disconnected devices in response",
-            "defaultValue": false,
-            "required": false,
-            "visibleRule": "mcResources = onlyDevices || mcResources = bothDevicesAndApps",
-            "helpMarkDown": "Choose whether to include the disconnected devices within the list of devices retrieved by running this task"
-        }
-    ],
+	},
+	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
+	"inputs": [
+		{
+			"name": "mcServerUrl",
+			"type": "string",
+			"label": "Functional Testing Lab Server",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "The address of your Functional Testing Lab server, in the format http[s]://(server name):(port)"
+		},
+		{
+			"name": "mcAuthType",
+			"type": "radio",
+			"label": "Authentication type",
+			"defaultValue": "basic",
+			"required": true,
+			"options": {
+				"basic": "Basic authentication",
+				"key": "Access key authentication"
+			},
+			"helpMarkDown": "Select the authentication mode to use for connecting to Functional Testing Lab"
+		},
+		{
+			"name": "mcUsername",
+			"type": "string",
+			"label": "Username",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "mcAuthType = basic",
+			"helpMarkDown": "The username that will access this Functional Testing Lab server during the build step run"
+		},
+		{
+			"name": "mcPassword",
+			"type": "string",
+			"label": "Password",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "mcAuthType = basic",
+			"helpMarkDown": "The password for the user that will access this Functional Testing Lab server during the build step run"
+		},
+		{
+			"name": "mcAccessKey",
+			"type": "string",
+			"label": "Access Key",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "mcAuthType = key",
+			"helpMarkDown": "The Access Key will provide access to this Functional Testing Lab server during the build step run"
+		},
+		{
+			"name": "useMcProxy",
+			"type": "boolean",
+			"label": "Use proxy settings",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to use a proxy for connecting to the Functional Testing Lab server"
+		},
+		{
+			"name": "mcProxyUrl",
+			"type": "string",
+			"label": "Proxy Server",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "useMcProxy = true",
+			"helpMarkDown": "The address of your proxy server, in the format (proxy server name):(port)"
+		},
+		{
+			"name": "useMcProxyCredentials",
+			"type": "boolean",
+			"label": "Use proxy credentials",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to specify credentials for connecting to the proxy server",
+			"visibleRule": "useMcProxy = true"
+		},
+		{
+			"name": "mcProxyUsername",
+			"type": "string",
+			"label": "Proxy Username",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
+			"helpMarkDown": "The username that will access this proxy server during the build step run"
+		},
+		{
+			"name": "mcProxyPassword",
+			"type": "string",
+			"label": "Proxy Password",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
+			"helpMarkDown": "The password for the user that will access this proxy server during the build step run"
+		},
+		{
+			"name": "mcResources",
+			"type": "pickList",
+			"label": "Resources to retrieve",
+			"defaultValue": "onlyDevices",
+			"required": false,
+			"helpMarkDown": "Choose what resources will be retrieved from the Functional Testing Lab server",
+			"options": {
+				"onlyDevices": "Only devices",
+				"onlyApps": "Only applications",
+				"bothDevicesAndApps": "Both devices and applications",
+				"cloudBrowsers": "Cloud browsers"
+			}
+		},
+		{
+			"name": "includeOfflineDevices",
+			"type": "boolean",
+			"label": "Include disconnected devices in response",
+			"defaultValue": false,
+			"required": false,
+			"visibleRule": "mcResources = onlyDevices || mcResources = bothDevicesAndApps",
+			"helpMarkDown": "Choose whether to include the disconnected devices within the list of devices retrieved by running this task"
+		}
+	],
 
-    "instanceNameFormat": "Get Functional Testing Lab Resources",
-    "execution": {
-        "PowerShell3": {
-            "target": "localTask.ps1",
-            "argumentFormat": "",
-            "workingDirectory": "$(currentDirectory)",
-            "platforms": [
-                "windows"
-            ]
-        }
-    }
+	"instanceNameFormat": "Get Functional Testing Lab Resources",
+	"execution": {
+		"PowerShell3": {
+			"target": "localTask.ps1",
+			"argumentFormat": "",
+			"workingDirectory": "$(currentDirectory)",
+			"platforms": [
+				"windows"
+			]
+		}
+	}
 }

@@ -1,457 +1,457 @@
 ﻿{
-    "id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F2",
-    "name": "RunFromFileSystemTask",
-    "friendlyName": "OpenText Functional Testing File System Run",
-    "description": "Run Functional Testing tests from file system",
-    "category": "Test",
-    "visibility": [
-        "Build",
-        "Release"
-    ],
-    "author": "OpenText",
-    "version": {
-        "Major": 6,
-        "Minor": 0,
-        "Patch": 1
-    },
-    "helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
-    "demands": "UFT_LAUNCHER",
-    "groups": [
-        {
-            "name": "digitalLab",
-            "displayName": "Functional Testing Lab",
-            "isExpanded": false,
-            "visibleRule": "useDigitalLab == true"
-        },
-        {
-            "name": "deviceLab",
-            "displayName": "Device Lab",
-            "isExpanded": true,
-            "visibleRule": "useDigitalLab == true && useMcDevice == true"
-        },
-        {
-            "name": "browserLab",
-            "displayName": "Cloud Browser Lab",
-            "isExpanded": true,
-            "visibleRule": "useDigitalLab == true && useCloudBrowser == true"
-        }
-    ],
-    "inputs": [
-        {
-            "name": "testPathInput",
-            "type": "multiLine",
-            "label": "Tests",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "List of tests or folders that contain tests, to run. Each line should contain a single test, folder, or MTB file"
-        },
-        {
-            "name": "tsPattern",
-            "type": "string",
-            "label": "Timestamp pattern",
-            "defaultValue": "yyyy-MM-dd HH:mm:ss",
-            "required": false,
-            "helpMarkDown": "Timestamp format used in [Functional Testing Report] from Extensions tab. The default value is yyyy-MM-dd HH:mm:ss"
-        },
-        {
-            "name": "timeOutIn",
-            "type": "string",
-            "label": "Timeout",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
-        },
-        {
-            "name": "useDigitalLab",
-            "type": "boolean",
-            "label": "Use Functional Testing Lab",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to display the Functional Testing Lab fields. Required for Mobile or Cloud Browser tests."
-        },
-        {
-            "name": "cancelRunOnFailure",
-            "type": "boolean",
-            "label": "Cancel run on first failure",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to cancel the run when a test fails, so that the subsequent tests will be skipped"
-        },
-        {
-            "name": "generateJUnitReport",
-            "type": "boolean",
-            "label": "Generate JUnit report",
-            "defaultValue": true,
-            "required": false,
-            "helpMarkDown": "Choose whether to generate a report which provides information on your tests. The results are saved in junit_results.xml in res\\Report_<buildnumber>."
-        },
-        {
-            "name": "enableFailedTestsReport",
-            "type": "boolean",
-            "label": "Generate 'Failed Tests' report",
-            "defaultValue": true,
-            "required": false,
-            "helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps. You can view these results in the Extensions tab.",
-            "visibleRule": "generateJUnitReport = true"
-        },
-        {
-            "name": "uploadArtifact",
-            "type": "radio",
-            "label": "Do you want to upload the Functional Testing report to the storage account?",
-            "defaultValue": "no",
-            "required": true,
-            "options": {
-                "yes": "Yes",
-                "no": "No"
-            },
-            "helpMarkDown": "Choose whether you want or not to upload the report on your Azure storage account."
-        },
-        {
-            "name": "artifactType",
-            "type": "pickList",
-            "label": "Artifacts to upload",
-            "defaultValue": "onlyReport",
-            "required": false,
-            "visibleRule": "uploadArtifact = yes",
-            "helpMarkDown": "Choose what artifact will be uploaded to the storage account",
-            "options": {
-                "onlyReport": "Only Functional Testing html report",
-                "onlyArchive": "Only Functional Testing archive",
-                "bothReportArchive": "Both Functional Testing report and archive"
-            }
-        },
-        {
-            "name": "reportFileName",
-            "type": "string",
-            "label": "Report file name",
-            "defaultValue": "$(System.DefinitionName)",
-            "visibleRule": "artifactType = onlyReport || artifactType = bothReportArchive",
-            "helpMarkDown": "Choose a name for the Functional Testing report file"
-        },
-        {
-            "name": "mcServerUrl",
-            "groupName": "digitalLab",
-            "type": "string",
-            "label": "Server",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "The address of your Functional Testing Lab server, in the format http[s]://(server name):(port)"
-        },
-        {
-            "name": "mcAuthType",
-            "groupName": "digitalLab",
-            "type": "radio",
-            "label": "Authentication type",
-            "defaultValue": "basic",
-            "required": true,
-            "options": {
-                "basic": "Basic authentication",
-                "key": "Access key authentication"
-            },
-            "helpMarkDown": "Select the authentication mode to use for connecting to Functional Testing Lab"
-        },
-        {
-            "name": "mcUsername",
-            "groupName": "digitalLab",
-            "type": "string",
-            "label": "Username",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "mcAuthType = basic",
-            "helpMarkDown": "The username that will access this Functional Testing Lab server during the build step run"
-        },
-        {
-            "name": "mcPassword",
-            "groupName": "digitalLab",
-            "type": "string",
-            "label": "Password",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "mcAuthType = basic",
-            "helpMarkDown": "The password for the user that will access this Functional Testing Lab server during the build step run"
-        },
-        {
-            "name": "mcAccessKey",
-            "groupName": "digitalLab",
-            "type": "string",
-            "label": "Access Key",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "mcAuthType = key",
-            "helpMarkDown": "The Access Key will provide access to this Functional Testing Lab server during the build step run"
-        },
-        {
-            "name": "useMcProxy",
-            "groupName": "digitalLab",
-            "type": "boolean",
-            "label": "Use proxy settings",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to use a proxy for connecting to the Functional Testing Lab server"
-        },
-        {
-            "name": "mcProxyUrl",
-            "groupName": "digitalLab",
-            "type": "string",
-            "label": "Proxy Server",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "useMcProxy = true",
-            "helpMarkDown": "The address of your proxy server, in the format (proxy server name):(port)"
-        },
-        {
-            "name": "useMcProxyCredentials",
-            "groupName": "digitalLab",
-            "type": "boolean",
-            "label": "Use proxy credentials",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to specify credentials for connecting to the proxy server",
-            "visibleRule": "useMcProxy = true"
-        },
-        {
-            "name": "mcProxyUsername",
-            "groupName": "digitalLab",
-            "type": "string",
-            "label": "Proxy Username",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
-            "helpMarkDown": "The username that will access this proxy server during the build step run"
-        },
-        {
-            "name": "mcProxyPassword",
-            "groupName": "digitalLab",
-            "type": "string",
-            "label": "Proxy Password",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
-            "helpMarkDown": "The password for the user that will access this proxy server during the build step run"
-        },
-        {
-            "name": "useMcDevice",
-            "groupName": "digitalLab",
-            "type": "boolean",
-            "label": "Use Device Lab",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to use a mobile device (applicable for mobile tests only)"
-        },
-        {
-            "name": "useCloudBrowser",
-            "groupName": "digitalLab",
-            "type": "boolean",
-            "label": "Use Cloud Browser Lab",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "Choose whether to use a cloud browser"
-        },
-        {
-            "name": "mcDevice",
-            "groupName": "deviceLab",
-            "type": "string",
-            "label": "Device",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Specify one single device's information"
-        },
-        {
-            "name": "mcAppType",
-            "groupName": "deviceLab",
-            "type": "pickList",
-            "label": "Launch on start",
-            "defaultValue": "home",
-            "required": false,
-            "helpMarkDown": "The app you want to launch automatically at the start of your test",
-            "options": {
-                "home": "Home Screen",
-                "system": "System App",
-                "custom": "Functional Testing Lab App"
-            }
-        },
-        {
-            "name": "mcSysApp",
-            "groupName": "deviceLab",
-            "type": "pickList",
-            "label": "System Application",
-            "defaultValue": "browser",
-            "required": false,
-            "visibleRule": "mcAppType = system",
-            "helpMarkDown": "The pre-installed system application that you want to test on your device",
-            "options": {
-                "browser": "Browser",
-                "settings": "Settings",
-                "sms": "SMS",
-                "phone": "Phone",
-                "mail": "Mail",
-                "calendar": "Calendar",
-                "camera": "Camera"
-            }
-        },
-        {
-            "name": "mcApp",
-            "groupName": "deviceLab",
-            "type": "string",
-            "label": "Main Functional Testing Lab Application",
-            "defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged: \"Yes\"",
-            "required": false,
-            "visibleRule": "mcAppType = custom",
-            "helpMarkDown": "The main application that you want to test.<br>Provide the app's identifier, as returned by the Get Functional Testing Lab Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`",
-            "validation": {
-                "expression": "or(eq(value, ''), isMatch(value, '^\\s?Identifier\\s?:\\s?\"[^\\s\"]+\"\\s*(,\\s?Packaged\\s?:\\s?\"(Yes|No)\"\\s*)?$', 'IgnoreCase'))",
-                "message": "Expected format -> Identifier:\"<app identifier>\", Packaged:\"Yes/No\" (Identifier is required, Packaged is optional)"
-            }
-        },
-        {
-            "name": "mcExtraApps",
-            "groupName": "deviceLab",
-            "type": "multiLine",
-            "label": "Additional Functional Testing Lab Applications",
-            "defaultValue": "Identifier: \"app2\", Packaged: \"Yes\"\nIdentifier: \"app3\", Packaged: \"No\"",
-            "required": false,
-            "helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Functional Testing Lab Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`",
-            "validation": null
-        },
-        {
-            "name": "mcInstall",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Install"
-        },
-        {
-            "name": "mcRestart",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Restart"
-        },
-        {
-            "name": "mcUninstall",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Uninstall"
-        },
-        {
-            "name": "mcLogDeviceMetrics",
-            "groupName": "deviceLab",
-            "defaultValue": false,
-            "type": "boolean",
-            "label": "Log device metrics",
-            "visibleRule": "mcSysApp = to_be_implemented"
-        },
-        {
-            "name": "mcCPU",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "CPU",
-            "visibleRule": "mcLogDeviceMetrics = true"
-        },
-        {
-            "name": "mcMemory",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Memory",
-            "visibleRule": "mcLogDeviceMetrics = true"
-        },
-        {
-            "name": "mcFreeMemory",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Free Memory",
-            "visibleRule": "mcLogDeviceMetrics = true"
-        },
-        {
-            "name": "mcLogs",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Logs",
-            "visibleRule": "mcLogDeviceMetrics = true"
-        },
-        {
-            "name": "mcWifiState",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Wifi State",
-            "visibleRule": "mcLogDeviceMetrics = true"
-        },
-        {
-            "name": "mcThermalState",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Thermal State",
-            "visibleRule": "mcLogDeviceMetrics = true"
-        },
-        {
-            "name": "mcFreeDiskSpace",
-            "groupName": "deviceLab",
-            "type": "boolean",
-            "label": "Free Disk Space",
-            "visibleRule": "mcLogDeviceMetrics = true"
-        },
-        {
-            "name": "cbStartUrl",
-            "groupName": "browserLab",
-            "type": "string",
-            "label": "URL",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "Specify the URL link of the starting webpage"
-        },
-        {
-            "name": "cbLocation",
-            "groupName": "browserLab",
-            "type": "string",
-            "label": "Location",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Specify the location name (use the task 'Get Functional Testing Lab Resources' to get the available browser locations)"
-        },
-        {
-            "name": "cbOS",
-            "groupName": "browserLab",
-            "type": "string",
-            "label": "Operating System",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Specify the OS name (use the task 'Get Functional Testing Lab Resources' to get the available browser Operating Systems)"
-        },
-        {
-            "name": "cbName",
-            "groupName": "browserLab",
-            "type": "string",
-            "label": "Browser",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Specify the name of one browser only (use the task 'Get Functional Testing Lab Resources' to get the available browsers)"
-        },
-        {
-            "name": "cbVersion",
-            "groupName": "browserLab",
-            "type": "string",
-            "label": "Version",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Specify the browser version / tag (use the task 'Get Functional Testing Lab Resources' to get the available browsers)"
-        }
-    ],
+	"id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F2",
+	"name": "RunFromFileSystemTask",
+	"friendlyName": "OpenText Functional Testing File System Run",
+	"description": "Run Functional Testing tests from file system",
+	"category": "Test",
+	"visibility": [
+		"Build",
+		"Release"
+	],
+	"author": "OpenText",
+	"version": {
+		"Major": 6,
+		"Minor": 0,
+		"Patch": 1
+	},
+	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
+	"demands": "UFT_LAUNCHER",
+	"groups": [
+		{
+			"name": "digitalLab",
+			"displayName": "Functional Testing Lab",
+			"isExpanded": false,
+			"visibleRule": "useDigitalLab == true"
+		},
+		{
+			"name": "deviceLab",
+			"displayName": "Device Lab",
+			"isExpanded": true,
+			"visibleRule": "useDigitalLab == true && useMcDevice == true"
+		},
+		{
+			"name": "browserLab",
+			"displayName": "Cloud Browser Lab",
+			"isExpanded": true,
+			"visibleRule": "useDigitalLab == true && useCloudBrowser == true"
+		}
+	],
+	"inputs": [
+		{
+			"name": "testPathInput",
+			"type": "multiLine",
+			"label": "Tests",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "List of tests or folders that contain tests, to run. Each line should contain a single test, folder, or MTB file"
+		},
+		{
+			"name": "tsPattern",
+			"type": "string",
+			"label": "Timestamp pattern",
+			"defaultValue": "yyyy-MM-dd HH:mm:ss",
+			"required": false,
+			"helpMarkDown": "Timestamp format used in [Functional Testing Report] from Extensions tab. The default value is yyyy-MM-dd HH:mm:ss"
+		},
+		{
+			"name": "timeOutIn",
+			"type": "string",
+			"label": "Timeout",
+			"defaultValue": "",
+			"required": false,
+			"helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
+		},
+		{
+			"name": "useDigitalLab",
+			"type": "boolean",
+			"label": "Use Functional Testing Lab",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to display the Functional Testing Lab fields. Required for Mobile or Cloud Browser tests."
+		},
+		{
+			"name": "cancelRunOnFailure",
+			"type": "boolean",
+			"label": "Cancel run on first failure",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to cancel the run when a test fails, so that the subsequent tests will be skipped"
+		},
+		{
+			"name": "generateJUnitReport",
+			"type": "boolean",
+			"label": "Generate JUnit report",
+			"defaultValue": true,
+			"required": false,
+			"helpMarkDown": "Choose whether to generate a report which provides information on your tests. The results are saved in junit_results.xml in res\\Report_<buildnumber>."
+		},
+		{
+			"name": "enableFailedTestsReport",
+			"type": "boolean",
+			"label": "Generate 'Failed Tests' report",
+			"defaultValue": true,
+			"required": false,
+			"helpMarkDown": "Choose whether to generate a report which provides information on your tests' failed steps. You can view these results in the Extensions tab.",
+			"visibleRule": "generateJUnitReport = true"
+		},
+		{
+			"name": "uploadArtifact",
+			"type": "radio",
+			"label": "Do you want to upload the Functional Testing report to the storage account?",
+			"defaultValue": "no",
+			"required": true,
+			"options": {
+				"yes": "Yes",
+				"no": "No"
+			},
+			"helpMarkDown": "Choose whether you want or not to upload the report on your Azure storage account."
+		},
+		{
+			"name": "artifactType",
+			"type": "pickList",
+			"label": "Artifacts to upload",
+			"defaultValue": "onlyReport",
+			"required": false,
+			"visibleRule": "uploadArtifact = yes",
+			"helpMarkDown": "Choose what artifact will be uploaded to the storage account",
+			"options": {
+				"onlyReport": "Only Functional Testing html report",
+				"onlyArchive": "Only Functional Testing archive",
+				"bothReportArchive": "Both Functional Testing report and archive"
+			}
+		},
+		{
+			"name": "reportFileName",
+			"type": "string",
+			"label": "Report file name",
+			"defaultValue": "$(System.DefinitionName)",
+			"visibleRule": "artifactType = onlyReport || artifactType = bothReportArchive",
+			"helpMarkDown": "Choose a name for the Functional Testing report file"
+		},
+		{
+			"name": "mcServerUrl",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Server",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "The address of your Functional Testing Lab server, in the format http[s]://(server name):(port)"
+		},
+		{
+			"name": "mcAuthType",
+			"groupName": "digitalLab",
+			"type": "radio",
+			"label": "Authentication type",
+			"defaultValue": "basic",
+			"required": true,
+			"options": {
+				"basic": "Basic authentication",
+				"key": "Access key authentication"
+			},
+			"helpMarkDown": "Select the authentication mode to use for connecting to Functional Testing Lab"
+		},
+		{
+			"name": "mcUsername",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Username",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "mcAuthType = basic",
+			"helpMarkDown": "The username that will access this Functional Testing Lab server during the build step run"
+		},
+		{
+			"name": "mcPassword",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Password",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "mcAuthType = basic",
+			"helpMarkDown": "The password for the user that will access this Functional Testing Lab server during the build step run"
+		},
+		{
+			"name": "mcAccessKey",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Access Key",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "mcAuthType = key",
+			"helpMarkDown": "The Access Key will provide access to this Functional Testing Lab server during the build step run"
+		},
+		{
+			"name": "useMcProxy",
+			"groupName": "digitalLab",
+			"type": "boolean",
+			"label": "Use proxy settings",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to use a proxy for connecting to the Functional Testing Lab server"
+		},
+		{
+			"name": "mcProxyUrl",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Proxy Server",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "useMcProxy = true",
+			"helpMarkDown": "The address of your proxy server, in the format (proxy server name):(port)"
+		},
+		{
+			"name": "useMcProxyCredentials",
+			"groupName": "digitalLab",
+			"type": "boolean",
+			"label": "Use proxy credentials",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to specify credentials for connecting to the proxy server",
+			"visibleRule": "useMcProxy = true"
+		},
+		{
+			"name": "mcProxyUsername",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Proxy Username",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
+			"helpMarkDown": "The username that will access this proxy server during the build step run"
+		},
+		{
+			"name": "mcProxyPassword",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Proxy Password",
+			"defaultValue": "",
+			"required": true,
+			"visibleRule": "useMcProxy = true && useMcProxyCredentials = true",
+			"helpMarkDown": "The password for the user that will access this proxy server during the build step run"
+		},
+		{
+			"name": "useMcDevice",
+			"groupName": "digitalLab",
+			"type": "boolean",
+			"label": "Use Device Lab",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to use a mobile device (applicable for mobile tests only)"
+		},
+		{
+			"name": "useCloudBrowser",
+			"groupName": "digitalLab",
+			"type": "boolean",
+			"label": "Use Cloud Browser Lab",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Choose whether to use a cloud browser"
+		},
+		{
+			"name": "mcDevice",
+			"groupName": "deviceLab",
+			"type": "string",
+			"label": "Device",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "Specify one single device's information"
+		},
+		{
+			"name": "mcAppType",
+			"groupName": "deviceLab",
+			"type": "pickList",
+			"label": "Launch on start",
+			"defaultValue": "home",
+			"required": false,
+			"helpMarkDown": "The app you want to launch automatically at the start of your test",
+			"options": {
+				"home": "Home Screen",
+				"system": "System App",
+				"custom": "Functional Testing Lab App"
+			}
+		},
+		{
+			"name": "mcSysApp",
+			"groupName": "deviceLab",
+			"type": "pickList",
+			"label": "System Application",
+			"defaultValue": "browser",
+			"required": false,
+			"visibleRule": "mcAppType = system",
+			"helpMarkDown": "The pre-installed system application that you want to test on your device",
+			"options": {
+				"browser": "Browser",
+				"settings": "Settings",
+				"sms": "SMS",
+				"phone": "Phone",
+				"mail": "Mail",
+				"calendar": "Calendar",
+				"camera": "Camera"
+			}
+		},
+		{
+			"name": "mcApp",
+			"groupName": "deviceLab",
+			"type": "string",
+			"label": "Main Functional Testing Lab Application",
+			"defaultValue": "Identifier: \"com.google.android.apps.maps\", Packaged: \"Yes\"",
+			"required": false,
+			"visibleRule": "mcAppType = custom",
+			"helpMarkDown": "The main application that you want to test.<br>Provide the app's identifier, as returned by the Get Functional Testing Lab Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`",
+			"validation": {
+				"expression": "or(eq(value, ''), isMatch(value, '^\\s?Identifier\\s?:\\s?\"[^\\s\"]+\"\\s*(,\\s?Packaged\\s?:\\s?\"(Yes|No)\"\\s*)?$', 'IgnoreCase'))",
+				"message": "Expected format -> Identifier:\"<app identifier>\", Packaged:\"Yes/No\" (Identifier is required, Packaged is optional)"
+			}
+		},
+		{
+			"name": "mcExtraApps",
+			"groupName": "deviceLab",
+			"type": "multiLine",
+			"label": "Additional Functional Testing Lab Applications",
+			"defaultValue": "Identifier: \"app2\", Packaged: \"Yes\"\nIdentifier: \"app3\", Packaged: \"No\"",
+			"required": false,
+			"helpMarkDown": "Additional applications that you want to test.<br>Provide the apps' identifiers, as returned by the Get Functional Testing Lab Resources task, and optionally, specify whether the app should be packaged.<br>**Example:**<br/>`Identifier:\"com.ebay.mobile\", Packaged:\"No\"`<br/>`Identifier:\"com.mf.iShopping\", Packaged:\"Yes\"`",
+			"validation": null
+		},
+		{
+			"name": "mcInstall",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Install"
+		},
+		{
+			"name": "mcRestart",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Restart"
+		},
+		{
+			"name": "mcUninstall",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Uninstall"
+		},
+		{
+			"name": "mcLogDeviceMetrics",
+			"groupName": "deviceLab",
+			"defaultValue": false,
+			"type": "boolean",
+			"label": "Log device metrics",
+			"visibleRule": "mcSysApp = to_be_implemented"
+		},
+		{
+			"name": "mcCPU",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "CPU",
+			"visibleRule": "mcLogDeviceMetrics = true"
+		},
+		{
+			"name": "mcMemory",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Memory",
+			"visibleRule": "mcLogDeviceMetrics = true"
+		},
+		{
+			"name": "mcFreeMemory",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Free Memory",
+			"visibleRule": "mcLogDeviceMetrics = true"
+		},
+		{
+			"name": "mcLogs",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Logs",
+			"visibleRule": "mcLogDeviceMetrics = true"
+		},
+		{
+			"name": "mcWifiState",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Wifi State",
+			"visibleRule": "mcLogDeviceMetrics = true"
+		},
+		{
+			"name": "mcThermalState",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Thermal State",
+			"visibleRule": "mcLogDeviceMetrics = true"
+		},
+		{
+			"name": "mcFreeDiskSpace",
+			"groupName": "deviceLab",
+			"type": "boolean",
+			"label": "Free Disk Space",
+			"visibleRule": "mcLogDeviceMetrics = true"
+		},
+		{
+			"name": "cbStartUrl",
+			"groupName": "browserLab",
+			"type": "string",
+			"label": "URL",
+			"defaultValue": "",
+			"required": false,
+			"helpMarkDown": "Specify the URL link of the starting webpage"
+		},
+		{
+			"name": "cbLocation",
+			"groupName": "browserLab",
+			"type": "string",
+			"label": "Location",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "Specify the location name (use the task 'Get Functional Testing Lab Resources' to get the available browser locations)"
+		},
+		{
+			"name": "cbOS",
+			"groupName": "browserLab",
+			"type": "string",
+			"label": "Operating System",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "Specify the OS name (use the task 'Get Functional Testing Lab Resources' to get the available browser Operating Systems)"
+		},
+		{
+			"name": "cbName",
+			"groupName": "browserLab",
+			"type": "string",
+			"label": "Browser",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "Specify the name of one browser only (use the task 'Get Functional Testing Lab Resources' to get the available browsers)"
+		},
+		{
+			"name": "cbVersion",
+			"groupName": "browserLab",
+			"type": "string",
+			"label": "Version",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "Specify the browser version / tag (use the task 'Get Functional Testing Lab Resources' to get the available browsers)"
+		}
+	],
 
-    "instanceNameFormat": "Run From File System",
-    "execution": {
-        "PowerShell3": {
-            "target": "localTask.ps1",
-            "argumentFormat": "",
-            "workingDirectory": "$(currentDirectory)",
-            "platforms": [
-                "windows"
-            ]
-        },
-        "PublishTest": {
-            "target": "publish.ps1",
-            "argumentFormat": "",
-            "workingDirectory": "$(currentDirectory)",
-            "platforms": [
-                "windows"
-            ]
-        }
-    }
+	"instanceNameFormat": "Run From File System",
+	"execution": {
+		"PowerShell3": {
+			"target": "localTask.ps1",
+			"argumentFormat": "",
+			"workingDirectory": "$(currentDirectory)",
+			"platforms": [
+				"windows"
+			]
+		},
+		"PublishTest": {
+			"target": "publish.ps1",
+			"argumentFormat": "",
+			"workingDirectory": "$(currentDirectory)",
+			"platforms": [
+				"windows"
+			]
+		}
+	}
 }
