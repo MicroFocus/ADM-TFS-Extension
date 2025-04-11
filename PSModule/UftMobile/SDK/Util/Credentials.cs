@@ -10,7 +10,6 @@
  */
 
 using PSModule.Properties;
-using PSModule.UftMobile.SDK.Enums;
 using System.Management.Automation;
 
 namespace PSModule.UftMobile.SDK.Util

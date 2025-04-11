@@ -74,7 +74,7 @@ namespace PSModule
             return string.IsNullOrEmpty(ReportName) ? base.GetReportFilename() : ReportName;
         }
 
-        public override Dictionary<string, string> GetTaskProperties()
+        protected override Dictionary<string, string> GetTaskProperties()
         {
             LauncherParamsBuilder builder = new();
 

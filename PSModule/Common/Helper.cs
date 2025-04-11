@@ -9,6 +9,7 @@
  * The information contained herein is subject to change without notice.
  */
 
+using PSModule.Common;
 using PSModule.Models;
 using PSModule.ParallelRunner.SDK.Entity;
 using System;
@@ -18,6 +19,12 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security;
+using System.Security.AccessControl;
+using System.Security.Cryptography;
+using System.Security.Principal;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
@@ -27,7 +34,7 @@ using PRHelper = PSModule.ParallelRunner.SDK.Util.Helper;
 namespace PSModule
 {
     using C = Common.Constants;
-    static class Helper
+    public static class Helper
     {
         #region - Private & Internal Constants
 
@@ -85,6 +92,9 @@ namespace PSModule
         private const string HYPHEN = "&ndash;";
 
         private static readonly CultureInfo _enUS = new("en-US");
+
+        // Alphanumeric character set: A-Z, a-z, 0-9 (62 characters)
+        private const string AlphaNumericChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         #endregion
 
@@ -727,6 +737,137 @@ namespace PSModule
                 .ForEach(index => rounded[index] += deltaUnit);
 
             return rounded;
+        }
+
+        public static SecureString GetPrivateKey(string resDir, out string filePath)
+        {
+            filePath = Path.Combine(resDir, C._KEY_VECTOR_TMP);
+            if (File.Exists(filePath))
+            {
+                return GetKeyFromFile(filePath);
+            }
+            else
+            {
+                filePath = null;
+            }
+            return null;
+        }
+
+        public static SecureString GenerateAndSavePrivateKey(string path, out string filePath)
+        {
+            filePath = Path.Combine(path, C._KEY_VECTOR_TMP);
+            var key = GenerateAlphaNumericSecureString(32);
+            SaveKeyAndVectorToProtectedHiddenFile(filePath, key);
+            return key;
+        }
+
+        public static string GenerateAlphaNumericString(int length)
+        {
+            using var rng = RandomNumberGenerator.Create();
+            var result = new StringBuilder(length);
+            for (int i = 0; i < length; i++)
+            {
+                byte[] buffer = new byte[1];
+                rng.GetBytes(buffer);
+                int index = buffer[0] % AlphaNumericChars.Length;
+                result.Append(AlphaNumericChars[index]);
+            }
+            return result.ToString();
+        }
+
+        public static void SaveKeyAndVectorToProtectedHiddenFile(string filePath, SecureString secureKey)
+        {
+            // Convert SecureString to byte arrays
+            byte[] keyBytes = secureKey.ToByteArray();
+
+            // Encrypt the byte arrays using DPAPI for the current user
+            byte[] keyEncrypted = ProtectedData.Protect(keyBytes, null, DataProtectionScope.CurrentUser);
+
+            // Write the encrypted data to the file
+            using (FileStream fs = new(filePath, FileMode.Create, FileAccess.Write))
+            using (BinaryWriter writer = new(fs))
+            {
+                // Write the key: length followed by encrypted bytes
+                writer.Write(keyEncrypted.Length);
+                writer.Write(keyEncrypted);
+            }
+
+            // Set the file attributes to hidden
+            File.SetAttributes(filePath, FileAttributes.Hidden);
+            // Apply strict ACLs
+            SetFileAcl(filePath);
+        }
+
+        private static void SetFileAcl(string filePath)
+        {
+            // Get the current user's identity
+            string currentUser = WindowsIdentity.GetCurrent().Name;
+
+            // Create a FileSecurity object
+            FileSecurity fileSecurity = new();
+
+            // Disable inheritance and remove inherited rules
+            fileSecurity.SetAccessRuleProtection(true, false);
+
+            // Grant full control to the current user only
+            FileSystemAccessRule accessRule = new(
+                currentUser,
+                FileSystemRights.FullControl,
+                AccessControlType.Allow
+            );
+
+            // Add the access rule
+            fileSecurity.AddAccessRule(accessRule);
+
+            // Apply the ACLs to the file
+            File.SetAccessControl(filePath, fileSecurity);
+        }
+
+        private static SecureString GetKeyFromFile(string filePath)
+        {
+            try
+            {
+                // Read the encrypted data from the file
+                byte[] keyEncrypted;
+                using (FileStream fs = new(filePath, FileMode.Open, FileAccess.Read))
+                using (BinaryReader reader = new(fs))
+                {
+                    // Read the length of the encrypted key (4 bytes), then the key itself
+                    int keyLength = reader.ReadInt32();
+                    keyEncrypted = reader.ReadBytes(keyLength);
+                }
+
+                // Decrypt the data using DPAPI for the current user
+                byte[] keyBytes = ProtectedData.Unprotect(keyEncrypted, null, DataProtectionScope.CurrentUser);
+
+                // Convert decrypted byte arrays to SecureString
+                SecureString secretKey = keyBytes.ToSecureString();
+
+                // Return the KeyVector object
+                return secretKey;
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new Exception("File not found: " + ex.Message, ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new Exception("Access denied to file: " + ex.Message, ex);
+            }
+            catch (CryptographicException ex)
+            {
+                throw new Exception("Decryption failed: " + ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        private static SecureString GenerateAlphaNumericSecureString(int count)
+        {
+            string str = GenerateAlphaNumericString(count);
+            return str.ToSecureString();
         }
     }
 }

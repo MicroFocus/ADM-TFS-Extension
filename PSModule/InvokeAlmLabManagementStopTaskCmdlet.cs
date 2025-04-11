@@ -23,6 +23,7 @@ namespace PSModule
 {
     using C = Constants;
     using L = LauncherParamsBuilder;
+    using H = Helper;
 
     [Cmdlet(VerbsLifecycle.Invoke, "AlmLabManagementStopTask")]
     public class InvokeAlmLabManagementStopTaskCmdlet : AbstractLauncherTaskCmdlet
@@ -37,6 +38,7 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
+            string kvFilePath = null, runIdFilePath = null;
             try
             {
                 RunStatus runStatus = RunStatus.FAILED;
@@ -45,6 +47,14 @@ namespace PSModule
                 string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
                 if (Directory.Exists(resDir))
                 {
+                    bool b = true;
+                    while(b)
+                    {
+                        WriteVerbose($"Waiting for debugger ...");
+                        System.Threading.Thread.Sleep(7000);
+                    }
+
+                    _privateKey = H.GetPrivateKey(resDir, out kvFilePath);
                     string lastRunId = GetLastRunId(resDir);
                     string jobStatus = Environment.GetEnvironmentVariable(C.AGENT_JOBSTATUS);
                     WriteVerbose($"AGENT_JOBSTATUS = {jobStatus}");
@@ -65,8 +75,7 @@ namespace PSModule
                                 ciParams.Load(propsFilePath);
                                 if (DoStopLastRun(lastRunId, ciParams))
                                 {
-                                    string runIdFilePath = Path.Combine(resDir, $"{lastRunId}.runid");
-                                    TryDeleteFile(runIdFilePath);
+                                    runIdFilePath = Path.Combine(resDir, $"{lastRunId}.runid");
                                     runStatus = RunStatus.PASSED;
                                 }
                             }
@@ -90,6 +99,11 @@ namespace PSModule
             catch (IOException ioe)
             {
                 LogError(ioe, ErrorCategory.ResourceExists);
+            }
+            finally
+            {
+                TryDeleteFile(kvFilePath);
+                TryDeleteFile(runIdFilePath);
             }
         }
 
@@ -122,8 +136,19 @@ namespace PSModule
             string domain = ciParams.GetOrDefault(L.ALMDOMAIN);
             string project = ciParams.GetOrDefault(L.ALMPROJECT);
             bool.TryParse(ciParams.GetOrDefault(L.SSOENABLED), out bool isSSO);
-            string usernameOrClientId = isSSO ? ciParams.GetOrDefault(L.ALMCLIENTID) : ciParams.GetOrDefault(L.ALMUSERNAME);
-            string passwordOrApiKey = isSSO ? L.DecryptParam(ciParams.GetOrDefault(L.ALMAPIKEYSECRET)) : L.DecryptParam(ciParams.GetOrDefault(L.ALMPASSWORD));
+            string usernameOrClientId, passwordOrApiKey;
+            Aes256Encrypter aes256Encrypter = new(_privateKey);
+            if (isSSO)
+            {
+                usernameOrClientId = ciParams.GetOrDefault(L.ALMCLIENTID);
+                passwordOrApiKey = aes256Encrypter.Decrypt(ciParams.GetOrDefault(L.ALMAPIKEYSECRET));
+            }
+            else
+            {
+                usernameOrClientId = ciParams.GetOrDefault(L.ALMUSERNAME);
+                passwordOrApiKey = aes256Encrypter.Decrypt(ciParams.GetOrDefault(L.ALMPASSWORD));
+            }
+
             string clientType = ciParams.GetOrDefault(L.CLIENTTYPE);
             WriteDebug($"Server URL: {serverUrl}, Domain: {domain}, Project: {project}, isSSO: {isSSO}, Username / ClientId: {usernameOrClientId}, ClientType: {clientType}");
             try
@@ -165,7 +190,7 @@ namespace PSModule
             return new RunManager(client, args);
         }
 
-        public override Dictionary<string, string> GetTaskProperties()
+        protected override Dictionary<string, string> GetTaskProperties()
         {
             throw new NotImplementedException();
         }

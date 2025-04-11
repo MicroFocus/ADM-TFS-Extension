@@ -9,6 +9,9 @@
 # The information contained herein is subject to change without notice.
 # 
 
+$uftworkdir = $env:UFT_LAUNCHER
+Import-Module "$uftworkdir\bin\PSModule.dll" -ErrorAction Stop
+
 $varAlmServ = Get-VstsInput -Name 'varAlmserv' -Require
 [bool]$varSSOEnabled = Get-VstsInput -Name 'varSSOEnabled' -AsBool
 $varClientID = Get-VstsInput -Name 'varClientID'
@@ -24,7 +27,6 @@ $varEnvironmentConfigurationID = Get-VstsInput -Name 'varEnvironmentConfiguratio
 $varClientType = Get-VstsInput -Name 'varClientType'
 $varReportName = Get-VstsInput -Name 'varReportName'
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
-$uftworkdir = $env:UFT_LAUNCHER
 
 # determine whether the entity to run is a Test Set or a Build Verification Suite
 $varTSId = Get-VstsInput -Name 'varTSEntity'
@@ -48,7 +50,6 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 }
 $resDir = Join-Path $uftworkdir -ChildPath "res\Report_$buildNumber"
 
-Import-Module $uftworkdir\bin\PSModule.dll
 
 # delete old "ALM Lab Management Report" file and create a new one
 if (-Not $varReportName) {

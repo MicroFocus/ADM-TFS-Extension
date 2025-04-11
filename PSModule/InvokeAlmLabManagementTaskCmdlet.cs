@@ -95,7 +95,7 @@ namespace PSModule
             return string.IsNullOrEmpty(ReportName) ? base.GetReportFilename() : ReportName;
         }
 
-        public override Dictionary<string, string> GetTaskProperties()
+        protected override Dictionary<string, string> GetTaskProperties()
         {
             LauncherParamsBuilder builder = new();
 
@@ -103,9 +103,9 @@ namespace PSModule
             builder.SetAlmServerUrl(ALMServerPath);
             builder.SetSSOEnabled(IsSSO);
             builder.SetClientID(ClientID);
-            builder.SetApiKeySecret(ApiKeySecret);
+            builder.SetApiKeySecret(ApiKeySecret, _privateKey);
             builder.SetAlmUserName(ALMUserName);
-            builder.SetAlmPassword(ALMPassword);
+            builder.SetAlmPassword(ALMPassword, _privateKey);
             builder.SetAlmDomain(ALMDomain);
             builder.SetAlmProject(ALMProject);
             builder.SetClientType(ClientType);
@@ -149,7 +149,8 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
-            string paramFileName = string.Empty, resultsFileName;
+            string paramFileName = string.Empty, resultsFileName, lastTimestampFilePath = null;
+            string kvFilePath = null;
             try
             {
                 Dictionary<string, string> properties;
@@ -177,10 +178,10 @@ namespace PSModule
                 if (!Directory.Exists(_resDir))
                     Directory.CreateDirectory(_resDir);
 
-                string timeSign = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
+                string timestamp = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
 
-                paramFileName = Path.Combine(propsDir, $"{PROPS}{timeSign}.txt");
-                resultsFileName = Path.Combine(_resDir, $"{RESULTS}{timeSign}.xml");
+                paramFileName = Path.Combine(propsDir, $"{PROPS}{timestamp}.txt");
+                resultsFileName = Path.Combine(_resDir, $"{RESULTS}{timestamp}.xml");
 
                 properties.Add(RESULTS_FILENAME, resultsFileName.Replace(@"\", @"\\")); // double backslashes are expected by HpToolsLauncher.exe (JavaProperties.cs, in LoadInternal method)
 
@@ -191,15 +192,13 @@ namespace PSModule
 
                 DeleteOldRunIdFiles(_resDir);
 
-                string lastTimestamp = Path.Combine(_resDir, C.LastTimestamp);
-                SaveTimestamp(lastTimestamp, timeSign);
+                lastTimestampFilePath = Path.Combine(_resDir, C.LastTimestamp);
+                SaveTimestamp(lastTimestampFilePath, timestamp);
+                _privateKey = H.GenerateAndSavePrivateKey(_resDir, out kvFilePath);
 
                 //run the build task
                 var runMgr = GetRunManager(_resDir);
                 bool hasResults = Run(resultsFileName, runMgr).Result;
-
-                TryDeleteFile(_runIdFilePath);
-                TryDeleteFile(lastTimestamp);
 
                 RunStatus runStatus = RunStatus.FAILED;
                 if (hasResults)
@@ -223,6 +222,12 @@ namespace PSModule
             catch (IOException ioe)
             {
                 LogError(ioe, ErrorCategory.ResourceExists);
+            }
+            finally
+            {
+                TryDeleteFile(_runIdFilePath);
+                TryDeleteFile(lastTimestampFilePath);
+                TryDeleteFile(kvFilePath);
             }
         }
 

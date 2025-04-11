@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Security;
 
 namespace PSModule
 {
@@ -83,7 +84,7 @@ namespace PSModule
         private const string MOBILEINFO = "mobileinfo";
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
 
-        private readonly static string _secretKey = "EncriptionPass4Java"; // TODO improve the encryption mechanism
+        private readonly static string _defaultSecretKey = "EncriptionPass4Java"; // TODO improve the encryption mechanism
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
         private readonly Dictionary<string, string> properties = [];
 
@@ -168,17 +169,16 @@ namespace PSModule
             SetParamValue(ALMUSERNAME, almUserName);
         }
 
-        public void SetAlmPassword(string almPassword)
+        public void SetAlmPassword(string almPassword, SecureString key = null)
         {
             string encAlmPass;
             try
             {
-                encAlmPass = EncryptParam(almPassword);
+                encAlmPass = key == null ? EncryptParam(almPassword) : new Aes256Encrypter(key).Encrypt(almPassword);
                 SetParamValue(ALMPASSWORD, encAlmPass);
             }
             catch
             {
-
             }
         }
 
@@ -202,9 +202,9 @@ namespace PSModule
             SetParamValue(ALMCLIENTID, clientID);
         }
 
-        public void SetApiKeySecret(string apiKeySecret)
+        public void SetApiKeySecret(string apiKeySecret, SecureString key = null)
         {
-            string encAlmApiKey = EncryptParam(apiKeySecret);
+            string encAlmApiKey = key == null ? EncryptParam(apiKeySecret) : new Aes256Encrypter(key).Encrypt(apiKeySecret);
             SetParamValue(ALMAPIKEYSECRET, encAlmApiKey);
         }
 
@@ -334,7 +334,7 @@ namespace PSModule
                 KeySize = 0x80,
                 BlockSize = 0x80
             };
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretKey);
+            byte[] pwdBytes = Encoding.UTF8.GetBytes(_defaultSecretKey);
             byte[] keyBytes = new byte[0x10];
             int len = pwdBytes.Length;
             if (len > keyBytes.Length)
@@ -360,7 +360,7 @@ namespace PSModule
                 BlockSize = 0x80
             };
             byte[] encryptedData = Convert.FromBase64String(encryptedText);
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretKey);
+            byte[] pwdBytes = Encoding.UTF8.GetBytes(_defaultSecretKey);
             byte[] keyBytes = new byte[0x10];
             int len = pwdBytes.Length;
             if (len > keyBytes.Length)
