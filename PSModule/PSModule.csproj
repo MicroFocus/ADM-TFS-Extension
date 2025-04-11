@@ -48,6 +48,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.0.0\lib\net4\System.Management.Automation.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
@@ -115,6 +116,7 @@
     <Compile Include="AlmLabMgmtClient\SDK\Util\Credentials.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\JUnitParser.cs" />
     <Compile Include="AlmLabMgmtClient\SDK\Util\ResourceAccessLevel.cs" />
+    <Compile Include="Common\Aes256Encrypter.cs" />
     <Compile Include="Common\EnvVarsConfig.cs" />
     <Compile Include="Common\JavaProperties.cs" />
     <Compile Include="Common\StringValue.cs" />

@@ -171,14 +171,14 @@ namespace PSModule
             return true; //do nothing here. Collate results should be made by the standard "Copy and Publish Artifacts" TFS task
         }
 
-        public override Dictionary<string, string> GetTaskProperties()
+        protected override Dictionary<string, string> GetTaskProperties()
         {
             LauncherParamsBuilder builder = new();
 
             builder.SetRunType(RunType.FileSystem);
             builder.SetFsTimeOut(Timeout);
 
-            var tests = TestsPath.Split("\n".ToArray());
+            var tests = TestsPath.Split([.. "\n"]);
 
             for (int i = 0; i < tests.Length; i++)
             {

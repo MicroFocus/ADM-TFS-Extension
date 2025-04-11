@@ -23,6 +23,7 @@ using PSModule.Models;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
 using PSModule.UftMobile.SDK.UI;
+using System.Security;
 
 namespace PSModule
 {
@@ -66,10 +67,11 @@ namespace PSModule
         protected CloudBrowserConfig _cloudBrowserConfig;
         protected ParallelRunnerConfig _parallelRunnerConfig;
         protected string _timestampPattern;
+        protected SecureString _privateKey;
 
         protected AbstractLauncherTaskCmdlet() { }
 
-        public abstract Dictionary<string, string> GetTaskProperties();
+        protected abstract Dictionary<string, string> GetTaskProperties();
 
         private delegate void CreateSummaryReport(string rptPath, RunType runType, IList<ReportMetaData> reportList, string tsPattern, H.OptionalParams optionalParams = null);
 
@@ -555,6 +557,5 @@ namespace PSModule
                 }
             }
         }
-
     }
 }

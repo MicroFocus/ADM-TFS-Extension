@@ -18,7 +18,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Serialization;
@@ -258,6 +260,82 @@ namespace PSModule
         public static bool AreTestRunsFromJsonRpt(this ReportMetaData testCase)
         {
             return testCase?.TestRuns?.Any(tr => tr.Id == 0) == true;
+        }
+
+        /// <summary>
+        /// Converts a SecureString to plain text. Warning: This exposes secure data in memory.
+        /// </summary>
+        /// <param name="secretValue">The SecureString to convert</param>
+        /// <returns>The plain text string</returns>
+        /// <exception cref="ArgumentNullException">Thrown if secretValue is null</exception>
+        public static string AsPlainText(this SecureString secretValue)
+        {
+            if (secretValue == null)
+                throw new ArgumentNullException(nameof(secretValue));
+
+            if (secretValue.Length == 0)
+                return string.Empty;
+
+            IntPtr valuePtr = IntPtr.Zero;
+            try
+            {
+                valuePtr = Marshal.SecureStringToGlobalAllocUnicode(secretValue);
+                return Marshal.PtrToStringUni(valuePtr);
+            }
+            finally
+            {
+                if (valuePtr != IntPtr.Zero)
+                {
+                    Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
+                }
+            }
+        }
+
+        public static SecureString ToSecureString(this string plainText)
+        {
+            if (string.IsNullOrEmpty(plainText))
+                return new SecureString();
+
+            SecureString secureString = new();
+            foreach (char c in plainText)
+            {
+                secureString.AppendChar(c);
+            }
+            secureString.MakeReadOnly();
+            return secureString;
+        }
+
+        public static SecureString ToSecureString(this byte[] bytes)
+        {
+            string str = Encoding.Unicode.GetString(bytes);
+            SecureString secureString = new();
+
+            foreach (char c in str)
+            {
+                secureString.AppendChar(c);
+            }
+
+            // Make the SecureString read-only and return it
+            secureString.MakeReadOnly();
+            return secureString;
+        }
+
+        public static byte[] ToByteArray(this SecureString secureString)
+        {
+            IntPtr bstr = Marshal.SecureStringToBSTR(secureString);
+            try
+            {
+                // Read the length prefix of the BSTR (4 bytes before the pointer)
+                int length = Marshal.ReadInt32(bstr, -4);
+                byte[] bytes = new byte[length];
+                Marshal.Copy(bstr, bytes, 0, length);
+                return bytes;
+            }
+            finally
+            {
+                // Free the BSTR to prevent memory leaks
+                Marshal.ZeroFreeBSTR(bstr);
+            }
         }
     }
 }

@@ -10,6 +10,7 @@
 # 
 
 $uftworkdir = $env:UFT_LAUNCHER
+Import-Module "$uftworkdir\bin\PSModule.dll" -ErrorAction Stop
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
@@ -18,8 +19,6 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:RELEASE_RELEASEID
 }
 $resDir = Join-Path $uftworkdir -ChildPath "res\Report_$buildNumber"
-
-Import-Module $uftworkdir\bin\PSModule.dll
 
 $retcodefile = "$resDir\StopRunReturnCode.txt"
 
