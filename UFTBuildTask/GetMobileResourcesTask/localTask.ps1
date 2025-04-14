@@ -11,7 +11,9 @@
 
 using namespace PSModule.UftMobile.SDK.UI
 
-param()
+$uftworkdir = $env:UFT_LAUNCHER
+Import-Module "$uftworkdir\bin\PSModule.dll" -ErrorAction Stop
+
 $mcServerUrl = (Get-VstsInput -Name 'mcServerUrl' -Require).Trim()
 $mcAuthType = Get-VstsInput -Name 'mcAuthType' -Require
 $mcUsername = (Get-VstsInput -Name 'mcUsername').Trim()
@@ -20,7 +22,6 @@ $mcAccessKey = (Get-VstsInput -Name 'mcAccessKey').Trim(' "')
 $mcResources = Get-VstsInput -Name 'mcResources' -Require
 [bool]$includeOfflineDevices = Get-VstsInput -Name 'includeOfflineDevices' -AsBool
 
-$uftworkdir = $env:UFT_LAUNCHER
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:BUILD_BUILDNUMBER
@@ -34,8 +35,6 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 
 $resDir = Join-Path $uftworkdir -ChildPath "res\Report_$buildNumber"
 $runStatusCodeFile = "$resDir\RunStatusCode.txt"
-
-Import-Module $uftworkdir\bin\PSModule.dll
 
 [bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 [ProxyConfig]$proxyConfig = $null

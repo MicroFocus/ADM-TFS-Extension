@@ -41,7 +41,6 @@ namespace PSModule.Common
     public class Aes256Encrypter
     {
         private readonly byte[] _keyBytes;
-        private readonly byte[] _ivBytes;
         private const int INT_256 = 256;
         private const int INT_128 = 128;
 

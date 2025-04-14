@@ -9,22 +9,24 @@
 # The information contained herein is subject to change without notice.
 # 
 
-$varAlmserv = Get-VstsInput -Name 'varAlmserv' -Require
-[bool]$varSSOEnabled = Get-VstsInput -Name 'varSSOEnabled' -AsBool
-$varClientID = Get-VstsInput -Name 'varClientID'
-$varApiKeySecret = Get-VstsInput -Name 'varApiKeySecret'
-$varUserName = Get-VstsInput -Name 'varUsername'
-$varPass = Get-VstsInput -Name 'varPass'
-$varDomain = Get-VstsInput -Name 'varDomain' -Require
-$varProject = Get-VstsInput -Name 'varProject' -Require
-$varTestsets = Get-VstsInput -Name 'varTestsets' -Require
-$varTimeout = Get-VstsInput -Name 'varTimeout'
-$varReportName = Get-VstsInput -Name 'varReportName'
-$runMode = Get-VstsInput -Name 'runMode'
-$testingToolHost = Get-VstsInput -Name 'testingToolHost'
-[string]$tsPattern = Get-VstsInput -Name 'tsPattern'
-
 $uftworkdir = $env:UFT_LAUNCHER
+Import-Module "$uftworkdir\bin\PSModule.dll" -ErrorAction Stop
+
+$varAlmserv = (Get-VstsInput -Name 'varAlmserv' -Require).Trim()
+[bool]$varSSOEnabled = Get-VstsInput -Name 'varSSOEnabled' -AsBool
+$varClientID = (Get-VstsInput -Name 'varClientID').Trim()
+$varApiKeySecret = Get-VstsInput -Name 'varApiKeySecret'
+$varUserName = (Get-VstsInput -Name 'varUsername').Trim()
+$varPass = Get-VstsInput -Name 'varPass'
+$varDomain = (Get-VstsInput -Name 'varDomain' -Require).Trim()
+$varProject = (Get-VstsInput -Name 'varProject' -Require).Trim()
+$varTestsets = (Get-VstsInput -Name 'varTestsets' -Require).Trim()
+$varTimeout = (Get-VstsInput -Name 'varTimeout').Trim()
+$varReportName = (Get-VstsInput -Name 'varReportName').Trim()
+$runMode = Get-VstsInput -Name 'runMode'
+$testingToolHost = (Get-VstsInput -Name 'testingToolHost').Trim()
+[string]$tsPattern = (Get-VstsInput -Name 'tsPattern').Trim()
+
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:BUILD_BUILDNUMBER
@@ -37,8 +39,6 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 
 }
 $resDir = Join-Path $uftworkdir -ChildPath "res\Report_$buildNumber"
-
-Import-Module $uftworkdir\bin\PSModule.dll
 
 # delete old "ALM Execution Report" file and create a new one
 if (-Not $varReportName) {

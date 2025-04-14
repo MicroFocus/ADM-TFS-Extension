@@ -39,10 +39,10 @@ if (Test-Path $retcodefile) {
 			Write-Host "Task completed successfully."
 		}
 
-		if ($retcode -eq -3) {
-			Write-Error "Task Failed with message: Closed by user"
-		} elseif ($retcode -ne 0) {
+		if ($retcode -eq -1) {
 			Write-Error "Task Failed"
+		} elseif ($retcode -eq -9) {
+			Write-Warning "Task completed with no action needed."
 		}
 	} else {
 		Write-Error "The file [$retcodefile] is empty!"

@@ -9,7 +9,6 @@
  * The information contained herein is subject to change without notice.
  */
 
-using PSModule.Common;
 using PSModule.Models;
 using PSModule.ParallelRunner.SDK.Entity;
 using System;
@@ -19,7 +18,6 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
@@ -688,7 +686,7 @@ namespace PSModule
 
         private static string GetTestName(string testPath)
         {
-            int pos = testPath.LastIndexOf(@"\", StringComparison.Ordinal) + 1;
+            int pos = testPath.LastIndexOf(C.BACK_SLASH_, StringComparison.Ordinal) + 1;
             return testPath.Substring(pos, testPath.Length - pos);
         }
 

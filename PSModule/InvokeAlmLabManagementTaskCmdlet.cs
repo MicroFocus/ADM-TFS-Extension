@@ -126,7 +126,7 @@ namespace PSModule
                 int i = 1;
                 foreach (string testSet in ALMEntityId.Split(C.LINE_FEED))
                 {
-                    builder.SetTestSet(i++, testSet.Replace(@"\", @"\\"));
+                    builder.SetTestSet(i++, testSet.Replace(C.BACK_SLASH_, C.DOUBLE_BACK_SLASH_));
                 }
             }
             else
@@ -149,7 +149,7 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
-            string paramFileName = string.Empty, resultsFileName, lastTimestampFilePath = null;
+            string propsFilePath = string.Empty, resultsFilePath, lastTimestampFilePath = null;
             string kvFilePath = null;
             try
             {
@@ -180,17 +180,17 @@ namespace PSModule
 
                 string timestamp = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
 
-                paramFileName = Path.Combine(propsDir, $"{PROPS}{timestamp}.txt");
-                resultsFileName = Path.Combine(_resDir, $"{RESULTS}{timestamp}.xml");
+                propsFilePath = Path.Combine(propsDir, $"{PROPS}{timestamp}.txt");
+                resultsFilePath = Path.Combine(_resDir, $"{RESULTS}{timestamp}.xml");
 
-                properties.Add(RESULTS_FILENAME, resultsFileName.Replace(@"\", @"\\")); // double backslashes are expected by HpToolsLauncher.exe (JavaProperties.cs, in LoadInternal method)
+                properties.Add(RESULTS_FILENAME, resultsFilePath.Replace(C.BACK_SLASH_, C.DOUBLE_BACK_SLASH_)); // double backslashes are expected by HpToolsLauncher.exe (JavaProperties.cs, in LoadInternal method)
 
-                if (!SaveProperties(paramFileName, properties))
+                if (!SaveProperties(propsFilePath, properties))
                 {
                     return;
                 }
 
-                DeleteOldRunIdFiles(_resDir);
+                DeleteExistingRunIdFiles(_resDir);
 
                 lastTimestampFilePath = Path.Combine(_resDir, C.LastTimestamp);
                 SaveTimestamp(lastTimestampFilePath, timestamp);
@@ -198,12 +198,12 @@ namespace PSModule
 
                 //run the build task
                 var runMgr = GetRunManager(_resDir);
-                bool hasResults = Run(resultsFileName, runMgr).Result;
+                bool hasResults = Run(resultsFilePath, runMgr).Result;
 
                 RunStatus runStatus = RunStatus.FAILED;
                 if (hasResults)
                 {
-                    var listReport = H.ReadReportFromXMLFile(resultsFileName, false, out _);
+                    var listReport = H.ReadReportFromXMLFile(resultsFilePath, false, out _);
                     H.CreateSummaryReport(_resDir, RunType.AlmLabManagement, listReport, _timestampPattern);
                     //get task return code
                     runStatus = H.GetRunStatus(listReport);
@@ -228,6 +228,7 @@ namespace PSModule
                 TryDeleteFile(_runIdFilePath);
                 TryDeleteFile(lastTimestampFilePath);
                 TryDeleteFile(kvFilePath);
+                TryDeleteFile(propsFilePath);
             }
         }
 
@@ -261,7 +262,7 @@ namespace PSModule
             }
         }
 
-        private void DeleteOldRunIdFiles(string folderPath)
+        private void DeleteExistingRunIdFiles(string folderPath)
         {
             try
             {

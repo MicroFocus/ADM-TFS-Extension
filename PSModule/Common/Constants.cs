@@ -59,6 +59,8 @@ namespace PSModule.Common
         public static readonly char[] SEMI_COLON_ = SEMI_COLON.ToCharArray();
         public const char SLASH = '/';
         public const char BACK_SLASH = '\\';
+        public const string BACK_SLASH_ = @"\";
+        public const string DOUBLE_BACK_SLASH_ = @"\\";
 
         public const string MC = "MC";
 

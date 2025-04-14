@@ -14,14 +14,16 @@ using namespace PSModule.UftMobile.SDK.UI
 using namespace PSModule.UftMobile.SDK.Entity
 using namespace System.Collections.Generic
 
-param()
+$uftworkdir = $env:UFT_LAUNCHER
+Import-Module "$uftworkdir\bin\PSModule.dll" -ErrorAction Stop
+
 $testPathInput = (Get-VstsInput -Name 'testPathInput' -Require).Trim()
 $timeOutIn = (Get-VstsInput -Name 'timeOutIn').Trim()
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
 $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
-[string]$tsPattern = Get-VstsInput -Name 'tsPattern'
+[string]$tsPattern = (Get-VstsInput -Name 'tsPattern').Trim()
 
 $envType = Get-VstsInput -Name 'envType'
 
@@ -35,8 +37,6 @@ $envType = Get-VstsInput -Name 'envType'
 [bool]$useIExplorer64 = Get-VstsInput -Name 'iExplorer64' -AsBool
 [bool]$useSafari = Get-VstsInput -Name 'safari' -AsBool
 
-$uftworkdir = $env:UFT_LAUNCHER
-Import-Module $uftworkdir\bin\PSModule.dll
 $configs = [List[IConfig]]::new()
 $configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER))
 

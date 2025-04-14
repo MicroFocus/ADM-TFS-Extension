@@ -38,22 +38,15 @@ namespace PSModule
 
         protected override void ProcessRecord()
         {
-            string kvFilePath = null, runIdFilePath = null;
+            string kvFilePath = null, runIdFilePath = null, propsFilePath = null;
+            RunStatus runStatus = RunStatus.FAILED;
             try
             {
-                RunStatus runStatus = RunStatus.FAILED;
                 string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
                 string resDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{BuildNumber}"));
                 string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
                 if (Directory.Exists(resDir))
                 {
-                    bool b = true;
-                    while(b)
-                    {
-                        WriteVerbose($"Waiting for debugger ...");
-                        System.Threading.Thread.Sleep(7000);
-                    }
-
                     _privateKey = H.GetPrivateKey(resDir, out kvFilePath);
                     string lastRunId = GetLastRunId(resDir);
                     string jobStatus = Environment.GetEnvironmentVariable(C.AGENT_JOBSTATUS);
@@ -63,12 +56,11 @@ namespace PSModule
                         if (lastRunId.IsNullOrEmpty())
                         {
                             WriteWarning($"Last Run ID file not found.");
-                            runStatus = RunStatus.UNDEFINED;
                         }
                         else
                         {
                             string lastTimestamp = GetLastTimestamp(Path.Combine(resDir, C.LastTimestamp));
-                            string propsFilePath = Path.Combine(propsDir, $"{PROPS}{lastTimestamp}.txt");
+                            propsFilePath = Path.Combine(propsDir, $"{PROPS}{lastTimestamp}.txt");
                             if (File.Exists(propsFilePath))
                             {
                                 JavaProperties ciParams = [];
@@ -81,9 +73,14 @@ namespace PSModule
                             }
                             else
                             {
+                                runStatus = RunStatus.FAILED;
                                 WriteWarning($"Properties file not found: {propsFilePath}");
                             }
                         }
+                    }
+                    else
+                    {
+                        runStatus = RunStatus.UNDEFINED;
                     }
                 }
                 else
@@ -96,14 +93,15 @@ namespace PSModule
             {
                 LogError(ae, ae.Category);
             }
-            catch (IOException ioe)
+            catch (Exception e)
             {
-                LogError(ioe, ErrorCategory.ResourceExists);
+                LogError(e);
             }
             finally
             {
                 TryDeleteFile(kvFilePath);
                 TryDeleteFile(runIdFilePath);
+                TryDeleteFile(propsFilePath);
             }
         }
 

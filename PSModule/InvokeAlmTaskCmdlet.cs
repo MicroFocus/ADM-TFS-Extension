@@ -109,7 +109,7 @@ namespace PSModule
                 int i = 1;
                 foreach (string testSet in ALMTestSet.Split(C.LINE_FEED))
                 {
-                    builder.SetTestSet(i++, testSet.Replace(@"\",@"\\"));
+                    builder.SetTestSet(i++, testSet.Replace(C.BACK_SLASH_, C.DOUBLE_BACK_SLASH_));
                 }
             }
             else

@@ -14,7 +14,9 @@ using namespace PSModule.UftMobile.SDK.UI
 using namespace PSModule.UftMobile.SDK.Entity
 using namespace System.Collections.Generic
 
-param()
+$uftworkdir = $env:UFT_LAUNCHER
+Import-Module "$uftworkdir\bin\PSModule.dll" -ErrorAction Stop
+
 $testPathInput = (Get-VstsInput -Name 'testPathInput' -Require).Trim()
 $timeOutIn = (Get-VstsInput -Name 'timeOutIn').Trim()
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
@@ -26,8 +28,6 @@ $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [bool]$generateJUnitRpt = Get-VstsInput -Name 'generateJUnitReport' -AsBool
 [bool]$useDigitalLab = Get-VstsInput -Name 'useDigitalLab' -AsBool
 
-$uftworkdir = $env:UFT_LAUNCHER
-Import-Module $uftworkdir\bin\PSModule.dll
 $configs = [List[IConfig]]::new()
 $configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE))
 

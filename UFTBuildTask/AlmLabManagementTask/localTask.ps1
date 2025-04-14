@@ -12,21 +12,21 @@
 $uftworkdir = $env:UFT_LAUNCHER
 Import-Module "$uftworkdir\bin\PSModule.dll" -ErrorAction Stop
 
-$varAlmServ = Get-VstsInput -Name 'varAlmserv' -Require
+$varAlmServ = (Get-VstsInput -Name 'varAlmserv' -Require).Trim()
 [bool]$varSSOEnabled = Get-VstsInput -Name 'varSSOEnabled' -AsBool
-$varClientID = Get-VstsInput -Name 'varClientID'
+$varClientID = (Get-VstsInput -Name 'varClientID').Trim()
 $varApiKeySecret = Get-VstsInput -Name 'varApiKeySecret'
-$varUserName = Get-VstsInput -Name 'varUserName'
+$varUserName = (Get-VstsInput -Name 'varUserName').Trim()
 $varPass = Get-VstsInput -Name 'varPass'
-$varDomain = Get-VstsInput -Name 'varDomain' -Require
-$varProject = Get-VstsInput -Name 'varProject' -Require
+$varDomain = (Get-VstsInput -Name 'varDomain' -Require).Trim()
+$varProject = (Get-VstsInput -Name 'varProject' -Require).Trim()
 $varRunType = Get-VstsInput -Name 'varRunType'
-$varDescription = Get-VstsInput -Name 'varDescription'
-$varTimeslotDuration = Get-VstsInput -Name 'varTimeslotDuration' -Require
-$varEnvironmentConfigurationID = Get-VstsInput -Name 'varEnvironmentConfigurationID'
-$varClientType = Get-VstsInput -Name 'varClientType'
-$varReportName = Get-VstsInput -Name 'varReportName'
-[string]$tsPattern = Get-VstsInput -Name 'tsPattern'
+$varDescription = (Get-VstsInput -Name 'varDescription').Trim()
+$varTimeslotDuration = (Get-VstsInput -Name 'varTimeslotDuration' -Require).Trim()
+$varEnvironmentConfigurationID = (Get-VstsInput -Name 'varEnvironmentConfigurationID').Trim()
+$varClientType = (Get-VstsInput -Name 'varClientType').Trim()
+$varReportName = (Get-VstsInput -Name 'varReportName').Trim()
+[string]$tsPattern = (Get-VstsInput -Name 'tsPattern').Trim()
 
 # determine whether the entity to run is a Test Set or a Build Verification Suite
 $varTSId = Get-VstsInput -Name 'varTSEntity'
@@ -98,6 +98,10 @@ try {
 } catch {
 	Write-Error "Invalid Timestamp Pattern '$tsPattern'"
 }
+
+Write-Host "=============================================================================="
+Write-Host "$varAlmServ, Domain: $varDomain, Project: $varProject, isSSO: $varSSOEnabled, UserName: $varUserName, ClientID: $varClientID, RunType: $varRunType, EntityID: $varEntityId, Env Config ID: $varEnvironmentConfigurationID, TimeslotDuration: $varTimeslotDuration"
+Write-Host "=============================================================================="
 Invoke-AlmLabManagementTask $varAlmServ $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varRunType $varEntityId $varDescription $varTimeslotDuration $varEnvironmentConfigurationID $varReportName $buildNumber $varClientType $tsPattern -Verbose
 
 #---------------------------------------------------------------------------------------------------
