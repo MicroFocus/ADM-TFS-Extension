@@ -1,4 +1,4 @@
-# Integration with OpenText Functional Testing
+# Integration with OpenText™ Functional Testing
 This extension enables you to run Functional Testing tests as part of your Azure DevOps build process. In a build step, run Functional Testing tests stored in the local file system or on an ALM server.    
 • When running test stored in the local file system, you can also run mobile tests. In addition, Parallel execution is available for mobile and web tests.    
 • When running tests from ALM Lab Management, you can also include a build step that prepares the test environment before running the tests.    

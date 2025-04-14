@@ -1,7 +1,7 @@
 ﻿{
 	"id": "37008DAC-BEE4-3D0A-B7EE-79BE8C118D3C",
 	"name": "AlmLabManagementStopTask",
-	"friendlyName": "OpenText Functional Testing ALM Lab Management Stop Run",
+	"friendlyName": "OpenText™ Functional Testing ALM Lab Management Stop Run",
 	"description": "Use this build step to stop run ALM server-side functional test sets",
 	"category": "Test",
 	"visibility": [

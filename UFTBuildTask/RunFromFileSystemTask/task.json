@@ -1,7 +1,7 @@
 ﻿{
 	"id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F2",
 	"name": "RunFromFileSystemTask",
-	"friendlyName": "OpenText Functional Testing File System Run",
+	"friendlyName": "OpenText™ Functional Testing File System Run",
 	"description": "Run Functional Testing tests from file system",
 	"category": "Test",
 	"visibility": [

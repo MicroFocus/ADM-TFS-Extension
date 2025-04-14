@@ -1,7 +1,7 @@
 ﻿{
 	"id": "91008DAF-AFF5-4E1A-A6FF-8ACF9D229E3C",
 	"name": "AlmLabManagementTask",
-	"friendlyName": "OpenText Functional Testing ALM Lab Management Run",
+	"friendlyName": "OpenText™ Functional Testing ALM Lab Management Run",
 	"description": "Use this build step to run ALM server-side functional test sets",
 	"category": "Test",
 	"visibility": [

@@ -1,7 +1,7 @@
 ﻿{
 	"id": "8A2A673B-D762-486B-854D-75C57E8D6B8A",
 	"name": "ParallelRunnerTask",
-	"friendlyName": "OpenText Functional Testing Parallel Test Run",
+	"friendlyName": "OpenText™ Functional Testing Parallel Test Run",
 	"description": "Run OpenText Functional Testing tests from file system using parallel runner",
 	"category": "Test",
 	"visibility": [

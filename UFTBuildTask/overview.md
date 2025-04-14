@@ -22,7 +22,7 @@ If you are running UFT tests saved in ALM, as part of a test set or build verifi
 
 ## System prerequisites
 
-* OpenText Functional Testing installed on the same computer as the Extension
+* OpenText™ Functional Testing installed on the same computer as the Extension
 * Powershell version 4.0 or higher
 * JRE installed with the Path environment variable pointing to the JRE installation folder
 
