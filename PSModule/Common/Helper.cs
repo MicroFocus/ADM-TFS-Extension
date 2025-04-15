@@ -755,7 +755,7 @@ namespace PSModule
         {
             filePath = Path.Combine(path, C._KEY_VECTOR_TMP);
             var key = GenerateAlphaNumericSecureString(32);
-            SaveKeyAndVectorToProtectedHiddenFile(filePath, key);
+            SaveKeyToProtectedHiddenFile(filePath, key);
             return key;
         }
 
@@ -773,7 +773,7 @@ namespace PSModule
             return result.ToString();
         }
 
-        public static void SaveKeyAndVectorToProtectedHiddenFile(string filePath, SecureString secureKey)
+        public static void SaveKeyToProtectedHiddenFile(string filePath, SecureString secureKey)
         {
             // Convert SecureString to byte arrays
             byte[] keyBytes = secureKey.ToByteArray();

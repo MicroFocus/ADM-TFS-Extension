@@ -171,15 +171,8 @@ namespace PSModule
 
         public void SetAlmPassword(string almPassword, SecureString key = null)
         {
-            string encAlmPass;
-            try
-            {
-                encAlmPass = key == null ? EncryptParam(almPassword) : new Aes256Encrypter(key).Encrypt(almPassword);
-                SetParamValue(ALMPASSWORD, encAlmPass);
-            }
-            catch
-            {
-            }
+            string encAlmPass = key == null ? EncryptParam(almPassword) : new Aes256Encrypter(key).Encrypt(almPassword);
+            SetParamValue(ALMPASSWORD, encAlmPass);
         }
 
         public void SetAlmDomain(string almDomain)

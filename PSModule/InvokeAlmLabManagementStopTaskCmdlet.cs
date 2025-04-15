@@ -139,7 +139,8 @@ namespace PSModule
             if (isSSO)
             {
                 usernameOrClientId = ciParams.GetOrDefault(L.ALMCLIENTID);
-                passwordOrApiKey = aes256Encrypter.Decrypt(ciParams.GetOrDefault(L.ALMAPIKEYSECRET));
+                string encApiKeySecret = ciParams.GetOrDefault(L.ALMAPIKEYSECRET);
+                passwordOrApiKey = aes256Encrypter.Decrypt(encApiKeySecret);
             }
             else
             {

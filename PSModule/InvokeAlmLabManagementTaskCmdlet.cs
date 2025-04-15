@@ -153,6 +153,23 @@ namespace PSModule
             string kvFilePath = null;
             try
             {
+                string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
+                string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
+
+                if (!Directory.Exists(propsDir))
+                    Directory.CreateDirectory(propsDir);
+
+                _resDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{BuildNumber}"));
+                if (!Directory.Exists(_resDir))
+                    Directory.CreateDirectory(_resDir);
+                DeleteExistingRunIdFiles(_resDir);
+
+                string timestamp = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
+
+                propsFilePath = Path.Combine(propsDir, $"{PROPS}{timestamp}.txt");
+                resultsFilePath = Path.Combine(_resDir, $"{RESULTS}{timestamp}.xml");
+                _privateKey = H.GenerateAndSavePrivateKey(_resDir, out kvFilePath);
+
                 Dictionary<string, string> properties;
                 try
                 {
@@ -168,21 +185,6 @@ namespace PSModule
                     return;
                 }
 
-                string ufttfsdir = Environment.GetEnvironmentVariable(UFT_LAUNCHER);
-                string propsDir = Path.GetFullPath(Path.Combine(ufttfsdir, PROPS));
-
-                if (!Directory.Exists(propsDir))
-                    Directory.CreateDirectory(propsDir);
-
-                _resDir = Path.GetFullPath(Path.Combine(ufttfsdir, $@"res\Report_{properties[BUILD_NUMBER]}"));
-                if (!Directory.Exists(_resDir))
-                    Directory.CreateDirectory(_resDir);
-
-                string timestamp = DateTime.Now.ToString(DDMMYYYYHHMMSSSSS);
-
-                propsFilePath = Path.Combine(propsDir, $"{PROPS}{timestamp}.txt");
-                resultsFilePath = Path.Combine(_resDir, $"{RESULTS}{timestamp}.xml");
-
                 properties.Add(RESULTS_FILENAME, resultsFilePath.Replace(C.BACK_SLASH_, C.DOUBLE_BACK_SLASH_)); // double backslashes are expected by HpToolsLauncher.exe (JavaProperties.cs, in LoadInternal method)
 
                 if (!SaveProperties(propsFilePath, properties))
@@ -190,11 +192,8 @@ namespace PSModule
                     return;
                 }
 
-                DeleteExistingRunIdFiles(_resDir);
-
                 lastTimestampFilePath = Path.Combine(_resDir, C.LastTimestamp);
                 SaveTimestamp(lastTimestampFilePath, timestamp);
-                _privateKey = H.GenerateAndSavePrivateKey(_resDir, out kvFilePath);
 
                 //run the build task
                 var runMgr = GetRunManager(_resDir);
