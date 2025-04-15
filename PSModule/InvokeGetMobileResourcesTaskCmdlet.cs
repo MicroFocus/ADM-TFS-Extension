@@ -47,7 +47,6 @@ namespace PSModule
         private const string NO_AVAILABLE_DEVICE_FOUND = "No available device has been retrieved from the Functional Testing Lab server";
         private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Functional Testing Lab server";
         private const string NO_APP_FOUND = "No application has been retrieved from the Functional Testing Lab server";
-        private const string LOGIN_FAILED = "Login failed";
         private const string DEVICES_HEAD = "================================== Devices ===================================";
         private const string APPS_HEAD = "================================== Applications ==============================";
         private const string CLOUD_BROWSERS_HEAD = "================================== Cloud Browsers ==============================";
@@ -131,7 +130,7 @@ namespace PSModule
 
                 }
                 else
-                    LogError(new UftMobileException(LOGIN_FAILED));
+                    LogError(new UftMobileException(C.LOGIN_FAILED));
 
                 await SaveRunStatus(resdir, runStatus);
             }

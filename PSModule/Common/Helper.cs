@@ -739,7 +739,7 @@ namespace PSModule
 
         public static SecureString GetPrivateKey(string resDir, out string filePath)
         {
-            filePath = Path.Combine(resDir, C._KEY_VECTOR_TMP);
+            filePath = Path.Combine(resDir, C._RANDOM_KEY_TMP);
             if (File.Exists(filePath))
             {
                 return GetKeyFromFile(filePath);
@@ -753,7 +753,7 @@ namespace PSModule
 
         public static SecureString GenerateAndSavePrivateKey(string path, out string filePath)
         {
-            filePath = Path.Combine(path, C._KEY_VECTOR_TMP);
+            filePath = Path.Combine(path, C._RANDOM_KEY_TMP);
             var key = GenerateAlphaNumericSecureString(32);
             SaveKeyToProtectedHiddenFile(filePath, key);
             return key;

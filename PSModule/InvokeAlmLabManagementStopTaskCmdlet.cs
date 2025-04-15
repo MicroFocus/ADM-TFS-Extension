@@ -149,7 +149,9 @@ namespace PSModule
             }
 
             string clientType = ciParams.GetOrDefault(L.CLIENTTYPE);
-            WriteDebug($"Server URL: {serverUrl}, Domain: {domain}, Project: {project}, isSSO: {isSSO}, Username / ClientId: {usernameOrClientId}, ClientType: {clientType}");
+            WriteVerbose(C.LINE_SEP);
+            WriteVerbose($"{serverUrl}, Domain: {domain}, Project: {project}, isSSO: {isSSO}, Username / ClientId: {usernameOrClientId}, ClientType: {clientType}");
+            WriteVerbose(C.LINE_SEP);
             try
             {
                 var runMgr = GetRunManager4Stop(runId, serverUrl, domain, project, isSSO, usernameOrClientId, passwordOrApiKey, clientType);
@@ -163,7 +165,7 @@ namespace PSModule
                 }
                 else
                 {
-                    WriteWarning("Login failed");
+                    WriteWarning(C.LOGIN_FAILED);
                 }
             }
             catch (Exception ex)

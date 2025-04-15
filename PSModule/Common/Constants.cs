@@ -79,7 +79,8 @@ namespace PSModule.Common
         public const string Canceled = "Canceled";
         public const string LastTimestamp = "LastTimestamp";
         public const string AGENT_JOBSTATUS = "AGENT_JOBSTATUS";
-        public const string _KEY_VECTOR_TMP = ".key_vector.tmp";
-
+        public const string _RANDOM_KEY_TMP = ".random-key.tmp";
+        public const string LINE_SEP = "==============================================================================";
+        public const string LOGIN_FAILED = "Login failed";
     }
 }

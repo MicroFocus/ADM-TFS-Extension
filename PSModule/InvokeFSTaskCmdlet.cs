@@ -34,7 +34,6 @@ namespace PSModule
     public class InvokeFSTaskCmdlet : AbstractLauncherTaskCmdlet
     {
         private const string DEBUG_PREFERENCE = "DebugPreference";
-        private const string LOGIN_FAILED = "Login failed";
         private const string MISSING_OR_INVALID_DEVICES = "Missing or invalid devices";
         private const string MISSING_OR_INVALID_APP = "Missing or invalid application";
         private const string MISSING_OR_INVALID_APPS = "Missing or invalid applications";
@@ -543,7 +542,7 @@ namespace PSModule
             }
             else
             {
-                ThrowTerminatingError(LOGIN_FAILED, nameof(ValidateDeviceLines), ErrorCategory.DeviceError, nameof(ValidateDeviceLines));
+                ThrowTerminatingError(C.LOGIN_FAILED, nameof(ValidateDeviceLines), ErrorCategory.DeviceError, nameof(ValidateDeviceLines));
             }
         }
 
