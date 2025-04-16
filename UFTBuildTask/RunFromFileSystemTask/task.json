@@ -337,7 +337,7 @@
 			"defaultValue": false,
 			"type": "boolean",
 			"label": "Log device metrics",
-			"visibleRule": "mcSysApp = to_be_implemented"
+			"visibleRule": "mcLogDeviceMetrics = true"
 		},
 		{
 			"name": "mcCPU",
