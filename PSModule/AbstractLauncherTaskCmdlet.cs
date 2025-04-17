@@ -204,7 +204,7 @@ namespace PSModule
                                 if (runStatus != RunStatus.CANCELED && _rptPaths.Any())
                                 {
                                     //run junit report converter
-                                    if (_generateJUnitReport || _isParallelRunnerMode)
+                                    if (_generateJUnitReport)
                                     {
                                         string outputFileReport = Path.Combine(resdir, JUNIT_REPORT_XML);
                                         RunConverter(converterPath, outputFileReport);
