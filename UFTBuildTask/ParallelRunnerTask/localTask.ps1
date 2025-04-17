@@ -23,6 +23,7 @@ $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
 $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
+[bool]$generateJUnitRpt = $true
 [string]$tsPattern = (Get-VstsInput -Name 'tsPattern').Trim()
 
 $envType = Get-VstsInput -Name 'envType'
@@ -307,7 +308,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $true $configs $rptFolders $false $tsPattern -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $true $configs $rptFolders $false $tsPattern -Verbose 
 } catch {
 	Write-Error $_
 } finally {
