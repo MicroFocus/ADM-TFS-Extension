@@ -1,7 +1,7 @@
 {
 	"manifestVersion": 1,
 	"id": "UFT-Azure-extension",
-	"name": "UFT One Azure DevOps extension",
+	"name": "OpenText™ Functional Testing Azure DevOps extension",
 	"version": "25.2.0",
 	"publisher": "uftpublisher",
 	"targets": [
@@ -10,7 +10,7 @@
 			"version": "[15.0,)"
 		}
 	],
-	"description": "Enables you to run Functional Testing tests as a build in an Azure DevOps build process. This extension includes 6 tasks.",
+	"description": "Enables you to run Functional Testing tests as a build in an Azure DevOps build process. This extension includes 7 tasks.",
 	"categories": [
 		"Azure Pipelines"
 	],
@@ -39,7 +39,7 @@
 	],
 	"links": {
 		"home": {
-			"uri": "https://github.com/MicroFocus/ADM-TFS-Extension/releases/tag/24.2.0"
+			"uri": "https://github.com/MicroFocus/ADM-TFS-Extension/releases/tag/25.2.0"
 		},
 		"installation": {
 			"uri": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops.htm"

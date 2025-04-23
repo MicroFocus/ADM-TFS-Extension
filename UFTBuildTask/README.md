@@ -83,8 +83,12 @@ This plugin update includes the following:
 - More information is available [here][alm-docs]
 
 ##### OpenText Functional Testing ALM Lab Management Run
-- Use this task to run ALM server-side functional test setssuites.
+- Use this task to run ALM server-side functional test-sets or build-verification-suites.
 - More information is available [here][alm-lab-docs]
+
+##### OpenText Functional Testing ALM Lab Management Stop Run
+- Use this task to stop ALM server-side functional test-sets or build-verification-suites.
+- More information is available [here][stop-alm-lab-docs]
 
 ##### OpenText Functional Testing ALM Lab Environment Preparation
 - Use this task to assign values to AUT Environment Configurations located in ALM.
@@ -113,6 +117,7 @@ For assistance or more information on configuring and using this extension, plea
    [fs-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm>
    [alm-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-alm.htm>
    [alm-lab-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-alm-lm.htm#mt-item-1>
+   [stop-alm-lab-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Default.htm#cshid=azure-stop-run>
    [alm-env-docs]:<https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-alm-lm.htm#mt-item-0>
    [azure-devops]:<https://dev.azure.com/>
    [azure-portal]:<http://portal.azure.com/>
