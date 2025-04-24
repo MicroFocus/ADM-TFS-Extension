@@ -4,6 +4,18 @@ This extension enables you to run Functional Testing tests as part of your Azure
 • When running tests from ALM Lab Management, you can also include a build step that prepares the test environment before running the tests.    
 After the build is complete, you can view comprehensive test results. 
 
+# What's new in OpenText™ Functional Testing Azure DevOps extension - version 25.2
+##### Release date: April 2025
+- Rebranding the OpenText™ family products
+  - Digital Lab is now OpenText™ Functional Testing Lab for Mobile and Web
+  - UFT One is now OpenText™ Functional Testing
+  - Application Lifecycle Management is now OpenText™ Application Quality Management
+  - LoadRunner Enterprise is now OpenText™ Enterprise Performance Engineering
+- [FS] Generate JUnit report option
+- [FS] Normalize test paths to prevent exceeding the maximum length
+- [ALM Lab Mgmt] Improve ALM Lab Management task to correctly handle the Cancel pipeline action, and stop the test execution
+- Bug fixing, code enhancements and optimizations
+
 # What's new in UFT One Azure DevOps extension - version 24.2
 ##### Release date: April 2024
 - Update ADO extension to use FTToolsLauncher instead of HpToolsLauncher

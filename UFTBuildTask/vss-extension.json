@@ -1,7 +1,7 @@
 {
 	"manifestVersion": 1,
 	"id": "UFT-Azure-extension",
-	"name": "OpenText™ Functional Testing Azure DevOps extension",
+	"name": "OpenText\u2122 Functional Testing Azure DevOps extension",
 	"version": "25.2.0",
 	"publisher": "uftpublisher",
 	"targets": [
