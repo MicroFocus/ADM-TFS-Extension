@@ -1,7 +1,7 @@
 # OpenText™ Functional Testing Azure DevOps extension
 Enables you to run OpenText Functional Testing tests as a build in an Azure DevOps build process. This extension includes 6 tasks.
 ## Table of contents
-1. [Integration with OpenText Functional Testing](#Integration-with-UFT-One)
+1. [Integration with OpenText Functional Testing](#Integration-with-OpenText-Functional-Testing)
 2. [Configuration](#Configuration)
 3. [Extension functionality](#Extension-functionality)
 4. [Resources](#Additional-resources)
@@ -72,7 +72,7 @@ After the build is complete, you can view comprehensive test results.
 - More information is available [here][parallel-docs]
 
 ##### Get OpenText Functional Testing Lab Resources
-- Use this task to configure a task that retrieves device and application information from Functional Testing Lab.
+- Use this task to configure a task that retrieves device and application information from Functional Testing Lab (Digital Lab).
 - More information is available [here][get-digital-lab-resources]
 
 # Additional Resources
