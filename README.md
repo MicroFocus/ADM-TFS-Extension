@@ -1,5 +1,5 @@
 # OpenText™ Functional Testing Azure DevOps extension
-Enables you to run OpenText Functional Testing tests as a build in an Azure DevOps build process. This extension includes 6 tasks.
+Enables you to run OpenText Functional Testing tests as a build in an Azure DevOps build process. This extension includes 7 tasks.
 ## Table of contents
 1. [Integration with OpenText Functional Testing](#Integration-with-OpenText-Functional-Testing)
 2. [Configuration](#Configuration)

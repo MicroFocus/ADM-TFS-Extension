@@ -51,7 +51,7 @@ if (Test-Path $report) {
 	Remove-Item $report
 }
 
-$uftReport = "$resDir\UFT Report"
+$uftReport = "$resDir\Functional Testing Report"
 $runSummary = "$resDir\Run Summary"
 $retcodefile = "$resDir\TestRunReturnCode.txt"
 $failedTests = "$resDir\Failed Tests"

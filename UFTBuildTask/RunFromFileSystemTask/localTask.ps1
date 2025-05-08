@@ -224,7 +224,7 @@ function UploadArchive() {
 
 #---------------------------------------------------------------------------------------------------
 
-$uftReport = "$resDir\UFT Report"
+$uftReport = "$resDir\Functional Testing Report"
 $runSummary = "$resDir\Run Summary"
 $retcodefile = "$resDir\TestRunReturnCode.txt"
 $failedTests = "$resDir\Failed Tests"
@@ -361,7 +361,7 @@ try {
 		$html = [System.Text.StringBuilder]""
 		$html.Append("<div class=`"margin-right-8 margin-left-8 padding-8 depth-8`"><div class=`"body-xl`">Run Sumary</div>")
 		$html.AppendLine((Get-Content -Path $runSummary))
-		$html.AppendLine("</div><div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">UFT Report</div>")
+		$html.AppendLine("</div><div class=`"margin-8 padding-8 depth-8`"><div class=`"body-xl`">Functional Testing Report</div>")
 		$html.AppendLine((Get-Content -Path $uftReport))
 		$html.AppendLine("</div>")
 		if (Test-Path $failedTests) {

@@ -12,7 +12,7 @@
 	"version": {
 		"Major": 7,
 		"Minor": 0,
-		"Patch": 0
+		"Patch": 1
 	},
 	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
 	"demands": "UFT_LAUNCHER",
@@ -227,7 +227,7 @@
 			"label": "Timestamp pattern",
 			"defaultValue": "yyyy-MM-dd HH:mm:ss",
 			"required": false,
-			"helpMarkDown": "Timestamp format used in [UFT Report] from Extensions tab. The default value is yyyy-MM-dd HH:mm:ss"
+			"helpMarkDown": "Timestamp format used in [Functional Testing Report] from Extensions tab. The default value is yyyy-MM-dd HH:mm:ss"
 		},
 		{
 			"name": "timeOutIn",
