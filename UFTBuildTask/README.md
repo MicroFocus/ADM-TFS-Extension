@@ -4,6 +4,11 @@ This extension enables you to run Functional Testing tests as part of your Azure
 • When running tests from ALM Lab Management, you can also include a build step that prepares the test environment before running the tests.    
 After the build is complete, you can view comprehensive test results. 
 
+# What's new in OpenText™ Functional Testing Azure DevOps extension - version 25.2.1
+##### Release date: May 2025
+- Restored the missing Extensions tab
+- Product name updated in additional locations
+
 # What's new in OpenText™ Functional Testing Azure DevOps extension - version 25.2
 ##### Release date: April 2025
 - Rebranding the OpenText™ family products
@@ -66,7 +71,7 @@ This plugin update includes the following:
 
 #### Setup
 1. Install this extension for the relevant Azure DevOps organization
-2. From our [GitHub][repository]: Browse a specific **release** (latest: v25.2.1)
+2. From our [GitHub][repository]: Browse a specific **release** (latest: **25.2.1**)
 3. From [Azure DevOps][azure-devops]: Have an agent set up (interactive or run as a service) 
 4. On your agent machine:    
 4.1. Download the resources provided by a specific release (UFT.zip, unpack.ps1 and optionally the .vsix file)    
