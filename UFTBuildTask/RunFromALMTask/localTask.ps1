@@ -24,6 +24,7 @@ $varTestsets = (Get-VstsInput -Name 'varTestsets' -Require).Trim()
 $varTimeout = (Get-VstsInput -Name 'varTimeout').Trim()
 $varReportName = (Get-VstsInput -Name 'varReportName').Trim()
 $runMode = Get-VstsInput -Name 'runMode'
+$orderByCriteria = Get-VstsInput -Name 'orderByCriteria'
 $testingToolHost = (Get-VstsInput -Name 'testingToolHost').Trim()
 [string]$tsPattern = (Get-VstsInput -Name 'tsPattern').Trim()
 
@@ -88,7 +89,7 @@ try {
 	Write-Error "Invalid Timestamp Pattern '$tsPattern'"
 }
 
-Invoke-AlmTask $varAlmserv $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varTestsets $varTimeout $varReportName $runMode $testingToolHost $buildNumber $tsPattern -Verbose
+Invoke-AlmTask $varAlmserv $varSSOEnabled $varClientID $varApiKeySecret $varUserName $varPass $varDomain $varProject $varTestsets $varTimeout $varReportName $runMode $testingToolHost $buildNumber $tsPattern $orderByCriteria -Verbose
 
 #---------------------------------------------------------------------------------------------------
 # uploads report files to build artifacts

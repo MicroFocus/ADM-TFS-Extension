@@ -61,6 +61,7 @@ namespace PSModule
         public const string ALMAPIKEYSECRET = "almApiKeySecret";
         public const string CLIENTTYPE = "clientType";
         private const string ALMRUNMODE = "almRunMode";
+        private const string ALMTESTSETSORDERBYCRITERIA = "almTestSetsOrderByCriteria";
         private const string ALMTIMEOUT = "almTimeout";
         private const string TIMESLOTDURATION = "timeslotDuration";
         private const string TESTSETID = "TestSetID";
@@ -244,6 +245,11 @@ namespace PSModule
         public void SetAlmRunHost(string host)
         {
             SetParamValue(ALMRUNHOST, host);
+        }
+        
+        public void SetAlmTestSetsRunOrderByCriteria(string almOrderByCriteria)
+        {
+            SetParamValue(ALMTESTSETSORDERBYCRITERIA, almOrderByCriteria);
         }
 
         public void SetTest(int index, string test)

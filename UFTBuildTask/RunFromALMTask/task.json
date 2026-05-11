@@ -10,9 +10,9 @@
 	],
 	"author": "OpenText",
 	"version": {
-		"Major": 5,
+		"Major": 7,
 		"Minor": 0,
-		"Patch": 3
+		"Patch": 2
 	},
 	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-alm.htm",
 	"demands": [
@@ -131,6 +131,19 @@
 				"runLocally": "Run locally",
 				"runOnPlannedHost": "Run on planned host",
 				"runRemotely": "Run remotely"
+			}
+		},
+		{
+			"name": "orderByCriteria",
+			"type": "pickList",
+			"label": "Test Set Execution Order:",
+			"defaultValue": "name",
+			"required": false,
+			"helpMarkDown": "Select how tests are ordered during execution: by name (alphabetically) or by ID (ascending).",
+			"groupName": "advanced",
+			"options": {
+				"name": "By name",
+				"id": "By ID"
 			}
 		},
 		{

@@ -69,6 +69,9 @@ namespace PSModule
             }
         }
 
+        [Parameter(Position = 15)]
+        public string OrderByCriteria { get; set; }
+
         protected override string GetReportFilename()
         {
             return string.IsNullOrEmpty(ReportName) ? base.GetReportFilename() : ReportName;
@@ -90,6 +93,7 @@ namespace PSModule
             builder.SetAlmRunHost(ALMRunHost);
             builder.SetAlmTimeout(TimeOut);
             builder.SetBuildNumber(BuildNumber);
+            builder.SetAlmTestSetsRunOrderByCriteria(OrderByCriteria);
 
             switch (RunMode)
             {
