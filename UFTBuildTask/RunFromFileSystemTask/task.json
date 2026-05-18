@@ -1,5 +1,5 @@
 ﻿{
-	"id": "CFBE6793-3BB1-44D5-AC87-7F14A148A6F5",
+	"id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F2",
 	"name": "RunFromFileSystemTask",
 	"friendlyName": "OpenText™ Functional Testing File System Run",
 	"description": "Run Functional Testing tests from file system",
@@ -10,9 +10,9 @@
 	],
 	"author": "OpenText",
 	"version": {
-		"Major": 6,
-		"Minor": 1,
-		"Patch": 2
+		"Major": 7,
+		"Minor": 0,
+		"Patch": 1
 	},
 	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
 	"demands": "UFT_LAUNCHER",
@@ -136,15 +136,6 @@
 			"defaultValue": "",
 			"required": true,
 			"helpMarkDown": "The address of your Functional Testing Lab server, in the format http[s]://(server name):(port)"
-		},
-		{
-			"name": "mcWorkspace",
-			"groupName": "digitalLab",
-			"type": "string",
-			"label": "Workspace",
-			"defaultValue": "Default Workspace",
-			"required": true,
-			"helpMarkDown": "Specify the workspace name here (use Get Functional Testing Lab Resources task first)."
 		},
 		{
 			"name": "mcAuthType",

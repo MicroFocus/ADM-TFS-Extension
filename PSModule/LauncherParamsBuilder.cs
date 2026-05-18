@@ -84,7 +84,6 @@ namespace PSModule
         private const string MOBILEPROXYSETTING_PASSWORD = "MobileProxySetting_Password";
         private const string MOBILEINFO = "mobileinfo";
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
-        private const string WORKSPACENAME = "workspaceName";
 
         private readonly static string _defaultSecretKey = "EncriptionPass4Java"; // TODO improve the encryption mechanism
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
@@ -309,11 +308,6 @@ namespace PSModule
             SetParamValue(CLOUDBROWSERINFO, cb);
         }
 
-        public void SetWorkspaceName(string workspaceName)
-        {
-            SetParamValue(WORKSPACENAME, workspaceName);
-        }
-
         private void SetParamValue(string key, string val)
         {
             if (val.IsNullOrEmpty())
@@ -324,7 +318,9 @@ namespace PSModule
                     properties.Add(key, string.Empty);
             }
             else
+            {
                 properties.Add(key, val);
+            }
         }
 
         private string EncryptParam(string text)

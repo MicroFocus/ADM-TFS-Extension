@@ -57,8 +57,8 @@ namespace PSModule
         private const string HTTP_PREFIX = "http://";
         private const string HTTPS_PREFIX = "https://";
         private const string JOB_ID = "job_id";
-        private const string UPDATE_JOB_DEVICE_FORMAT = @"{{""id"":""{0}"",""workspace"":""{5}"",""capableDeviceFilterDetails"":{{}},""devices"":[{{""deviceID"":""{1}""}}],""application"":{2},""extraApps"":{3},""header"":""{4}""}}";
-        private const string UPDATE_JOB_CDFD_FORMAT = @"{{""id"":""{0}"",""workspace"":""{5}"",""capableDeviceFilterDetails"":{1},""application"":{2},""devices"":[],""extraApps"":{3},""header"":""{4}""}}";
+        private const string UPDATE_JOB_DEVICE_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{{}},""devices"":[{{""deviceID"":""{1}""}}],""application"":{2},""extraApps"":{3},""header"":""{4}""}}";
+        private const string UPDATE_JOB_CDFD_FORMAT = @"{{""id"":""{0}"",""capableDeviceFilterDetails"":{1},""application"":{2},""devices"":[],""extraApps"":{3},""header"":""{4}""}}";
         private const string MC_HOME = "MC.Home";
         private IClient _client;
         private IAuthenticator _auth;
@@ -165,9 +165,6 @@ namespace PSModule
             }
         }
 
-        [Parameter(Position = 14)]
-        public string WorkspaceName { get; set; }
-
         protected override bool CollateResults(string resultFile, string resdir)
         {
             return true; //do nothing here. Collate results should be made by the standard "Copy and Publish Artifacts" TFS task
@@ -233,7 +230,7 @@ namespace PSModule
             builder.SetDigitalLabSrvConfig(_dlServerConfig);
             builder.SetMobileConfig(_deviceConfig);
             builder.SetCloudBrowserConfig(_cloudBrowserConfig);
-            builder.SetWorkspaceName(WorkspaceName);
+
             return builder.GetProperties();
         }
 
@@ -662,7 +659,7 @@ namespace PSModule
         {
             string jsonApp = _deviceConfig.App.Json4JobUpdate;
             string jsonExtraApps = GetExtraAppsJson4JobUpdate();
-            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_DEVICE_FORMAT, jobId, deviceId, jsonApp, jsonExtraApps, hdr.EscapeDblQuotes(), WorkspaceName));
+            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_DEVICE_FORMAT, jobId, deviceId, jsonApp, jsonExtraApps, hdr.EscapeDblQuotes()));
             if (!res.IsOK)
             {
                 ThrowTerminatingError(res.Error, nameof(UpdateJobDevice), ErrorCategory.NotSpecified, nameof(UpdateJobDevice));
@@ -675,7 +672,7 @@ namespace PSModule
             string jsonExtraApps = GetExtraAppsJson4JobUpdate();
             string jsonDetails = details?.ToJson(false);
 
-            string body = string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, jsonDetails, jsonApp, jsonExtraApps, hdr?.EscapeDblQuotes(), WorkspaceName);
+            string body = string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, jsonDetails, jsonApp, jsonExtraApps, hdr?.EscapeDblQuotes());
             var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, body);
             if (!res.IsOK)
             {
