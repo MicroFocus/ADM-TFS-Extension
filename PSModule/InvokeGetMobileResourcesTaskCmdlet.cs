@@ -34,6 +34,7 @@ namespace PSModule
     public class InvokeGetMobileResourcesTaskCmdlet : AsyncCmdlet
     {
         private const string DEVICES_ENDPOINT = "rest/devices";
+        private const string WORKSPACES_ENDPOINT = "rest/workspaces";
         private const string APPS_ENDPOINT = "rest/apps/getAplicationsLastVersion";
         private const string APPS_QUERY_PARAMS = "excludeIosAgents=false&multiWorkspace=true";
         private const string REGISTERED = "registered";
@@ -48,6 +49,7 @@ namespace PSModule
         private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Functional Testing Lab server";
         private const string NO_APP_FOUND = "No application has been retrieved from the Functional Testing Lab server";
         private const string DEVICES_HEAD = "================================== Devices ===================================";
+        private const string WORKSPACES_HEAD = "================================== Workspaces ================================";
         private const string APPS_HEAD = "================================== Applications ==============================";
         private const string CLOUD_BROWSERS_HEAD = "================================== Cloud Browsers ==============================";
         private const string SECTION_BOTTOM = "------------------------------------------------------------------------------";
@@ -61,7 +63,8 @@ namespace PSModule
         private LabResxConfig _config;
 
         [Parameter(Position = 0, Mandatory = true)]
-        public LabResxConfig Config {
+        public LabResxConfig Config
+        {
             get { return _config; }
             set { _config = value; }
         }
@@ -117,6 +120,7 @@ namespace PSModule
                             runStatusDevices = await CheckAndPrintDevices(client);
                         if (_config.Resx.In(Resx.OnlyApps, Resx.BothDevicesAndApps))
                             runStatusApps = await GetAndPrintApps(client);
+                        await GetAndPrintWorkspaces(client);
 
                         if (runStatusDevices == RunStatus.PASSED && runStatusApps == RunStatus.PASSED)
                             runStatus = RunStatus.PASSED;
@@ -352,6 +356,29 @@ namespace PSModule
                 WriteDebug($"{wex.Status}: {wex.Message}");
             }
             return err;
+        }
+
+        private async Task<RunStatus> GetAndPrintWorkspaces(IClient client)
+        {
+            RunStatus status = RunStatus.FAILED;
+            WriteObject(WORKSPACES_HEAD);
+            Response<Workspace> res = await client.HttpGet<Workspace>(WORKSPACES_ENDPOINT);
+            if (res.IsOK)
+            {
+                if (res.Entities.Any())
+                {
+                    int x = 1;
+                    WriteObject($"Available workspaces ({res.Entities.Count()}):");
+                    res.Entities.ForEach(w => WriteObject($"Workspace #{x++} -Name: \"{w}\", Id: \"{w.Uuid}\""));
+                }
+                else
+                    WriteObject("No workspace has been retrieved from the Functional Testing Lab server");
+                status = RunStatus.PASSED;
+            }
+            else
+                LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
+            WriteObject(SECTION_BOTTOM);
+            return status;
         }
     }
 }
