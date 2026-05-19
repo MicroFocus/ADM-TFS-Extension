@@ -22,10 +22,9 @@ namespace PSModule.Models
         public String proxyAddress;// = null;
         public String proxyUserName;// = null;
         public String proxyPassword;// = null;
-
         public bool useSSL;
         public bool useProxy;
-
         public bool specifyAuthentication;
+        public string workspace;
     }
 }
