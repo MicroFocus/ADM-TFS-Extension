@@ -21,6 +21,7 @@ $testPathInput = (Get-VstsInput -Name 'testPathInput' -Require).Trim()
 $timeOutIn = (Get-VstsInput -Name 'timeOutIn').Trim()
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
+$workspaceName = Get-VstsInput -Name 'workspaceName'
 $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
@@ -329,7 +330,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern $workspaceName -Verbose 
 } catch {
 	Write-Error $_
 } finally {

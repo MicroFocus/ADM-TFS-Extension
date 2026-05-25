@@ -367,9 +367,7 @@ namespace PSModule
             byte[] keyBytes = new byte[0x10];
             int len = pwdBytes.Length;
             if (len > keyBytes.Length)
-            {
                 len = keyBytes.Length;
-            }
             Array.Copy(pwdBytes, keyBytes, len);
             rijndaelCipher.Key = keyBytes;
             rijndaelCipher.IV = keyBytes;

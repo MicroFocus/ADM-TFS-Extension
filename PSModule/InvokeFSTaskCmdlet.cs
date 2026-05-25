@@ -662,7 +662,7 @@ namespace PSModule
         {
             string jsonApp = _deviceConfig.App.Json4JobUpdate;
             string jsonExtraApps = GetExtraAppsJson4JobUpdate();
-            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_DEVICE_FORMAT, jobId, deviceId, jsonApp, jsonExtraApps, hdr.EscapeDblQuotes(), WorkspaceName));
+            Response res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, string.Format(UPDATE_JOB_DEVICE_FORMAT, jobId, deviceId, jsonApp, jsonExtraApps, hdr.EscapeDblQuotes(), WorkspaceName));
             if (!res.IsOK)
             {
                 ThrowTerminatingError(res.Error, nameof(UpdateJobDevice), ErrorCategory.NotSpecified, nameof(UpdateJobDevice));
@@ -676,7 +676,7 @@ namespace PSModule
             string jsonDetails = details?.ToJson(false);
 
             string body = string.Format(UPDATE_JOB_CDFD_FORMAT, jobId, jsonDetails, jsonApp, jsonExtraApps, hdr?.EscapeDblQuotes(), WorkspaceName);
-            var res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, body);
+            Response res = await _client.HttpPost(JOB_UPDATE_ENDPOINT, body);
             if (!res.IsOK)
             {
                 ThrowTerminatingError(res.Error, nameof(UpdateJobCDFDetails), ErrorCategory.NotSpecified, nameof(UpdateJobCDFDetails));

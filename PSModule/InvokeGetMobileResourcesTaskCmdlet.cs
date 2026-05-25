@@ -34,7 +34,7 @@ namespace PSModule
     public class InvokeGetMobileResourcesTaskCmdlet : AsyncCmdlet
     {
         private const string DEVICES_ENDPOINT = "rest/devices";
-        private const string WORKSPACES_ENDPOINT = "rest/workspaces";
+        private const string WORKSPACES_ENDPOINT = "rest/v2/workspaces";
         private const string APPS_ENDPOINT = "rest/apps/getAplicationsLastVersion";
         private const string APPS_QUERY_PARAMS = "excludeIosAgents=false&multiWorkspace=true";
         private const string REGISTERED = "registered";
@@ -362,14 +362,14 @@ namespace PSModule
         {
             RunStatus status = RunStatus.FAILED;
             WriteObject(WORKSPACES_HEAD);
-            Response<Workspace> res = await client.HttpGet<Workspace>(WORKSPACES_ENDPOINT);
+            Response<Workspace> res = await client.HttpGet<Workspace>(WORKSPACES_ENDPOINT, resType: ResType.Array);
             if (res.IsOK)
             {
                 if (res.Entities.Any())
                 {
                     int x = 1;
                     WriteObject($"Available workspaces ({res.Entities.Count()}):");
-                    res.Entities.ForEach(w => WriteObject($"Workspace #{x++} -Name: \"{w}\", Id: \"{w.Uuid}\""));
+                    res.Entities.ForEach(w => WriteObject($"Workspace #{x++} -Name: \"{w.Name}\", Id: \"{w.Uuid}\""));
                 }
                 else
                     WriteObject("No workspace has been retrieved from the Functional Testing Lab server");
