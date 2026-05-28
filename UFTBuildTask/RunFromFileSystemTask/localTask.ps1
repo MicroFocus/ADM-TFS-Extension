@@ -21,13 +21,16 @@ $testPathInput = (Get-VstsInput -Name 'testPathInput' -Require).Trim()
 $timeOutIn = (Get-VstsInput -Name 'timeOutIn').Trim()
 $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
-$workspaceName = Get-VstsInput -Name 'workspaceName'
 $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 [bool]$generateJUnitRpt = Get-VstsInput -Name 'generateJUnitReport' -AsBool
 [bool]$useDigitalLab = Get-VstsInput -Name 'useDigitalLab' -AsBool
+
+if ($workspaceID -and ($workspaceID -notmatch "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+    Write-Host "Workspace ID is not in valid UUID format." -ForegroundColor Red
+}
 
 $configs = [List[IConfig]]::new()
 $configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE))
@@ -53,6 +56,7 @@ if ($useDigitalLab) {
 	$mcUsername = (Get-VstsInput -Name 'mcUsername').Trim()
 	$mcPassword = Get-VstsInput -Name 'mcPassword'
 	$mcAccessKey = (Get-VstsInput -Name 'mcAccessKey').Trim(' "')
+	$workspaceID = Get-VstsInput -Name 'mcWorkspaceID'
 	[bool]$useMcProxy = Get-VstsInput -Name 'useMcProxy' -AsBool
 	[ProxyConfig]$proxyConfig = $null
 	[bool]$isBasicAuth = ($mcAuthType -eq "basic")
@@ -330,7 +334,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern $workspaceName -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern $workspaceID -Verbose 
 } catch {
 	Write-Error $_
 } finally {

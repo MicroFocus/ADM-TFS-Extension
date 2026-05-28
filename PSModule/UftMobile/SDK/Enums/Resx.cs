@@ -14,9 +14,11 @@ namespace PSModule.UftMobile.SDK.Enums
 {
     public enum Resx
     {
+        Workspaces,
         OnlyDevices,
         OnlyApps,
         BothDevicesAndApps,
-        CloudBrowsers
+        CloudBrowsers,
+        AllResources
     }
 }

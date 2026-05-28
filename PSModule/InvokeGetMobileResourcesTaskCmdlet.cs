@@ -84,9 +84,9 @@ namespace PSModule
                 if (!Directory.Exists(resdir))
                     Directory.CreateDirectory(resdir);
 
-                RunStatus runStatus = RunStatus.FAILED, runStatusDevices = RunStatus.PASSED, runStatusApps = RunStatus.PASSED;
-
+                RunStatus runStatus = RunStatus.FAILED;
                 IWebProxy proxy = null;
+
                 if (_config.UseProxy)
                 {
                     try
@@ -116,22 +116,23 @@ namespace PSModule
                         runStatus = await GetAndPrintCloudBrowsers(client);
                     else
                     {
-                        if (_config.Resx.In(Resx.OnlyDevices, Resx.BothDevicesAndApps))
-                            runStatusDevices = await CheckAndPrintDevices(client);
-                        if (_config.Resx.In(Resx.OnlyApps, Resx.BothDevicesAndApps))
-                            runStatusApps = await GetAndPrintApps(client);
-                        await GetAndPrintWorkspaces(client);
+                        List<RunStatus> runStatuses = [];
 
-                        if (runStatusDevices == RunStatus.PASSED && runStatusApps == RunStatus.PASSED)
+                        if (_config.Resx.In(Resx.OnlyDevices, Resx.BothDevicesAndApps, Resx.AllResources))
+                            runStatuses.Add(await CheckAndPrintDevices(client));
+                        if (_config.Resx.In(Resx.OnlyApps, Resx.BothDevicesAndApps, Resx.AllResources))
+                            runStatuses.Add(await GetAndPrintApps(client));
+                        if (_config.Resx.In(Resx.Workspaces, Resx.AllResources))
+                            runStatuses.Add(await GetAndPrintWorkspaces(client));
+
+                        if (runStatuses.All(status => status == RunStatus.PASSED))
                             runStatus = RunStatus.PASSED;
-                        else if (runStatusDevices == RunStatus.FAILED && runStatusApps == RunStatus.FAILED)
+                        else if (runStatuses.All(status => status == RunStatus.FAILED))
                             runStatus = RunStatus.FAILED;
                         else
                             runStatus = RunStatus.UNSTABLE;
                     }
-
                     await auth.Logout(client);
-
                 }
                 else
                     LogError(new UftMobileException(C.LOGIN_FAILED));
