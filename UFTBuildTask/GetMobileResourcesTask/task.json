@@ -129,7 +129,7 @@
 			"label": "Include disconnected devices in response",
 			"defaultValue": false,
 			"required": false,
-			"visibleRule": "mcResources = onlyDevices || mcResources = bothDevicesAndApps",
+			"visibleRule": "mcResources = onlyDevices || mcResources = bothDevicesAndApps || mcResources = allResources",
 			"helpMarkDown": "Choose whether to include the disconnected devices within the list of devices retrieved by running this task"
 		}
 	],

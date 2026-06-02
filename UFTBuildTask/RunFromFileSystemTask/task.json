@@ -1,5 +1,5 @@
 ﻿{
-	"id": "CFBE6793-3BB1-44D5-AC87-7F14A148A6F5",
+	"id": "CFBE1493-3BB1-44D5-AC87-7F14A148A6F2",
 	"name": "RunFromFileSystemTask",
 	"friendlyName": "OpenText™ Functional Testing File System Run",
 	"description": "Run Functional Testing tests from file system",
@@ -10,7 +10,7 @@
 	],
 	"author": "OpenText",
 	"version": {
-		"Major": 7,
+		"Major": 8,
 		"Minor": 0,
 		"Patch": 0
 	},
@@ -143,7 +143,7 @@
 			"type": "string",
 			"label": "Workspace ID",
 			"defaultValue": "",
-			"required": true,
+			"required": false,
 			"helpMarkDown": "Specify the workspace ID here (use Get Functional Testing Lab Resources task first)."
 		},
 		{
