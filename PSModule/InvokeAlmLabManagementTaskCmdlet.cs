@@ -105,7 +105,7 @@ namespace PSModule
             builder.SetClientID(ClientID);
             builder.SetApiKeySecret(ApiKeySecret, _privateKey);
             builder.SetAlmUserName(ALMUserName);
-            builder.SetAlmPassword(ALMPassword, _privateKey);
+            builder.SetAlmPassword(ALMPassword);
             builder.SetAlmDomain(ALMDomain);
             builder.SetAlmProject(ALMProject);
             builder.SetClientType(ClientType);
