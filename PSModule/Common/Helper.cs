@@ -87,6 +87,7 @@ namespace PSModule
         private const string RUN_SUMMARY = "Run Summary";
         private const string FAILED_TESTS = "Failed Tests";
         private const string HYPHEN = "&ndash;";
+        private const int PRIVATE_KEY_LENGTH = 64;
 
         private static readonly CultureInfo _enUS = new("en-US");
 
@@ -750,7 +751,7 @@ namespace PSModule
         public static byte[] GenerateAndSavePrivateKey(string path, out string filePath)
         {
             filePath = Path.Combine(path, C._RANDOM_KEY_TMP);
-            byte[] key = GenerateAlphaNumericBytes(32);
+            byte[] key = GenerateAlphaNumericBytes(PRIVATE_KEY_LENGTH);
             SaveKeyToProtectedHiddenFile(filePath, key);
             return key;
         }
