@@ -44,13 +44,6 @@ namespace PSModule.Common
         // Constants and static fields for key management and legacy support.
         public const string USE_STDIN_KEY = "--use-stdin-key";
 
-        [Obsolete("Legacy key. Use only if you need to encrypt new data compatible with the old method.")]
-        private const string OLD_KEY = "EncriptionPass4Java";
-
-        // Static legacy key — simple field initialiser, no static ctor, no stdin involved.
-        [Obsolete("Legacy key. Use only if you need to encrypt new data compatible with the old method.")]
-        private static readonly byte[] _oldKey = DeriveOldKey();
-
         // Singleton instance — null until Create() is called from Main.
         private static Aes256Encrypter _instance;
 
@@ -100,19 +93,6 @@ namespace PSModule.Common
             _privateKey = privateKey;
             Buffer.BlockCopy(privateKey, 0, _aesKey, 0, 32);
             Buffer.BlockCopy(privateKey, 32, _hmacKey, 0, 32);
-        }
-
-        /// <summary>
-        /// Derives the legacy 16-byte AES key by zero-padding the hardcoded string "EncriptionPass4Java" into a 16-byte array.
-        /// </summary>
-        /// <returns>The derived 16-byte AES key.</returns>
-        [Obsolete("Legacy key derivation. Use only if you need to encrypt new data compatible with the old method.")]
-        private static byte[] DeriveOldKey()
-        {
-            byte[] key = new byte[16];
-            byte[] pwd = Encoding.UTF8.GetBytes(OLD_KEY);
-            Buffer.BlockCopy(pwd, 0, key, 0, Math.Min(pwd.Length, 16));
-            return key;
         }
 
         // =========================================================
