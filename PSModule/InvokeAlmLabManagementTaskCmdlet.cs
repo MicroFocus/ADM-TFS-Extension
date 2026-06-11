@@ -103,7 +103,7 @@ namespace PSModule
             builder.SetAlmServerUrl(ALMServerPath);
             builder.SetSSOEnabled(IsSSO);
             builder.SetClientID(ClientID);
-            builder.SetApiKeySecret(ApiKeySecret, _privateKey);
+            builder.SetApiKeySecret(ApiKeySecret);
             builder.SetAlmUserName(ALMUserName);
             builder.SetAlmPassword(ALMPassword);
             builder.SetAlmDomain(ALMDomain);

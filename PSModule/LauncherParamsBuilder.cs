@@ -197,7 +197,7 @@ namespace PSModule
             SetParamValue(ALMCLIENTID, clientID);
         }
 
-        public void SetApiKeySecret(string apiKeySecret, byte[] key = null)
+        public void SetApiKeySecret(string apiKeySecret)
         {
             string encAlmApiKey = Aes256Encrypter.Encrypt(apiKeySecret);
             SetParamValue(ALMAPIKEYSECRET, encAlmApiKey);
