@@ -41,9 +41,6 @@ namespace PSModule.Common
         // =========================================================
         // ATTRIBUTES:
         // =========================================================
-        // Constants and static fields for key management and legacy support.
-        public const string USE_STDIN_KEY = "--use-stdin-key";
-
         // Singleton instance — null until Create() is called from Main.
         private static Aes256Encrypter _instance;
 
@@ -58,8 +55,7 @@ namespace PSModule.Common
 
         /// <summary>
         /// Creates the singleton. Must be called once from Main, before any
-        /// Encrypt / Decrypt call, passing the raw base64 key read from stdin
-        /// (when --use-stdin-key is present)
+        /// Encrypt / Decrypt call, passing the raw byte-array key.
         /// </summary>
         public static void Create(byte[] privateKey = null)
         {
@@ -76,14 +72,15 @@ namespace PSModule.Common
 
         /// <summary>
         /// Splits the 64-byte key into two 32-byte halves: _aesKey (for AES-256) and _hmacKey (for HMAC-SHA256).
-        /// If no key is provided, the instance remains in legacy/no-key mode.
+        /// If no key is provided, an ArgumentNullException is thrown.
         /// </summary>
         /// <param name="privateKey">The 64-byte key.</param>
-        /// <exception cref="CryptographicException">Thrown if the key is invalid or not provided.</exception>
+        /// <exception cref="ArgumentNullException">Thrown if the key is null or empty.</exception>
+        /// <exception cref="CryptographicException">Thrown if the key is invalid.</exception>
         private Aes256Encrypter(byte[] privateKey)
         {
-            if (privateKey.IsNullOrEmpty())
-                return;                             // legacy / no-key mode
+            if (privateKey is null)
+                throw new ArgumentNullException(nameof(privateKey));
 
             if (privateKey.Length != 64)
                 throw new CryptographicException("Invalid secure key length. Expected 64 bytes (base64-encoded).");
@@ -100,7 +97,7 @@ namespace PSModule.Common
         // =========================================================
         /// <summary>
         /// Entry point for encryption.
-        /// Delegates to EncryptSecure if a key is available, otherwise falls back to EncryptOld.
+        /// Delegates to EncryptSecure, using Singleton instance.
         /// <param name="plainText">The plaintext to encrypt.</param>
         /// <returns>The encrypted ciphertext.</returns>
         /// </summary>
@@ -110,7 +107,7 @@ namespace PSModule.Common
         /// <summary>
         /// Entry point for decryption.
         /// In DEBUG mode returns the input as-is.
-        /// Otherwise delegates to DecryptSecure or DecryptOld depending on key availability.
+        /// Otherwise delegates to DecryptSecure, using Singleton instance.
         /// </summary>
         /// <param name="cipherText">The ciphertext to decrypt.</param>
         /// <returns>The decrypted plaintext.</returns>

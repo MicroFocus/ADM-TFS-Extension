@@ -311,7 +311,7 @@ namespace PSModule
 
                 launcher.BeginOutputReadLine();
                 launcher.BeginErrorReadLine();
-                string encryptionKeyAsBase64 = "";
+                string encryptionKeyAsBase64 = string.Empty;
                 byte[] privateKey = Aes256Encrypter.GetPrivateKey();
                 if (!privateKey.IsNullOrEmpty())
                 {
