@@ -42,7 +42,6 @@ namespace PSModule.Common
         // =========================================================
         // ATTRIBUTES:
         // =========================================================
-        public static string USE_STDIN_KEY = "--use-stdin-key";
         // Singleton instance — null until Create() is called from Main.
         private static Aes256Encrypter _instance;
 
@@ -111,7 +110,7 @@ namespace PSModule.Common
         {
             if (_instance == null)
             { 
-                Create(); // lazily initialize with random key if not already created by Main
+                Create(); // lazily initialize with random key if not already created
             }
             return _instance?.EncryptSecure(plainText);
         }

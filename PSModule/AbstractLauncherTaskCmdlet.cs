@@ -265,7 +265,7 @@ namespace PSModule
             string args = $" -paramfile \"{paramFile}\"";
             if (!privateKey.IsNullOrEmpty())
             {
-                args += $" {Aes256Encrypter.USE_STDIN_KEY}";
+                args += $" --use-stdin-key";
             }
             Console.WriteLine($"{launcherPath}{args}");
             _launcherConsole.Clear();
