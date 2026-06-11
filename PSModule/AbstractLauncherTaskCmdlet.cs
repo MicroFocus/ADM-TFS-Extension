@@ -24,6 +24,7 @@ using System.Xml.Linq;
 using System.Runtime.CompilerServices;
 using PSModule.UftMobile.SDK.UI;
 using System.Security;
+using PSModule.Common;
 
 namespace PSModule
 {
@@ -67,7 +68,7 @@ namespace PSModule
         protected CloudBrowserConfig _cloudBrowserConfig;
         protected ParallelRunnerConfig _parallelRunnerConfig;
         protected string _timestampPattern;
-        protected SecureString _privateKey;
+        protected byte[] _privateKey;
 
         protected AbstractLauncherTaskCmdlet() { }
 
@@ -279,7 +280,8 @@ namespace PSModule
                     Arguments = args,
                     FileName = launcherPath,
                     RedirectStandardOutput = true,
-                    RedirectStandardError = true
+                    RedirectStandardError = true,
+                    RedirectStandardInput = true
                 };
 
                 using Process launcher = new() { StartInfo = info };
@@ -309,6 +311,15 @@ namespace PSModule
 
                 launcher.BeginOutputReadLine();
                 launcher.BeginErrorReadLine();
+                string encryptionKeyAsBase64 = string.Empty;
+                byte[] privateKey = Aes256Encrypter.GetPrivateKey();
+                if (!privateKey.IsNullOrEmpty())
+                {
+                    encryptionKeyAsBase64 = Convert.ToBase64String(privateKey);
+                }
+                launcher.StandardInput.WriteLine(encryptionKeyAsBase64);
+                launcher.StandardInput.Flush();
+                launcher.StandardInput.Close();
 
                 // Wait for the process to exit without polling
                 exitEvent.WaitOne();

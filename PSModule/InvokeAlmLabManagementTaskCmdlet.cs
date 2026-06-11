@@ -103,9 +103,9 @@ namespace PSModule
             builder.SetAlmServerUrl(ALMServerPath);
             builder.SetSSOEnabled(IsSSO);
             builder.SetClientID(ClientID);
-            builder.SetApiKeySecret(ApiKeySecret, _privateKey);
+            builder.SetApiKeySecret(ApiKeySecret);
             builder.SetAlmUserName(ALMUserName);
-            builder.SetAlmPassword(ALMPassword, _privateKey);
+            builder.SetAlmPassword(ALMPassword);
             builder.SetAlmDomain(ALMDomain);
             builder.SetAlmProject(ALMProject);
             builder.SetClientType(ClientType);

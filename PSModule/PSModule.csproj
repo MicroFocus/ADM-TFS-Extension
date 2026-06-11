@@ -10,7 +10,7 @@
     <RootNamespace>PSModule</RootNamespace>
     <AssemblyName>PSModule</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>13</LangVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>

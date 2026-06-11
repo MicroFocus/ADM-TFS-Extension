@@ -135,17 +135,17 @@ namespace PSModule
             string project = ciParams.GetOrDefault(L.ALMPROJECT);
             bool.TryParse(ciParams.GetOrDefault(L.SSOENABLED), out bool isSSO);
             string usernameOrClientId, passwordOrApiKey;
-            Aes256Encrypter aes256Encrypter = new(_privateKey);
+            Aes256Encrypter.Create(_privateKey);
             if (isSSO)
             {
                 usernameOrClientId = ciParams.GetOrDefault(L.ALMCLIENTID);
                 string encApiKeySecret = ciParams.GetOrDefault(L.ALMAPIKEYSECRET);
-                passwordOrApiKey = aes256Encrypter.Decrypt(encApiKeySecret);
+                passwordOrApiKey = Aes256Encrypter.Decrypt(encApiKeySecret);
             }
             else
             {
                 usernameOrClientId = ciParams.GetOrDefault(L.ALMUSERNAME);
-                passwordOrApiKey = aes256Encrypter.Decrypt(ciParams.GetOrDefault(L.ALMPASSWORD));
+                passwordOrApiKey = Aes256Encrypter.Decrypt(ciParams.GetOrDefault(L.ALMPASSWORD));
             }
 
             string clientType = ciParams.GetOrDefault(L.CLIENTTYPE);

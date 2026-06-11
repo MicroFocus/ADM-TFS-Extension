@@ -34,6 +34,7 @@ namespace PSModule
     public class InvokeGetMobileResourcesTaskCmdlet : AsyncCmdlet
     {
         private const string DEVICES_ENDPOINT = "rest/devices";
+        private const string WORKSPACES_ENDPOINT = "rest/v2/workspaces";
         private const string APPS_ENDPOINT = "rest/apps/getAplicationsLastVersion";
         private const string APPS_QUERY_PARAMS = "excludeIosAgents=false&multiWorkspace=true";
         private const string REGISTERED = "registered";
@@ -48,6 +49,7 @@ namespace PSModule
         private const string NO_DISCONNECTED_DEVICE_FOUND = "No disconnected device has been retrieved from the Functional Testing Lab server";
         private const string NO_APP_FOUND = "No application has been retrieved from the Functional Testing Lab server";
         private const string DEVICES_HEAD = "================================== Devices ===================================";
+        private const string WORKSPACES_HEAD = "================================== Workspaces ================================";
         private const string APPS_HEAD = "================================== Applications ==============================";
         private const string CLOUD_BROWSERS_HEAD = "================================== Cloud Browsers ==============================";
         private const string SECTION_BOTTOM = "------------------------------------------------------------------------------";
@@ -61,7 +63,8 @@ namespace PSModule
         private LabResxConfig _config;
 
         [Parameter(Position = 0, Mandatory = true)]
-        public LabResxConfig Config {
+        public LabResxConfig Config
+        {
             get { return _config; }
             set { _config = value; }
         }
@@ -81,9 +84,9 @@ namespace PSModule
                 if (!Directory.Exists(resdir))
                     Directory.CreateDirectory(resdir);
 
-                RunStatus runStatus = RunStatus.FAILED, runStatusDevices = RunStatus.PASSED, runStatusApps = RunStatus.PASSED;
-
+                RunStatus runStatus = RunStatus.FAILED;
                 IWebProxy proxy = null;
+
                 if (_config.UseProxy)
                 {
                     try
@@ -113,21 +116,23 @@ namespace PSModule
                         runStatus = await GetAndPrintCloudBrowsers(client);
                     else
                     {
-                        if (_config.Resx.In(Resx.OnlyDevices, Resx.BothDevicesAndApps))
-                            runStatusDevices = await CheckAndPrintDevices(client);
-                        if (_config.Resx.In(Resx.OnlyApps, Resx.BothDevicesAndApps))
-                            runStatusApps = await GetAndPrintApps(client);
+                        List<RunStatus> runStatuses = [];
 
-                        if (runStatusDevices == RunStatus.PASSED && runStatusApps == RunStatus.PASSED)
+                        if (_config.Resx.In(Resx.OnlyDevices, Resx.BothDevicesAndApps, Resx.AllResources))
+                            runStatuses.Add(await CheckAndPrintDevices(client));
+                        if (_config.Resx.In(Resx.OnlyApps, Resx.BothDevicesAndApps, Resx.AllResources))
+                            runStatuses.Add(await GetAndPrintApps(client));
+                        if (_config.Resx.In(Resx.Workspaces, Resx.AllResources))
+                            runStatuses.Add(await GetAndPrintWorkspaces(client));
+
+                        if (runStatuses.All(status => status == RunStatus.PASSED))
                             runStatus = RunStatus.PASSED;
-                        else if (runStatusDevices == RunStatus.FAILED && runStatusApps == RunStatus.FAILED)
+                        else if (runStatuses.All(status => status == RunStatus.FAILED))
                             runStatus = RunStatus.FAILED;
                         else
                             runStatus = RunStatus.UNSTABLE;
                     }
-
                     await auth.Logout(client);
-
                 }
                 else
                     LogError(new UftMobileException(C.LOGIN_FAILED));
@@ -352,6 +357,29 @@ namespace PSModule
                 WriteDebug($"{wex.Status}: {wex.Message}");
             }
             return err;
+        }
+
+        private async Task<RunStatus> GetAndPrintWorkspaces(IClient client)
+        {
+            RunStatus status = RunStatus.FAILED;
+            WriteObject(WORKSPACES_HEAD);
+            Response<Workspace> res = await client.HttpGet<Workspace>(WORKSPACES_ENDPOINT, resType: ResType.Array);
+            if (res.IsOK)
+            {
+                if (res.Entities.Any())
+                {
+                    int x = 1;
+                    WriteObject($"Available workspaces ({res.Entities.Count()}):");
+                    res.Entities.ForEach(w => WriteObject($"Workspace #{x++} -Name: \"{w.Name}\", Id: \"{w.Uuid}\""));
+                }
+                else
+                    WriteObject("No workspace has been retrieved from the Functional Testing Lab server");
+                status = RunStatus.PASSED;
+            }
+            else
+                LogError(new UftMobileException($"StatusCode={res.StatusCode}, Error={res.Error}"));
+            WriteObject(SECTION_BOTTOM);
+            return status;
         }
     }
 }

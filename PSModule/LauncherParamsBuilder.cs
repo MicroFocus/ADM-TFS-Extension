@@ -84,6 +84,7 @@ namespace PSModule
         private const string MOBILEPROXYSETTING_PASSWORD = "MobileProxySetting_Password";
         private const string MOBILEINFO = "mobileinfo";
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
+        private const string WORKSPACEID = "workspaceId";
 
         private readonly static string _defaultSecretKey = "EncriptionPass4Java"; // TODO improve the encryption mechanism
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
@@ -170,9 +171,9 @@ namespace PSModule
             SetParamValue(ALMUSERNAME, almUserName);
         }
 
-        public void SetAlmPassword(string almPassword, SecureString key = null)
+        public void SetAlmPassword(string almPassword)
         {
-            string encAlmPass = key == null ? EncryptParam(almPassword) : new Aes256Encrypter(key).Encrypt(almPassword);
+            string encAlmPass = Aes256Encrypter.Encrypt(almPassword);
             SetParamValue(ALMPASSWORD, encAlmPass);
         }
 
@@ -196,9 +197,9 @@ namespace PSModule
             SetParamValue(ALMCLIENTID, clientID);
         }
 
-        public void SetApiKeySecret(string apiKeySecret, SecureString key = null)
+        public void SetApiKeySecret(string apiKeySecret)
         {
-            string encAlmApiKey = key == null ? EncryptParam(apiKeySecret) : new Aes256Encrypter(key).Encrypt(apiKeySecret);
+            string encAlmApiKey = Aes256Encrypter.Encrypt(apiKeySecret);
             SetParamValue(ALMAPIKEYSECRET, encAlmApiKey);
         }
 
@@ -269,12 +270,12 @@ namespace PSModule
             if (config.AuthType == UftMobile.SDK.Enums.AuthType.Basic)
             {
                 SetParamValue(MOBILEUSERNAME, config.UsernameOrClientId);
-                SetParamValue(MOBILEPASSWORD, EncryptParam(config.PasswordOrSecret));
+                SetParamValue(MOBILEPASSWORD, Aes256Encrypter.Encrypt(config.PasswordOrSecret));
             }
             else
             {
                 SetParamValue(MOBILECLIENTID, config.UsernameOrClientId);
-                SetParamValue(MOBILESECRETKEY, EncryptParam(config.PasswordOrSecret));
+                SetParamValue(MOBILESECRETKEY, Aes256Encrypter.Encrypt(config.PasswordOrSecret));
             }
             if (config.ServerUrl.StartsWith(C.HTTPS, StringComparison.OrdinalIgnoreCase))
             {
@@ -291,7 +292,7 @@ namespace PSModule
                 {
                     SetParamValue(MOBILEPROXYSETTING_AUTHENTICATION, C.ONE);
                     SetParamValue(MOBILEPROXYSETTING_USERNAME, proxy.UsernameOrClientId);
-                    SetParamValue(MOBILEPROXYSETTING_PASSWORD, EncryptParam(proxy.PasswordOrSecret));
+                    SetParamValue(MOBILEPROXYSETTING_PASSWORD, Aes256Encrypter.Encrypt(proxy.PasswordOrSecret));
                 }
             }
         }
@@ -308,6 +309,11 @@ namespace PSModule
             SetParamValue(CLOUDBROWSERINFO, cb);
         }
 
+        public void SetWorkspaceID(string workspaceID)
+        {
+            SetParamValue(WORKSPACEID, workspaceID);
+        }
+
         private void SetParamValue(string key, string val)
         {
             if (val.IsNullOrEmpty())
@@ -318,59 +324,7 @@ namespace PSModule
                     properties.Add(key, string.Empty);
             }
             else
-            {
                 properties.Add(key, val);
-            }
-        }
-
-        private string EncryptParam(string text)
-        {
-            RijndaelManaged rijndaelCipher = new()
-            {
-                Mode = CipherMode.CBC,
-                Padding = PaddingMode.PKCS7,
-
-                KeySize = 0x80,
-                BlockSize = 0x80
-            };
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(_defaultSecretKey);
-            byte[] keyBytes = new byte[0x10];
-            int len = pwdBytes.Length;
-            if (len > keyBytes.Length)
-            {
-                len = keyBytes.Length;
-            }
-            Array.Copy(pwdBytes, keyBytes, len);
-            rijndaelCipher.Key = keyBytes;
-            rijndaelCipher.IV = keyBytes;
-            ICryptoTransform transform = rijndaelCipher.CreateEncryptor();
-            byte[] plainText = Encoding.UTF8.GetBytes(text);
-            return Convert.ToBase64String(transform.TransformFinalBlock(plainText, 0, plainText.Length));
-        }
-
-        public static string DecryptParam(string encryptedText)
-        {
-            RijndaelManaged rijndaelCipher = new()
-            {
-                Mode = CipherMode.CBC,
-                Padding = PaddingMode.PKCS7,
-
-                KeySize = 0x80,
-                BlockSize = 0x80
-            };
-            byte[] encryptedData = Convert.FromBase64String(encryptedText);
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(_defaultSecretKey);
-            byte[] keyBytes = new byte[0x10];
-            int len = pwdBytes.Length;
-            if (len > keyBytes.Length)
-            {
-                len = keyBytes.Length;
-            }
-            Array.Copy(pwdBytes, keyBytes, len);
-            rijndaelCipher.Key = keyBytes;
-            rijndaelCipher.IV = keyBytes;
-            byte[] plainText = rijndaelCipher.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
-            return Encoding.UTF8.GetString(plainText);
         }
     }
 }

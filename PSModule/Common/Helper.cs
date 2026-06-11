@@ -18,7 +18,6 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -88,6 +87,7 @@ namespace PSModule
         private const string RUN_SUMMARY = "Run Summary";
         private const string FAILED_TESTS = "Failed Tests";
         private const string HYPHEN = "&ndash;";
+        private const int PRIVATE_KEY_LENGTH = 64;
 
         private static readonly CultureInfo _enUS = new("en-US");
 
@@ -527,7 +527,7 @@ namespace PSModule
             }
 
             //add table to file
-            StringWriter sw = new();
+            using StringWriter sw = new();
             table.RenderControl(new(sw));
             string html = sw.ToString();
             File.WriteAllText(Path.Combine(rptPath, UFT_REPORT_CAPTION), html);
@@ -699,7 +699,7 @@ namespace PSModule
 
         private static byte[] ImageToByteArray(Image imageIn)
         {
-            MemoryStream ms = new();
+            using MemoryStream ms = new();
             imageIn.Save(ms, ImageFormat.Png);
 
             return ms.ToArray();
@@ -737,32 +737,29 @@ namespace PSModule
             return rounded;
         }
 
-        public static SecureString GetPrivateKey(string resDir, out string filePath)
+        public static byte[] GetPrivateKey(string resDir, out string filePath)
         {
             filePath = Path.Combine(resDir, C._RANDOM_KEY_TMP);
             if (File.Exists(filePath))
             {
                 return GetKeyFromFile(filePath);
             }
-            else
-            {
-                filePath = null;
-            }
+            filePath = null;
             return null;
         }
 
-        public static SecureString GenerateAndSavePrivateKey(string path, out string filePath)
+        public static byte[] GenerateAndSavePrivateKey(string path, out string filePath)
         {
             filePath = Path.Combine(path, C._RANDOM_KEY_TMP);
-            var key = GenerateAlphaNumericSecureString(32);
+            byte[] key = GenerateAlphaNumericBytes(PRIVATE_KEY_LENGTH);
             SaveKeyToProtectedHiddenFile(filePath, key);
             return key;
         }
 
-        public static string GenerateAlphaNumericString(int length)
+        public static byte[] GenerateAlphaNumericBytes(int length)
         {
-            using var rng = RandomNumberGenerator.Create();
-            var result = new StringBuilder(length);
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            StringBuilder result = new(length);
             for (int i = 0; i < length; i++)
             {
                 byte[] buffer = new byte[1];
@@ -770,16 +767,13 @@ namespace PSModule
                 int index = buffer[0] % AlphaNumericChars.Length;
                 result.Append(AlphaNumericChars[index]);
             }
-            return result.ToString();
+            return Encoding.UTF8.GetBytes(result.ToString());
         }
 
-        public static void SaveKeyToProtectedHiddenFile(string filePath, SecureString secureKey)
+        public static void SaveKeyToProtectedHiddenFile(string filePath, byte[] secureKey)
         {
-            // Convert SecureString to byte arrays
-            byte[] keyBytes = secureKey.ToByteArray();
-
             // Encrypt the byte arrays using DPAPI for the current user
-            byte[] keyEncrypted = ProtectedData.Protect(keyBytes, null, DataProtectionScope.CurrentUser);
+            byte[] keyEncrypted = ProtectedData.Protect(secureKey, null, DataProtectionScope.CurrentUser);
 
             // Write the encrypted data to the file
             using (FileStream fs = new(filePath, FileMode.Create, FileAccess.Write))
@@ -821,7 +815,7 @@ namespace PSModule
             File.SetAccessControl(filePath, fileSecurity);
         }
 
-        private static SecureString GetKeyFromFile(string filePath)
+        private static byte[] GetKeyFromFile(string filePath)
         {
             try
             {
@@ -838,11 +832,8 @@ namespace PSModule
                 // Decrypt the data using DPAPI for the current user
                 byte[] keyBytes = ProtectedData.Unprotect(keyEncrypted, null, DataProtectionScope.CurrentUser);
 
-                // Convert decrypted byte arrays to SecureString
-                SecureString secretKey = keyBytes.ToSecureString();
-
                 // Return the KeyVector object
-                return secretKey;
+                return keyBytes;
             }
             catch (FileNotFoundException ex)
             {
@@ -860,12 +851,6 @@ namespace PSModule
             {
                 throw new Exception("An unexpected error occurred: " + ex.Message, ex);
             }
-        }
-
-        private static SecureString GenerateAlphaNumericSecureString(int count)
-        {
-            string str = GenerateAlphaNumericString(count);
-            return str.ToSecureString();
         }
     }
 }

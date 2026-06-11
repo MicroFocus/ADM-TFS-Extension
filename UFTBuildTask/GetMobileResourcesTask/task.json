@@ -10,9 +10,9 @@
 	],
 	"author": "OpenText",
 	"version": {
-		"Major": 5,
+		"Major": 6,
 		"Minor": 0,
-		"Patch": 1
+		"Patch": 0
 	},
 	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
 	"inputs": [
@@ -115,10 +115,12 @@
 			"required": false,
 			"helpMarkDown": "Choose what resources will be retrieved from the Functional Testing Lab server",
 			"options": {
+				"workspaces": "Workspaces",
 				"onlyDevices": "Only devices",
 				"onlyApps": "Only applications",
 				"bothDevicesAndApps": "Both devices and applications",
-				"cloudBrowsers": "Cloud browsers"
+				"cloudBrowsers": "Cloud browsers",
+				"allResources": "All resources"
 			}
 		},
 		{
@@ -127,7 +129,7 @@
 			"label": "Include disconnected devices in response",
 			"defaultValue": false,
 			"required": false,
-			"visibleRule": "mcResources = onlyDevices || mcResources = bothDevicesAndApps",
+			"visibleRule": "mcResources = onlyDevices || mcResources = bothDevicesAndApps || mcResources = allResources",
 			"helpMarkDown": "Choose whether to include the disconnected devices within the list of devices retrieved by running this task"
 		}
 	],

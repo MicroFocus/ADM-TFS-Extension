@@ -10,9 +10,9 @@
 	],
 	"author": "OpenText",
 	"version": {
-		"Major": 7,
+		"Major": 8,
 		"Minor": 0,
-		"Patch": 1
+		"Patch": 0
 	},
 	"helpUrl": "https://admhelp.microfocus.com/uft/en/latest/UFT_Help/Content/UFT_Tools/Azure_DevOps_Extension/uft-azure-devops-run-local.htm",
 	"demands": "UFT_LAUNCHER",
@@ -138,6 +138,15 @@
 			"helpMarkDown": "The address of your Functional Testing Lab server, in the format http[s]://(server name):(port)"
 		},
 		{
+			"name": "mcWorkspaceID",
+			"groupName": "digitalLab",
+			"type": "string",
+			"label": "Workspace ID",
+			"defaultValue": "",
+			"required": false,
+			"helpMarkDown": "Specify the workspace ID here (use Get Functional Testing Lab Resources task first)."
+		},
+		{
 			"name": "mcAuthType",
 			"groupName": "digitalLab",
 			"type": "radio",
@@ -254,7 +263,7 @@
 			"label": "Device",
 			"defaultValue": "",
 			"required": true,
-			"helpMarkDown": "Specify one single device's information"
+			"helpMarkDown": "Specify one single device's information. The expected pattern is: 'property1:\"value1\", property2:\"value2\"...'. Valid property names are: DeviceID, Manufacturer, Model, OSType and OSVersion."
 		},
 		{
 			"name": "mcAppType",

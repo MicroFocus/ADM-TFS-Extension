@@ -31,8 +31,6 @@
  */
 
 using System;
-using System.IO;
-using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -40,94 +38,192 @@ namespace PSModule.Common
 {
     public class Aes256Encrypter
     {
-        private readonly byte[] _keyBytes;
-        private const int INT_256 = 256;
-        private const int INT_128 = 128;
+        // =========================================================
+        // ATTRIBUTES:
+        // =========================================================
+        // Singleton instance — null until Create() is called from Main.
+        private static Aes256Encrypter _instance;
 
-        public Aes256Encrypter(SecureString privateKey)
+        // Per-instance secure keys set once in the private constructor.
+        private readonly byte[] _aesKey;
+        private readonly byte[] _hmacKey;
+        private readonly byte[] _privateKey;
+
+        // =========================================================
+        // SINGLETON FACTORY
+        // =========================================================
+
+        /// <summary>
+        /// Creates the singleton. Must be called once from Main, before any
+        /// Encrypt / Decrypt call, passing the raw byte-array key.
+        /// </summary>
+        public static void Create(byte[] privateKey = null)
         {
-            string secretKey = privateKey?.AsPlainText();
-            if (string.IsNullOrEmpty(secretKey))
+            if (_instance != null)
+                throw new InvalidOperationException("Encrypter is already initialized.");
+            if (privateKey.IsNullOrEmpty())
             {
-                throw new ArgumentException("The secret key is null or empty.", nameof(secretKey));
+                privateKey = new byte[64];
+                using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+                rng.GetBytes(privateKey);
             }
-
-            _keyBytes = Encoding.UTF8.GetBytes(secretKey);
-
-            if (_keyBytes.Length != 32)
-            {
-                throw new ArgumentException("The secret key must be 32 bytes (256 bits) when UTF-8 encoded.", nameof(secretKey));
-            }
+            _instance = new Aes256Encrypter(privateKey);
         }
 
-        public string Decrypt(string text)
+        /// <summary>
+        /// Splits the 64-byte key into two 32-byte halves: _aesKey (for AES-256) and _hmacKey (for HMAC-SHA256).
+        /// If no key is provided, an ArgumentNullException is thrown.
+        /// </summary>
+        /// <param name="privateKey">The 64-byte key.</param>
+        /// <exception cref="ArgumentNullException">Thrown if the key is null or empty.</exception>
+        /// <exception cref="CryptographicException">Thrown if the key is invalid.</exception>
+        private Aes256Encrypter(byte[] privateKey)
         {
-            if (text.IsNullOrEmpty())
-                throw new ArgumentNullException(nameof(text));
+            if (privateKey is null)
+                throw new ArgumentNullException(nameof(privateKey));
 
-            byte[] encryptedBytes;
-            try
-            {
-                encryptedBytes = Convert.FromBase64String(text);
-            }
-            catch (FormatException ex)
-            {
-                throw new ArgumentException("The input text is not a valid Base64 string.", nameof(text), ex);
-            }
+            if (privateKey.Length != 64)
+                throw new CryptographicException("Invalid secure key length. Expected 64 bytes (base64-encoded).");
 
-            if (encryptedBytes.Length < 16)
-                throw new ArgumentException("The input data is too short to contain an IV.", nameof(text));
+            _aesKey = new byte[32];
+            _hmacKey = new byte[32];
+            _privateKey = privateKey;
+            Buffer.BlockCopy(privateKey, 0, _aesKey, 0, 32);
+            Buffer.BlockCopy(privateKey, 32, _hmacKey, 0, 32);
+        }
 
+        // =========================================================
+        // 🔒 PUBLIC STATIC API (callers are unchanged)
+        // =========================================================
+        /// <summary>
+        /// Entry point for encryption.
+        /// Delegates to EncryptSecure, using Singleton instance.
+        /// <param name="plainText">The plaintext to encrypt.</param>
+        /// <returns>The encrypted ciphertext.</returns>
+        /// </summary>
+        public static string Encrypt(string plainText) =>
+            _instance?.EncryptSecure(plainText);
+
+        /// <summary>
+        /// Entry point for decryption.
+        /// In DEBUG mode returns the input as-is.
+        /// Otherwise delegates to DecryptSecure, using Singleton instance.
+        /// </summary>
+        /// <param name="cipherText">The ciphertext to decrypt.</param>
+        /// <returns>The decrypted plaintext.</returns>
+        public static string Decrypt(string cipherText)
+        {
+#if DEBUG
+            return cipherText; // used for troubleshooting and testing without needing to set up keys
+#endif
+            if (cipherText.IsNullOrEmpty())
+                return cipherText;
+
+            return _instance?.DecryptSecure(cipherText);
+        }
+
+        // =========================================================
+        // 🔐 SECURE MODE (AES-256-CBC + HMAC)
+        // =========================================================
+        /// <summary>
+        /// Encrypts using AES-256-CBC with a randomly generated IV, then appends an HMAC-SHA256 tag.
+        /// Output layout: [ IV (16) | ciphertext | HMAC (32) ], base64-encoded.
+        /// </summary>
+        /// <param name="plainText">The plaintext to encrypt.</param>
+        /// <returns>The encrypted ciphertext.</returns>
+        private string EncryptSecure(string plainText)
+        {
             using Aes aes = Aes.Create();
-            aes.KeySize = INT_256;
-            aes.BlockSize = INT_128;
+            aes.Key = _aesKey;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
-            aes.Key = _keyBytes;
+            aes.GenerateIV();
 
-            // Extract IV from the first 16 bytes
+            byte[] iv = aes.IV; // 16 bytes
+
+            using ICryptoTransform encryptor = aes.CreateEncryptor();
+            byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
+            byte[] ciphertext = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+
+            // Layout: [ IV (16) | ciphertext | HMAC (32) ]
+            byte[] data = new byte[16 + ciphertext.Length];
+            Buffer.BlockCopy(iv, 0, data, 0, 16);
+            Buffer.BlockCopy(ciphertext, 0, data, 16, ciphertext.Length);
+
+            using HMACSHA256 h = new(_hmacKey);
+            byte[] hmac = h.ComputeHash(data);
+
+            byte[] result = new byte[data.Length + 32];
+            Buffer.BlockCopy(data, 0, result, 0, data.Length);
+            Buffer.BlockCopy(hmac, 0, result, data.Length, 32);
+
+            return Convert.ToBase64String(result);
+        }
+
+        /// <summary>
+        /// Decodes the base64 payload, verifies the HMAC using constant-time comparison,
+        /// then decrypts the ciphertext with AES-256-CBC using the embedded IV.
+        /// </summary>
+        /// <param name="encryptedText">The base64-encoded encrypted payload.</param>
+        /// <returns>The decrypted plaintext.</returns>
+        /// <exception cref="CryptographicException">Thrown if the payload is invalid or HMAC validation fails.</exception>
+        private string DecryptSecure(string encryptedText)
+        {
+            byte[] buffer = Convert.FromBase64String(encryptedText);
+            // minimum: 16 (IV) + 1 block (16) + 32 (HMAC) = 64
+            if (buffer.Length < 64)
+                throw new CryptographicException("Invalid encrypted payload.");
+
+            int ciphertextLen = buffer.Length - 16 - 32;
+
             byte[] iv = new byte[16];
-            Array.Copy(encryptedBytes, 0, iv, 0, 16);
-            aes.IV = iv;
+            byte[] ciphertext = new byte[ciphertextLen];
+            byte[] hmac = new byte[32];
 
-            // Extract ciphertext (skip IV)
-            byte[] ciphertext = new byte[encryptedBytes.Length - 16];
-            Array.Copy(encryptedBytes, 16, ciphertext, 0, ciphertext.Length);
+            Buffer.BlockCopy(buffer, 0, iv, 0, 16);
+            Buffer.BlockCopy(buffer, 16, ciphertext, 0, ciphertextLen);
+            Buffer.BlockCopy(buffer, buffer.Length - 32, hmac, 0, 32);
 
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-            try
-            {
-                using MemoryStream msDecrypt = new(ciphertext);
-                using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
-                using StreamReader srDecrypt = new(csDecrypt);
-                return srDecrypt.ReadToEnd();
-            }
-            catch (CryptographicException ex)
-            {
-                throw new CryptographicException("Decryption failed. The input may not be valid encrypted data, or the key may not match.", ex);
-            }
-        }
+            using HMACSHA256 h = new HMACSHA256(_hmacKey);
+            byte[] expected = h.ComputeHash(buffer, 0, buffer.Length - 32);
 
-        public string Encrypt(string text)
-        {
+            if (!ConstantTimeEquals(expected, hmac))
+                throw new CryptographicException("HMAC validation failed.");
+
             using Aes aes = Aes.Create();
-            aes.KeySize = INT_256;
-            aes.BlockSize = INT_128;
+            aes.Key = _aesKey;
+            aes.IV = iv;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
-            aes.Key = _keyBytes;
-            aes.GenerateIV(); // Random IV
 
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-            using MemoryStream msEncrypt = new();
-            // Write IV to the start of the output
-            msEncrypt.Write(aes.IV, 0, aes.IV.Length);
-            using CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using StreamWriter swEncrypt = new(csEncrypt);
-            swEncrypt.Write(text);
-            swEncrypt.Flush();
-            csEncrypt.FlushFinalBlock();
-            return Convert.ToBase64String(msEncrypt.ToArray());
+            using ICryptoTransform decryptor = aes.CreateDecryptor();
+            byte[] plain = decryptor.TransformFinalBlock(ciphertext, 0, ciphertext.Length);
+
+            return Encoding.UTF8.GetString(plain);
         }
+
+        // =========================================================
+        // 🛠 HELPERS
+        // =========================================================
+        /// <summary>
+        /// Compares two byte arrays in constant time (bitwise OR of all differences)
+        /// to prevent timing-based side-channel attacks during HMAC verification.
+        /// </summary>
+        /// <param name="a">The first byte array to compare.</param>
+        /// <param name="b">The second byte array to compare.</param>
+        /// <returns>True if the byte arrays are equal, false otherwise.</returns>
+        private static bool ConstantTimeEquals(byte[] a, byte[] b)
+        {
+            if (a.Length != b.Length) return false;
+            int diff = 0;
+            for (int i = 0; i < a.Length; i++)
+                diff |= a[i] ^ b[i];
+            return diff == 0;
+        }
+
+        /// <summary>
+        /// Returns the private key of the current singleton instance, or <c>null</c> if not initialized.
+        /// </summary>
+        public static byte[] GetPrivateKey() => _instance?._privateKey;
     }
 }
