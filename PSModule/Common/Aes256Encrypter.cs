@@ -51,13 +51,17 @@ namespace PSModule.Common
         private readonly byte[] _hmacKey;
         private readonly byte[] _privateKey;
 
+        /// <summary>
+        /// Returns the private key of the current singleton instance, or <c>null</c> if not initialized.
+        /// </summary>
+        public static byte[] GetPrivateKey() => _instance?._privateKey;
+
         // =========================================================
         // SINGLETON FACTORY
         // =========================================================
 
         /// <summary>
-        /// Creates the singleton. Must be called once from Main, before any
-        /// Encrypt / Decrypt call, passing the raw byte-array key.
+        /// Creates the singleton.
         /// </summary>
         public static void Create(byte[] privateKey = null)
         {
@@ -186,7 +190,7 @@ namespace PSModule.Common
             Buffer.BlockCopy(buffer, 16, ciphertext, 0, ciphertextLen);
             Buffer.BlockCopy(buffer, buffer.Length - 32, hmac, 0, 32);
 
-            using HMACSHA256 h = new HMACSHA256(_hmacKey);
+            using HMACSHA256 h = new (_hmacKey);
             byte[] expected = h.ComputeHash(buffer, 0, buffer.Length - 32);
 
             if (!ConstantTimeEquals(expected, hmac))
@@ -222,10 +226,5 @@ namespace PSModule.Common
                 diff |= a[i] ^ b[i];
             return diff == 0;
         }
-
-        /// <summary>
-        /// Returns the private key of the current singleton instance, or <c>null</c> if not initialized.
-        /// </summary>
-        public static byte[] GetPrivateKey() => _instance?._privateKey;
     }
 }
