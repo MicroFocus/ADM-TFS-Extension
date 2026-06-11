@@ -31,6 +31,7 @@
  */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -41,6 +42,7 @@ namespace PSModule.Common
         // =========================================================
         // ATTRIBUTES:
         // =========================================================
+        public static string USE_STDIN_KEY = "--use-stdin-key";
         // Singleton instance — null until Create() is called from Main.
         private static Aes256Encrypter _instance;
 

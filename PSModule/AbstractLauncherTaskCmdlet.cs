@@ -127,6 +127,7 @@ namespace PSModule
                 {
                     return;
                 }
+                Aes256Encrypter.Create();
                 //run the build task
                 var exitCode = Run(launcherPath, propsFilePath);
                 var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
@@ -261,7 +262,12 @@ namespace PSModule
 
         private LauncherExitCode? Run(string launcherPath, string paramFile)
         {
+            byte[] privateKey = Aes256Encrypter.GetPrivateKey();
             string args = $" -paramfile \"{paramFile}\"";
+            if (!privateKey.IsNullOrEmpty())
+            {
+                args += $" {Aes256Encrypter.USE_STDIN_KEY}";
+            }
             Console.WriteLine($"{launcherPath}{args}");
             _launcherConsole.Clear();
             try
@@ -311,16 +317,12 @@ namespace PSModule
 
                 launcher.BeginOutputReadLine();
                 launcher.BeginErrorReadLine();
-                string encryptionKeyAsBase64 = string.Empty;
-                byte[] privateKey = Aes256Encrypter.GetPrivateKey();
                 if (!privateKey.IsNullOrEmpty())
                 {
-                    encryptionKeyAsBase64 = Convert.ToBase64String(privateKey);
+                    launcher.StandardInput.WriteLine(Convert.ToBase64String(privateKey));
+                    launcher.StandardInput.Flush();
+                    launcher.StandardInput.Close();
                 }
-                launcher.StandardInput.WriteLine(encryptionKeyAsBase64);
-                launcher.StandardInput.Flush();
-                launcher.StandardInput.Close();
-
                 // Wait for the process to exit without polling
                 exitEvent.WaitOne();
                 return (LauncherExitCode?)launcher.ExitCode;
