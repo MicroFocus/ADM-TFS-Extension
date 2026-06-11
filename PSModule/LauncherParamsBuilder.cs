@@ -86,7 +86,6 @@ namespace PSModule
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
         private const string WORKSPACEID = "workspaceId";
 
-        private readonly static string _defaultSecretKey = "EncriptionPass4Java"; // TODO improve the encryption mechanism
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
         private readonly Dictionary<string, string> properties = [];
 
