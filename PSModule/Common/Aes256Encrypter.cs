@@ -107,8 +107,14 @@ namespace PSModule.Common
         /// <param name="plainText">The plaintext to encrypt.</param>
         /// <returns>The encrypted ciphertext.</returns>
         /// </summary>
-        public static string Encrypt(string plainText) =>
-            _instance?.EncryptSecure(plainText);
+        public static string Encrypt(string plainText)
+        {
+            if (_instance == null)
+            { 
+                Create(); // lazily initialize with random key if not already created by Main
+            }
+            return _instance?.EncryptSecure(plainText);
+        }
 
         /// <summary>
         /// Entry point for decryption.

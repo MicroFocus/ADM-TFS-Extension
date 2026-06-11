@@ -127,7 +127,6 @@ namespace PSModule
                 {
                     return;
                 }
-                Aes256Encrypter.Create();
                 //run the build task
                 var exitCode = Run(launcherPath, propsFilePath);
                 var runType = (RunType)Enum.Parse(typeof(RunType), properties[RUN_TYPE]);
