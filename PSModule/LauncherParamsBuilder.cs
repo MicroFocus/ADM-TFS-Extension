@@ -85,6 +85,8 @@ namespace PSModule
         private const string MOBILEINFO = "mobileinfo";
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
         private const string WORKSPACEID = "workspaceId";
+        private const string RUNASUSERNAME = "runAsUsername";
+        private const string RUNASPASSWORD = "runAsPassword";
 
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
         private readonly Dictionary<string, string> properties = [];
@@ -260,6 +262,12 @@ namespace PSModule
         public void SetFsTimeOut(string fsTimeOut)
         {
             SetParamValue(FSTIMEOUT, fsTimeOut.IsNullOrWhiteSpace() ? C.MINUS_ONE : fsTimeOut);
+        }
+
+        public void SetRunAsDifferentUser(string username, string password)
+        {
+            SetParamValue(RUNASUSERNAME, username);
+            SetParamValue(RUNASPASSWORD, Aes256Encrypter.Encrypt(password));
         }
 
         public void SetDigitalLabSrvConfig(ServerConfigEx config)

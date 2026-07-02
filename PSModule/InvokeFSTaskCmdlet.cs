@@ -167,6 +167,15 @@ namespace PSModule
 
         [Parameter(Position = 14)]
         public string WorkspaceID { get; set; }
+        
+        [Parameter(Position = 15)]
+        public bool RunAsDifferentUser { get; set; }
+
+        [Parameter(Position = 16)]
+        public string RunAsUsername { get; set; }
+
+        [Parameter(Position = 17)]
+        public string RunAsPassword { get; set; }
 
         protected override bool CollateResults(string resultFile, string resdir)
         {
@@ -242,6 +251,10 @@ namespace PSModule
                 WriteWarning($"Invalid Workspace ID format: '{WorkspaceID}'. A valid GUID is expected.");
             }
             builder.SetWorkspaceID(WorkspaceID);
+            if (RunAsDifferentUser)
+            {
+                builder.SetRunAsDifferentUser(RunAsUsername, RunAsPassword);
+            }
             return builder.GetProperties();
         }
 

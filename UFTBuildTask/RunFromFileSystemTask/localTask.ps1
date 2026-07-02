@@ -23,6 +23,7 @@ $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
 $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
+[bool]$runAsDifferentUser = Get-VstsInput -Name 'runAsDifferentUser' -AsBool
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 [bool]$generateJUnitRpt = Get-VstsInput -Name 'generateJUnitReport' -AsBool
@@ -45,6 +46,15 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:RELEASE_RELEASEID
 	[int]$rerunIdx = $env:RELEASE_ATTEMPTNUMBER
 	$rerunType = "attempt"
+}
+if ($runAsDifferentUser) {
+	$runAsUsername = (Get-VstsInput -Name 'runAsUsername').Trim()
+	$runAsPassword = Get-VstsInput -Name 'runAsPassword'
+	if ($runAsUsername -eq "") {
+		throw "The Run As Username field is required."
+	} elseif ($runAsPassword.Trim() -eq "") {
+		throw "The Run As Password field is required."
+	}
 }
 
 if ($useDigitalLab) {
@@ -334,7 +344,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern $workspaceID -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern $workspaceID $runAsDifferentUser $runAsUsername $runAsPassword -Verbose 
 } catch {
 	Write-Error $_
 } finally {

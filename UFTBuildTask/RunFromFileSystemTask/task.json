@@ -34,7 +34,14 @@
 			"displayName": "Cloud Browser Lab",
 			"isExpanded": true,
 			"visibleRule": "useDigitalLab == true && useCloudBrowser == true"
+		},		
+		{
+			"name": "runAsUser",
+			"displayName": "Run As Different User",
+			"isExpanded": true,
+			"visibleRule": "runAsDifferentUser == true"
 		}
+
 	],
 	"inputs": [
 		{
@@ -60,6 +67,14 @@
 			"defaultValue": "",
 			"required": false,
 			"helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
+		},		
+		{
+			"name": "runAsDifferentUser",
+			"type": "boolean",
+			"label": "Run UFT as a different user",
+			"defaultValue": false,
+			"required": false,
+			"helpMarkDown": "Run UFT One using different Windows credentials instead of the logged-in agent user."
 		},
 		{
 			"name": "useDigitalLab",
@@ -441,6 +456,24 @@
 			"defaultValue": "",
 			"required": true,
 			"helpMarkDown": "Specify the browser version / tag (use the task 'Get Functional Testing Lab Resources' to get the available browsers)"
+		},
+		{
+			"name": "runAsUsername",
+			"groupName": "runAsUser",
+			"type": "string",
+			"label": "Username",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "Windows user account (DOMAIN\\user)"
+		},
+		{
+			"name": "runAsPassword",
+			"groupName": "runAsUser",
+			"type": "password",
+			"label": "Password",
+			"defaultValue": "",
+			"required": true,
+			"helpMarkDown": "Use a secret variable like $(password)"
 		}
 	],
 
