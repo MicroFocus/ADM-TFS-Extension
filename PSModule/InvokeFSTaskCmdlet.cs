@@ -242,7 +242,7 @@ namespace PSModule
             builder.SetDigitalLabSrvConfig(_dlServerConfig);
             builder.SetMobileConfig(_deviceConfig);
             builder.SetCloudBrowserConfig(_cloudBrowserConfig);
-            if (_dlServerConfig != null || _deviceConfig != null || _cloudBrowserConfig != null)
+            if (_dlServerConfig != null)
             {
                 if (WorkspaceID.IsNullOrWhiteSpace())
                 {
