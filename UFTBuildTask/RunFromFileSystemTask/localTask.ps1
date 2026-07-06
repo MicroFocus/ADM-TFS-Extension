@@ -23,7 +23,6 @@ $uploadArtifact = Get-VstsInput -Name 'uploadArtifact' -Require
 $artifactType = Get-VstsInput -Name 'artifactType'
 $rptFileName = (Get-VstsInput -Name 'reportFileName').Trim()
 [string]$tsPattern = Get-VstsInput -Name 'tsPattern'
-[bool]$runAsDifferentUser = Get-VstsInput -Name 'runAsDifferentUser' -AsBool
 [bool]$cancelRunOnFailure = Get-VstsInput -Name 'cancelRunOnFailure' -AsBool
 [bool]$enableFailedTestsRpt = Get-VstsInput -Name 'enableFailedTestsReport' -AsBool
 [bool]$generateJUnitRpt = Get-VstsInput -Name 'generateJUnitReport' -AsBool
@@ -34,7 +33,7 @@ if ($workspaceID -and ($workspaceID -notmatch "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0
 }
 
 $configs = [List[IConfig]]::new()
-$configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE))
+$configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE, $env:UFT_RUN_AS_USERNAME, $env:UFT_RUN_AS_PASSWORD))
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {
@@ -46,15 +45,6 @@ if ($env:SYSTEM_HOSTTYPE -eq "build") {
 	$buildNumber = $env:RELEASE_RELEASEID
 	[int]$rerunIdx = $env:RELEASE_ATTEMPTNUMBER
 	$rerunType = "attempt"
-}
-if ($runAsDifferentUser) {
-	$runAsUsername = (Get-VstsInput -Name 'runAsUsername').Trim()
-	$runAsPassword = Get-VstsInput -Name 'runAsPassword'
-	if ($runAsUsername -eq "") {
-		throw "The Run As Username field is required."
-	} elseif ($runAsPassword.Trim() -eq "") {
-		throw "The Run As Password field is required."
-	}
 }
 
 if ($useDigitalLab) {
@@ -344,7 +334,7 @@ try {
 #---------------------------------------------------------------------------------------------------
 #Run the tests
 try {
-	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern $workspaceID $runAsDifferentUser $runAsUsername $runAsPassword -Verbose 
+	Invoke-FSTask $testPathInput $timeOutIn $uploadArtifact $artifactType $rptFileName $archiveNamePattern $buildNumber $enableFailedTestsRpt $generateJUnitRpt $false $configs $rptFolders $cancelRunOnFailure $tsPattern $workspaceID -Verbose 
 } catch {
 	Write-Error $_
 } finally {
