@@ -11,19 +11,18 @@
 
 namespace PSModule.Common
 {
-    public class EnvVarsConfig(string storageAccount, string container, string leaveUftOpenIfVisible = "", string uftRunAsUsername = "", string uftRunAsPassword = "") : IConfig
+    public class EnvVarsConfig(string storageAccount, string container, string leaveUftOpenIfVisible = "", string uftRunAsUserName = "", string uftRunAsUserPassword = "") : IConfig
     {
         private readonly string _storageAccount = storageAccount;
         private readonly string _container = container;
         private readonly string _leaveUftOpenIfVisible = leaveUftOpenIfVisible;
-        private readonly string _uftRunAsUsername = uftRunAsUsername;
-        private readonly string _uftRunAsPassword = uftRunAsPassword;
-
+        private readonly string _uftRunAsUserName = uftRunAsUserName;
+        private readonly string _uftRunAsUserPassword = uftRunAsUserPassword;
 
         public string StorageAccount => _storageAccount;
         public string Container => _container;
         public string LeaveUftOpenIfVisible => _leaveUftOpenIfVisible;
-        public string UftRunAsUsername => _uftRunAsUsername;
-        public string UftRunAsPassword => _uftRunAsPassword;
+        public string uftRunAsUserName => _uftRunAsUserName;
+        public string uftRunAsUserPassword => _uftRunAsUserPassword;
     }
 }

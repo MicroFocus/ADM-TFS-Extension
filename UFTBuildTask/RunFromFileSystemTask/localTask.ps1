@@ -32,9 +32,10 @@ if ($workspaceID -and ($workspaceID -notmatch "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0
     Write-Host "Workspace ID is not in valid UUID format." -ForegroundColor Red
 }
 
-$username = $env:UFT_RUN_AS_USERNAME
+# same as in Jenkins plugin
+$username = $env:UFT_RUN_AS_USER_NAME
 # Secret variables are not exposed as environment variables
-$password = [string](Get-VstsTaskVariable -Name 'UFT_RUN_AS_PASSWORD' -Require:$false)
+$password = [string](Get-VstsTaskVariable -Name 'UFT_RUN_AS_USER_PASSWORD' -Require:$false)
 
 $configs = [List[IConfig]]::new()
 $configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE, $username, $password)) 

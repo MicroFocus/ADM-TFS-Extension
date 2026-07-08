@@ -85,8 +85,8 @@ namespace PSModule
         private const string MOBILEINFO = "mobileinfo";
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
         private const string WORKSPACEID = "workspaceId";
-        private const string UFT_RUN_AS_USERNAME = "runAsUsername";
-        private const string UFT_RUN_AS_PASSWORD = "runAsPassword";
+        private const string UFT_RUN_AS_USER_NAME = "uftRunAsUserName";
+        private const string UFT_RUN_AS_USER_PASSWORD = "uftRunAsUserPassword";
 
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
         private readonly Dictionary<string, string> properties = [];
@@ -156,8 +156,8 @@ namespace PSModule
             SetParamValue(STORAGEACCOUNT, envVars.StorageAccount);
             SetParamValue(CONTAINER, envVars.Container);
             SetParamValue(LEAVE_UFT_OPEN_IF_VISIBLE, envVars.LeaveUftOpenIfVisible);
-            SetParamValue(UFT_RUN_AS_USERNAME, envVars.UftRunAsUsername);
-            SetParamValue(UFT_RUN_AS_PASSWORD, Aes256Encrypter.Encrypt(envVars.UftRunAsPassword));
+            SetParamValue(UFT_RUN_AS_USER_NAME, envVars.uftRunAsUserName);
+            SetParamValue(UFT_RUN_AS_USER_PASSWORD, Aes256Encrypter.Encrypt(envVars.uftRunAsUserPassword));
         }
 
         public void SetRunType(RunType runType)
@@ -266,8 +266,6 @@ namespace PSModule
         {
             SetParamValue(FSTIMEOUT, fsTimeOut.IsNullOrWhiteSpace() ? C.MINUS_ONE : fsTimeOut);
         }
-
-
 
         public void SetDigitalLabSrvConfig(ServerConfigEx config)
         {
