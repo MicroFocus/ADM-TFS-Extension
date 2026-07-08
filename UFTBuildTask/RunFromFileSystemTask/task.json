@@ -60,7 +60,7 @@
 			"defaultValue": "",
 			"required": false,
 			"helpMarkDown": "Timeout value in seconds. If left empty, there is no timeout"
-		},		
+		},
 		{
 			"name": "useDigitalLab",
 			"type": "boolean",
