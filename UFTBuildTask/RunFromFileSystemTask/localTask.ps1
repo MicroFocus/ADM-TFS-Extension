@@ -32,8 +32,12 @@ if ($workspaceID -and ($workspaceID -notmatch "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0
     Write-Host "Workspace ID is not in valid UUID format." -ForegroundColor Red
 }
 
+$username = $env:UFT_RUN_AS_USERNAME
+# Secret variables are not exposed as environment variables
+$password = [string](Get-VstsTaskVariable -Name 'UFT_RUN_AS_PASSWORD' -Require:$false)
+
 $configs = [List[IConfig]]::new()
-$configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE, $env:UFT_RUN_AS_USERNAME, $env:UFT_RUN_AS_PASSWORD))
+$configs.Add([EnvVarsConfig]::new($env:STORAGE_ACCOUNT, $env:CONTAINER, $env:LEAVE_UFT_OPEN_IF_VISIBLE, $username, $password)) 
 
 # $env:SYSTEM can be used also to determine the pipeline type "build" or "release"
 if ($env:SYSTEM_HOSTTYPE -eq "build") {

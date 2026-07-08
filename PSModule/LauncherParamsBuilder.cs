@@ -157,8 +157,9 @@ namespace PSModule
             SetParamValue(CONTAINER, envVars.Container);
             SetParamValue(LEAVE_UFT_OPEN_IF_VISIBLE, envVars.LeaveUftOpenIfVisible);
             SetParamValue(UFT_RUN_AS_USERNAME, envVars.UftRunAsUsername);
-            SetParamValue(UFT_RUN_AS_PASSWORD, envVars.UftRunAsPassword);
+            SetParamValue(UFT_RUN_AS_PASSWORD, Aes256Encrypter.Encrypt(envVars.UftRunAsPassword));
         }
+
         public void SetRunType(RunType runType)
         {
             SetParamValue(RUNTYPE, runType.ToString());
@@ -266,11 +267,7 @@ namespace PSModule
             SetParamValue(FSTIMEOUT, fsTimeOut.IsNullOrWhiteSpace() ? C.MINUS_ONE : fsTimeOut);
         }
 
-        public void SetRunAsDifferentUser(string username, string password)
-        {
-            SetParamValue(UFT_RUN_AS_USERNAME, username);
-            SetParamValue(UFT_RUN_AS_PASSWORD, Aes256Encrypter.Encrypt(password));
-        }
+
 
         public void SetDigitalLabSrvConfig(ServerConfigEx config)
         {
