@@ -1,7 +1,7 @@
 ﻿/*
  * MIT License https://github.com/MicroFocus/ADM-TFS-Extension/blob/master/LICENSE
  *
- * Copyright 2016-2024 Open Text
+ * Copyright 2016-2026 Open Text
  *
  * The only warranties for products and services of Open Text and its affiliates and licensors ("Open Text") are as may be set forth in the express warranty statements accompanying such products and services.
  * Nothing herein should be construed as constituting an additional warranty.
@@ -85,6 +85,8 @@ namespace PSModule
         private const string MOBILEINFO = "mobileinfo";
         private const string CLOUDBROWSERINFO = "cloudbrowserinfo";
         private const string WORKSPACEID = "workspaceId";
+        private const string UFT_RUN_AS_USER_NAME = "uftRunAsUserName";
+        private const string UFT_RUN_AS_USER_PASSWORD = "uftRunAsUserPassword";
 
         private readonly List<string> requiredParams = ["almRunHost", "almUserName", "almPassword"];
         private readonly Dictionary<string, string> properties = [];
@@ -154,7 +156,10 @@ namespace PSModule
             SetParamValue(STORAGEACCOUNT, envVars.StorageAccount);
             SetParamValue(CONTAINER, envVars.Container);
             SetParamValue(LEAVE_UFT_OPEN_IF_VISIBLE, envVars.LeaveUftOpenIfVisible);
+            SetParamValue(UFT_RUN_AS_USER_NAME, envVars.uftRunAsUserName);
+            SetParamValue(UFT_RUN_AS_USER_PASSWORD, Aes256Encrypter.Encrypt(envVars.uftRunAsUserPassword));
         }
+
         public void SetRunType(RunType runType)
         {
             SetParamValue(RUNTYPE, runType.ToString());

@@ -1,7 +1,7 @@
 ﻿/*
  * MIT License https://github.com/MicroFocus/ADM-TFS-Extension/blob/master/LICENSE
  *
- * Copyright 2016-2024 Open Text
+ * Copyright 2016-2026 Open Text
  *
  * The only warranties for products and services of Open Text and its affiliates and licensors ("Open Text") are as may be set forth in the express warranty statements accompanying such products and services.
  * Nothing herein should be construed as constituting an additional warranty.
@@ -167,7 +167,7 @@ namespace PSModule
 
         [Parameter(Position = 14)]
         public string WorkspaceID { get; set; }
-
+        
         protected override bool CollateResults(string resultFile, string resdir)
         {
             return true; //do nothing here. Collate results should be made by the standard "Copy and Publish Artifacts" TFS task
@@ -233,13 +233,16 @@ namespace PSModule
             builder.SetDigitalLabSrvConfig(_dlServerConfig);
             builder.SetMobileConfig(_deviceConfig);
             builder.SetCloudBrowserConfig(_cloudBrowserConfig);
-            if (WorkspaceID.IsNullOrWhiteSpace())
+            if (_dlServerConfig != null)
             {
-                WriteWarning($"Workspace ID is empty. A valid GUID is expected.");
-            }
-            else if (!Guid.TryParse(WorkspaceID, out _))
-            {
-                WriteWarning($"Invalid Workspace ID format: '{WorkspaceID}'. A valid GUID is expected.");
+                if (WorkspaceID.IsNullOrWhiteSpace())
+                {
+                    WriteWarning($"Workspace ID is empty. A valid GUID is expected.");
+                }
+                else if (!Guid.TryParse(WorkspaceID, out _))
+                {
+                    WriteWarning($"Invalid Workspace ID format: '{WorkspaceID}'. A valid GUID is expected.");
+                }
             }
             builder.SetWorkspaceID(WorkspaceID);
             return builder.GetProperties();
