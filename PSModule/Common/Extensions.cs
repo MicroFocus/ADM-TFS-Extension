@@ -23,6 +23,7 @@ using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using C = PSModule.Common.Constants;
 
@@ -30,7 +31,9 @@ namespace PSModule
 {
 	public static class Extensions
 	{
-		private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
+        private static readonly Regex SingleBackslashRegex = new(@"(?<!\\)\\(?!\\)", RegexOptions.Compiled);
+        
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
 		{
 			ContractResolver = new CamelCasePropertyNamesContractResolver { },
 			NullValueHandling = NullValueHandling.Include
@@ -336,6 +339,11 @@ namespace PSModule
                 // Free the BSTR to prevent memory leaks
                 Marshal.ZeroFreeBSTR(bstr);
             }
+        }
+
+        public static string EscapeSingleBackslashes(this string str)
+        {
+            return str.IsNullOrWhiteSpace() ? str : SingleBackslashRegex.Replace(str.Trim(), @"\\");
         }
     }
 }

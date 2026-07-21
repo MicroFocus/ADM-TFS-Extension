@@ -22,7 +22,7 @@ namespace PSModule.Common
         public string StorageAccount => _storageAccount;
         public string Container => _container;
         public string LeaveUftOpenIfVisible => _leaveUftOpenIfVisible;
-        public string uftRunAsUserName => _uftRunAsUserName;
-        public string uftRunAsUserPassword => _uftRunAsUserPassword;
+        public string UftRunAsUserName => _uftRunAsUserName;
+        public string UftRunAsUserPassword => _uftRunAsUserPassword;
     }
 }
