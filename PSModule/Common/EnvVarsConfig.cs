@@ -16,7 +16,7 @@ namespace PSModule.Common
         private readonly string _storageAccount = storageAccount;
         private readonly string _container = container;
         private readonly string _leaveUftOpenIfVisible = leaveUftOpenIfVisible;
-        private readonly string _uftRunAsUserName = uftRunAsUserName.Trim();
+        private readonly string _uftRunAsUserName = uftRunAsUserName?.Trim();
         private readonly string _uftRunAsUserPassword = uftRunAsUserPassword;
 
         public string StorageAccount => _storageAccount;
