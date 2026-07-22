@@ -36,7 +36,6 @@ namespace PSModule
         private const string DEBUG_PREFERENCE = "DebugPreference";
         private const string MISSING_OR_INVALID_DEVICES = "Missing or invalid devices";
         private const string MISSING_OR_INVALID_APP = "Missing or invalid application";
-        private const string MISSING_OR_INVALID_APPS = "Missing or invalid applications";
         private const string MISSING_OR_INVALID_DEVICE = "Missing or invalid device";
         private const string FAILED_TO_CREATE_TEMP_JOB = "Functional Testing Lab server failed to create a temporary job";
         private const string NO_JOB_FOUND_BY_GIVEN_ID = "No job found by given ID";

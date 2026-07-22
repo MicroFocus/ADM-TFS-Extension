@@ -156,8 +156,11 @@ namespace PSModule
             SetParamValue(STORAGEACCOUNT, envVars.StorageAccount);
             SetParamValue(CONTAINER, envVars.Container);
             SetParamValue(LEAVE_UFT_OPEN_IF_VISIBLE, envVars.LeaveUftOpenIfVisible);
-            SetParamValue(UFT_RUN_AS_USER_NAME, envVars.UftRunAsUserName.EscapeSingleBackslashes());
-            SetParamValue(UFT_RUN_AS_USER_PASSWORD, Aes256Encrypter.Encrypt(envVars.UftRunAsUserPassword));
+            if (envVars.HasUftCredentials)
+            {
+                SetParamValue(UFT_RUN_AS_USER_NAME, envVars.UftRunAsUserName.EscapeSingleBackslashes());
+                SetParamValue(UFT_RUN_AS_USER_PASSWORD, Aes256Encrypter.Encrypt(envVars.UftRunAsUserPassword));
+            }
         }
 
         public void SetRunType(RunType runType)
